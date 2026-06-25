@@ -15,11 +15,18 @@ class DatabaseSeeder extends Seeder
      */
     public function run(): void
     {
-        // User::factory(10)->create();
+        // En lugar de usar factory()->create() directo, validamos si ya existe el email
+        User::firstOrCreate(
+            ['email' => 'test@example.com'],
+            [
+                'name' => 'Test User',
+                'password' => bcrypt('password'), // Le asignamos una contraseña por defecto de forma segura
+            ]
+        );
 
-        User::factory()->create([
-            'name' => 'Test User',
-            'email' => 'test@example.com',
+        // Llamamos al seeder del catálogo para las tablets
+        $this->call([
+            HotelCatalogSeeder::class,
         ]);
     }
 }
