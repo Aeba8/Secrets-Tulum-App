@@ -23,8 +23,13 @@ class CenaEspecialResource extends JsonResource
             'restaurant'      => $this->restaurant,
             'numero_personas' => (int) $this->numero_personas,
             'is_active'       => (bool) $this->is_active,
-            'ficha_tecnica'   => $this->ficha_tecnica, // Laravel ya lo decodifica a array/objeto gracias al cast
+            'ficha_tecnica'   => $this->ficha_tecnica,
+            
+            // 🌟 Agregamos el desglose del menú al JSON de salida:
+            'entrada'         => $this->Entrada,
+            'crema'           => $this->Crema,
+            'plato_fuerte'    => $this->Plato_fuerte,
+            'postre'          => $this->Postre,
         ];
+    }
 }
-}
-
