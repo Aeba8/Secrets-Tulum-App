@@ -1,3 +1,10 @@
+@php
+    // Dividimos la Ficha_Tecnica original del modelo usando tu separador '|'
+    $parts = explode('|', $balinesa->Ficha_Tecnica ?? ($balinesa->ficha_tecnica ?? ''));
+    $horario_disponible = isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : 'Todos los días';
+    $botella_incluida = isset($parts[1]) && !empty(trim($parts[1])) ? trim($parts[1]) : '1 botella de Moët & Chandon Brut 750ml';
+@endphp
+
 <!DOCTYPE html>
 <html lang="{{ request('lang', 'es') }}">
 
@@ -61,7 +68,8 @@
             <span data-key="back">Ir atrás</span>
         </button>
 
-        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de Camas Balinesas</span>
+        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de Camas
+            Balinesas</span>
 
         <button onclick="navigateWithAnimation('{{ route('welcome') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none">
@@ -75,7 +83,8 @@
         <div
             class="w-1/4 min-w-[260px] max-w-[320px] bg-black/40 backdrop-blur-md border-r border-white/10 p-6 flex flex-col gap-6 text-white">
             <div>
-                <h2 data-key="filter_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase mb-4">Ubicación</h2>
+                <h2 data-key="filter_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase mb-4">
+                    Ubicación</h2>
                 <div class="flex flex-col gap-3">
                     <label class="flex items-center gap-3 cursor-pointer group text-sm">
                         <div class="w-5 h-5 rounded-full border-2 border-[#A21B54] flex items-center justify-center">
@@ -103,7 +112,8 @@
             <hr class="border-white/10">
 
             <div class="flex flex-col gap-4">
-                <h2 data-key="search_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase">Preferencias</h2>
+                <h2 data-key="search_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase">
+                    Preferencias</h2>
                 <button
                     class="w-full text-left py-2 px-3 bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-all text-xs flex justify-between items-center text-white/70">
                     <span data-key="filter_amenity">Inclusiones (Champagne / Frutas)</span>
@@ -126,94 +136,96 @@
     </div>
 
     <script>
-    const translations = {
-        es: {
-            back: "Ir atrás",
-            home: "Inicio",
-            top_title: "Reservación de Camas Balinesas",
-            filter_title: "Ubicación",
-            loc_all: "Todas las zonas",
-            loc_beach: "Frente a la Playa",
-            loc_pool: "Zona de Piscina",
-            search_title: "Preferencias",
-            filter_amenity: "Inclusiones (Champagne / Frutas)",
-            filter_price: "Rango de Precio",
-            loading: "Cargando catálogo...",
-            tap_view: "Tocar para ver"
-        },
-        en: {
-            back: "Back",
-            home: "Home",
-            top_title: "Bali Beds Reservation",
-            filter_title: "Location",
-            loc_all: "All Zones",
-            loc_beach: "Beachfront",
-            loc_pool: "Pool Area",
-            search_title: "Preferences",
-            filter_amenity: "Inclusions (Champagne / Fruits)",
-            filter_price: "Price Range",
-            loading: "Loading catalog...",
-            tap_view: "Tap to view"
-        }
-    };
+        const translations = {
+            es: {
+                back: "Ir atrás",
+                home: "Inicio",
+                top_title: "Reservación de Camas Balinesas",
+                filter_title: "Ubicación",
+                loc_all: "Todas las zonas",
+                loc_beach: "Frente a la Playa",
+                loc_pool: "Zona de Piscina",
+                search_title: "Preferencias",
+                filter_amenity: "Inclusiones (Champagne / Frutas)",
+                filter_price: "Rango de Precio",
+                loading: "Cargando catálogo...",
+                tap_view: "Tocar para ver"
+            },
+            en: {
+                back: "Back",
+                home: "Home",
+                top_title: "Bali Beds Reservation",
+                filter_title: "Location",
+                loc_all: "All Zones",
+                loc_beach: "Beachfront",
+                loc_pool: "Pool Area",
+                search_title: "Preferences",
+                filter_amenity: "Inclusions (Champagne / Fruits)",
+                filter_price: "Price Range",
+                loading: "Loading catalog...",
+                tap_view: "Tap to view"
+            }
+        };
 
-    const urlParams = new URLSearchParams(window.location.search);
-    const currentLang = urlParams.get('lang') === 'en' ? 'en' : 'es';
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentLang = urlParams.get('lang') === 'en' ? 'en' : 'es';
 
-    // Traducir los elementos estáticos con data-key
-    document.querySelectorAll('[data-key]').forEach(element => {
-        const key = element.getAttribute('data-key');
-        if (translations[currentLang] && translations[currentLang][key]) {
-            const textSpan = element.querySelector('span');
-            if (textSpan) {
-                textSpan.innerText = translations[currentLang][key];
-            } else {
-                element.innerText = translations[currentLang][key];
+        // Traducir los elementos estáticos con data-key
+        document.querySelectorAll('[data-key]').forEach(element => {
+            const key = element.getAttribute('data-key');
+            if (translations[currentLang] && translations[currentLang][key]) {
+                const textSpan = element.querySelector('span');
+                if (textSpan) {
+                    textSpan.innerText = translations[currentLang][key];
+                } else {
+                    element.innerText = translations[currentLang][key];
+                }
+            }
+        });
+
+        // 🌟 FUNCIÓN AUXILIAR DE TRADUCCIÓN AUTOMÁTICA Y GRATUITA
+        async function traducirTextoAIngles(textoOriginal) {
+            try {
+                // Utilizamos la API pública y gratuita de MyMemory para traducir de español (es) a inglés (en)
+                const response = await fetch(
+                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
+                const data = await response.json();
+                if (data.responseData && data.responseData.translatedText) {
+                    return data.responseData.translatedText;
+                }
+                return textoOriginal;
+            } catch (error) {
+                console.error("Error en la traducción automática:", error);
+                return textoOriginal; // Si falla la red, regresa el texto original en español
             }
         }
-    });
 
-    // 🌟 FUNCIÓN AUXILIAR DE TRADUCCIÓN AUTOMÁTICA Y GRATUITA
-    async function traducirTextoAIngles(textoOriginal) {
-        try {
-            // Utilizamos la API pública y gratuita de MyMemory para traducir de español (es) a inglés (en)
-            const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
-            const data = await response.json();
-            if (data.responseData && data.responseData.translatedText) {
-                return data.responseData.translatedText;
-            }
-            return textoOriginal;
-        } catch (error) {
-            console.error("Error en la traducción automática:", error);
-            return textoOriginal; // Si falla la red, regresa el texto original en español
-        }
-    }
+        document.addEventListener("DOMContentLoaded", function() {
+            const loadingContainer = document.getElementById('balinesas-container');
+            loadingContainer.innerHTML =
+                `<div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> ${translations[currentLang].loading}</div>`;
 
-    document.addEventListener("DOMContentLoaded", function() {
-        const loadingContainer = document.getElementById('balinesas-container');
-        loadingContainer.innerHTML = `<div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> ${translations[currentLang].loading}</div>`;
+            fetch('/api/hotel/catalog')
+                .then(response => response.json())
+                .then(async res => { // 🌟 Convertimos a async para poder esperar la traducción automática
+                    if (res.success) {
+                        loadingContainer.innerHTML = '';
 
-        fetch('/api/hotel/catalog')
-            .then(response => response.json())
-            .then(async res => { // 🌟 Convertimos a async para poder esperar la traducción automática
-                if (res.success) {
-                    loadingContainer.innerHTML = '';
+                        // Usamos un bucle for...of para procesar las traducciones en orden
+                        for (const balinesa of res.data.balinesas) {
 
-                    // Usamos un bucle for...of para procesar las traducciones en orden
-                    for (const balinesa of res.data.balinesas) {
-                        
-                        // El título siempre se queda fiel al nombre de la Base de Datos en español
-                        const nombre = balinesa.nombre || balinesa.Nombre; 
-                        
-                        // Extraemos la descripción original en español que viene de la base de datos
-                        let descripcion = balinesa.ficha_tecnica || balinesa.Descripcion;
+                            // El título siempre se queda fiel al nombre de la Base de Datos en español
+                            const nombre = balinesa.nombre || balinesa.Nombre;
 
-                        // 🌟 TRADUCCIÓN AUTOMÁTICA AL VUELO: Si el idioma seleccionado es inglés, se traduce en el momento
-                        if (currentLang === 'en' && descripcion) {
-                            descripcion = await traducirTextoAIngles(descripcion);
-                        }
+                            // Extraemos la descripción original en español que viene de la base de datos
+                            let descripcion = balinesa.ficha_tecnica || balinesa.Descripcion;
 
-                        const tarjeta = `
+                            // 🌟 TRADUCCIÓN AUTOMÁTICA AL VUELO: Si el idioma seleccionado es inglés, se traduce en el momento
+                            if (currentLang === 'en' && descripcion) {
+                                descripcion = await traducirTextoAIngles(descripcion);
+                            }
+
+                            const tarjeta = `
                             <div onclick="selectBalinesa('${balinesa.slug}')" class="bg-black/60 hover:bg-black/70 backdrop-blur-sm border border-white/10 hover:border-[#A21B54]/50 rounded-xl p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.99] group">
                                 <div class="flex-1 pr-6 text-white">
                                     <h3 translate="no" class="text-lg font-semibold tracking-wide mb-2 group-hover:text-[#D4AF37] transition-colors">${nombre}</h3>
@@ -230,32 +242,39 @@
                                 </div>
                             </div>
                         `;
-                        loadingContainer.innerHTML += tarjeta;
+                            loadingContainer.innerHTML += tarjeta;
+                        }
                     }
-                }
-            })
-            .catch(err => {
-                console.error("Error al obtener catálogo:", err);
-                loadingContainer.innerHTML = `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
-            });
-    });
+                })
+                .catch(err => {
+                    console.error("Error al obtener catálogo:", err);
+                    loadingContainer.innerHTML =
+                        `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
+                });
+        });
 
-    function navigateWithAnimation(targetUrl) {
-        const body = document.getElementById('balinesas-body');
-        body.classList.add('page-exit');
-        setTimeout(() => {
-            window.location.href = targetUrl + "?lang=" + currentLang;
-        }, 400);
-    }
+        function navigateWithAnimation(targetUrl) {
+            const body = document.getElementById('balinesas-body');
+            body.classList.add('page-exit');
+            setTimeout(() => {
+                window.location.href = targetUrl + (targetUrl.includes('?') ? '&' : '?') + "lang=" + currentLang;
+            }, 400);
+        }
 
-    function selectBalinesa(packageId) {
-        const body = document.getElementById('balinesas-body');
-        body.classList.add('page-exit');
-        setTimeout(() => {
-            window.location.href = "{{ route('mapa.espacios') }}?package=" + packageId + "&lang=" + currentLang;
-        }, 400);
-    }
-</script>
+        function selectBalinesa(slug) { // 🌟 Cambiamos packageId por slug
+            const body = document.getElementById('balinesas-body');
+            if (body) {
+                body.classList.add('page-exit');
+            }
+
+            // Construimos la URL limpia hacia el controlador usando el slug recibido
+            const urlDestino = `/hotel/detalle-balinesa/${slug}?lang=${currentLang}`;
+
+            setTimeout(() => {
+                window.location.href = urlDestino;
+            }, 400);
+        }
+    </script>
 </body>
 
 </html>
