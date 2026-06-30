@@ -27,6 +27,11 @@ class ExperienciaResource extends JsonResource
             'numero_personas' => (int) $this->numero_personas,
             'is_active'       => (bool) $this->is_active,
             'ficha_tecnica'   => $this->ficha_tecnica,
+            'descripcion'     => $this->Descripcion,
+            'productos'       => $this->Productos, // Si activaste el cast a array, se enviará como objeto/lista limpia
+            'imagenes'        => $this->imagenes,  // Si activaste el cast a array, se enviará como lista de URLs
+            'costo_operativo' => (float) $this->Costo_Operativo,
+            'estado'          => $this->Estado,
         ];
     }
 }

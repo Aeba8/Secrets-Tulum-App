@@ -61,7 +61,8 @@
             <span data-key="back">Ir atrás</span>
         </button>
 
-        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de Cenas Especiales</span>
+        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de Cenas
+            Especiales</span>
 
         <button onclick="navigateWithAnimation('{{ route('welcome') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none">
@@ -75,7 +76,8 @@
         <div
             class="w-1/4 min-w-[260px] max-w-[320px] bg-black/40 backdrop-blur-md border-r border-white/10 p-6 flex flex-col gap-6 text-white">
             <div>
-                <h2 data-key="filter_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase mb-4">Ubicación</h2>
+                <h2 data-key="filter_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase mb-4">
+                    Ubicación</h2>
                 <div class="flex flex-col gap-3">
                     <label class="flex items-center gap-3 cursor-pointer group text-sm">
                         <div class="w-5 h-5 rounded-full border-2 border-[#A21B54] flex items-center justify-center">
@@ -103,7 +105,8 @@
             <hr class="border-white/10">
 
             <div class="flex flex-col gap-4">
-                <h2 data-key="search_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase">Menú & Maridaje</h2>
+                <h2 data-key="search_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase">Menú &
+                    Maridaje</h2>
                 <button
                     class="w-full text-left py-2 px-3 bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-all text-xs flex justify-between items-center text-white/70">
                     <span data-key="filter_menu">Tiempos del Menú (3 o 5 Tiempos)</span>
@@ -189,7 +192,8 @@
             async function traducirTextoAIngles(textoOriginal) {
                 if (!textoOriginal) return '';
                 try {
-                    const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
+                    const response = await fetch(
+                        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
                     const data = await response.json();
                     if (data.responseData && data.responseData.translatedText) {
                         return data.responseData.translatedText;
@@ -215,7 +219,8 @@
 
             document.addEventListener("DOMContentLoaded", function() {
                 const container = document.getElementById('cenas-container');
-                container.innerHTML = `<div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> ${translations[currentLang].loading}</div>`;
+                container.innerHTML =
+                    `<div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> ${translations[currentLang].loading}</div>`;
 
                 fetch('/api/hotel/catalog')
                     .then(response => response.json())
@@ -225,7 +230,7 @@
 
                             for (const cena of res.data.cenas_especiales) {
                                 const nombre = currentLang === 'en' ? (cena.name || cena.nombre) : cena.nombre;
-                                
+
                                 // Extraemos los platos individuales que vienen en español de la base de datos
                                 let entrada = cena.entrada || '';
                                 let crema = cena.crema || '';
@@ -244,8 +249,9 @@
 
                                 const t = translations[currentLang];
                                 // Armamos la descripción elegante de forma dinámica con las etiquetas correctas de idioma
-                                const descripcionMenu = `<strong>${t.menu_lbl}:</strong> ${t.starter_lbl}: ${entrada} • ${t.soup_lbl}: ${crema} • ${t.main_lbl}: ${plato_fuerte} • ${t.dessert_lbl}: ${postre}.`;
-                                
+                                const descripcionMenu =
+                                    `<strong>${t.menu_lbl}:</strong> ${t.starter_lbl}: ${entrada} • ${t.soup_lbl}: ${crema} • ${t.main_lbl}: ${plato_fuerte} • ${t.dessert_lbl}: ${postre}.`;
+
                                 const tarjeta = `
                                     <div onclick="selectCena('${cena.slug}')" class="bg-black/60 hover:bg-black/70 backdrop-blur-sm border border-white/10 hover:border-[#A21B54]/50 rounded-xl p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.99] group">
                                         <div class="flex-1 pr-6 text-white">
@@ -271,9 +277,20 @@
                     })
                     .catch(err => {
                         console.error("Error al obtener catálogo:", err);
-                        container.innerHTML = `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
+                        container.innerHTML =
+                            `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
                     });
             });
+
+            function selectCena(slug) {
+                // Aplicamos la animación de salida premium que ya tienes definida
+                document.getElementById('cenas-body').classList.add('page-exit');
+
+                setTimeout(() => {
+                    // Redirecciona al endpoint pasando el slug y el idioma actual
+                    window.location.href = `/hotel/detalle-cena/${slug}?lang=${currentLang}`;
+                }, 400);
+            }
         </script>
 </body>
 

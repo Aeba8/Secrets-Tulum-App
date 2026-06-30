@@ -30,6 +30,22 @@ Route::middleware(['auth', 'role:Operativo'])->group(function () {
     Route::get('/hotel/detalle-balinesa/{slug}', [HotelWebController::class, 'detalleBalinesa'])
         ->name('paquetes.detalleBalinesa');
 
+    // 🌟 NUEVA RUTA: Detalle de Cenas Románticas / Especiales
+    Route::get('/hotel/detalle-cena/{slug}', [HotelWebController::class, 'detalleCena'])
+        ->name('paquetes.detalleCena');
+
+    Route::middleware(['auth', 'role:Operativo'])->group(function () {
+        // ... tus rutas actuales
+
+        // 🌟 NUEVA RUTA: Detalle de Experiencias VIP
+        Route::get('/hotel/detalle-experiencia/{slug}', [HotelWebController::class, 'detalleExperiencia'])
+            ->name('paquetes.detalleExperiencia');
+
+        Route::get('/hotel/experiencias-vip', function () {
+            return view('ipad.experiencias');
+        })->name('paquetes.experiencias');
+    });
+
     // Carga las estructuras limpias de las vistas
     Route::get('/hotel/balinesas', function () {
         return view('ipad.balinesas');

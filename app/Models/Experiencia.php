@@ -11,9 +11,13 @@ class Experiencia extends Model
     public $timestamps = false;
 
     protected $fillable = [
-    'Nombre', 'Precio', 'Slug', 'Tipo', 'Lugar', 'Duracion', 'Horario', 'Numero_Personas', 'Is_Active', 'Id_Categoria', 'Ficha_Tecnica',
-    'name', 'slug', 'price', 'tipo', 'lugar', 'duracion', 'horario', 'numero_personas', 'is_active', 'id_categoria', 'ficha_tecnica'
-];
+        'Nombre', 'Precio', 'Slug', 'Tipo', 'Lugar', 'Duracion', 'Horario', 'Numero_Personas', 'Is_Active', 'Id_Categoria', 'Ficha_Tecnica',
+        'name', 'slug', 'price', 'tipo', 'lugar', 'duracion', 'horario', 'numero_personas', 'is_active', 'id_categoria', 'ficha_tecnica',
+        'Productos', 'Descripcion', 'imagenes', 'Costo_Operativo', 'Estado',
+        'productos', 'descripcion', 'imagenes', 'costo_operativo', 'estado',
+        
+
+    ];
 
     protected function casts(): array
     {
@@ -21,10 +25,11 @@ class Experiencia extends Model
             'Ficha_Tecnica' => 'array',
             'Numero_Personas' => 'integer',
             'Is_Active' => 'boolean',
+            'imagenes' => 'array',
+            'Costo_Operativo' => 'float',
         ];
     }
 
-    // Tu relación inversa del polimorfismo intacta
     public function reservas()
     {
         return $this->morphMany(Reserva::class, 'serviciable', 'serviciable_type', 'serviciable_id');

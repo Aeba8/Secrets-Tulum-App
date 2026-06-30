@@ -61,7 +61,8 @@
             <span data-key="back">Ir atrás</span>
         </button>
 
-        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de Experiencias VIP</span>
+        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de
+            Experiencias VIP</span>
 
         <button onclick="navigateWithAnimation('{{ route('welcome') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none">
@@ -75,7 +76,8 @@
         <div
             class="w-1/4 min-w-[260px] max-w-[320px] bg-black/40 backdrop-blur-md border-r border-white/10 p-6 flex flex-col gap-6 text-white">
             <div>
-                <h2 data-key="filter_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase mb-4">Tipo de Actividad</h2>
+                <h2 data-key="filter_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase mb-4">
+                    Tipo de Actividad</h2>
                 <div class="flex flex-col gap-3">
                     <label class="flex items-center gap-3 cursor-pointer group text-sm">
                         <div class="w-5 h-5 rounded-full border-2 border-[#A21B54] flex items-center justify-center">
@@ -103,7 +105,8 @@
             <hr class="border-white/10">
 
             <div class="flex flex-col gap-4">
-                <h2 data-key="search_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase">Filtros Avanzados</h2>
+                <h2 data-key="search_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase">Filtros
+                    Avanzados</h2>
                 <button
                     class="w-full text-left py-2 px-3 bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-all text-xs flex justify-between items-center text-white/70">
                     <span data-key="filter_duration">Duración de la Actividad</span>
@@ -181,7 +184,8 @@
             async function traducirTextoAIngles(textoOriginal) {
                 if (!textoOriginal) return '';
                 try {
-                    const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
+                    const response = await fetch(
+                        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
                     const data = await response.json();
                     if (data.responseData && data.responseData.translatedText) {
                         return data.responseData.translatedText;
@@ -195,7 +199,8 @@
 
             document.addEventListener("DOMContentLoaded", function() {
                 const container = document.getElementById('experiencias-container');
-                container.innerHTML = `<div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> ${translations[currentLang].loading}</div>`;
+                container.innerHTML =
+                    `<div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> ${translations[currentLang].loading}</div>`;
 
                 fetch('/api/hotel/catalog')
                     .then(response => response.json())
@@ -205,10 +210,12 @@
 
                             for (const exp of res.data.experiencias) {
                                 const nombre = currentLang === 'en' ? (exp.name || exp.nombre) : exp.nombre;
-                                const icono = exp.tipo === 'Spa & Bienestar' ? 'fa-spa' : 'fa-martini-glass-citrus';
-                                
+                                const icono = exp.tipo === 'Spa & Bienestar' ? 'fa-spa' :
+                                    'fa-martini-glass-citrus';
+
                                 // Campos originales en español de la BD
-                                let descripcion = exp.ficha_tecnica || exp.Descripcion || '';
+                                // Campos originales garantizando el uso de la descripción del modelo
+                                let descripcion = exp.descripcion || '';
                                 let duracion = exp.duracion || '';
                                 let lugar = exp.lugar || translations[currentLang].default_place;
 
@@ -216,7 +223,7 @@
                                 if (currentLang === 'en') {
                                     descripcion = await traducirTextoAIngles(descripcion);
                                     duracion = await traducirTextoAIngles(duracion);
-                                    if(exp.lugar) {
+                                    if (exp.lugar) {
                                         lugar = await traducirTextoAIngles(lugar);
                                     }
                                 }
@@ -246,7 +253,8 @@
                     })
                     .catch(err => {
                         console.error("Error al obtener experiencias:", err);
-                        container.innerHTML = `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
+                        container.innerHTML =
+                            `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
                     });
             });
 
@@ -262,7 +270,8 @@
                 const body = document.getElementById('experiencias-body');
                 body.classList.add('page-exit');
                 setTimeout(() => {
-                    window.location.href = "{{ route('catalogo') }}?experience=" + slug + "&lang=" + currentLang;
+                    // Redirecciona a la nueva ruta premium pasando el slug e idioma
+                    window.location.href = `/hotel/detalle-experiencia/${slug}?lang=${currentLang}`;
                 }, 400);
             }
         </script>
