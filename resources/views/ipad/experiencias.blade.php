@@ -53,16 +53,15 @@
 
     <div class="absolute inset-0 bg-black/60 z-0"></div>
 
-    <div
-        class="relative z-10 w-full bg-[#A21B54] text-white flex items-center justify-between px-6 py-2 text-sm shadow-md">
+    <!-- Top Navbar -->
+    <div class="relative z-10 w-full bg-[#C5A059] text-white flex items-center justify-between px-6 py-2 text-sm shadow-md">
         <button onclick="navigateWithAnimation('{{ route('catalogo') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none">
             <i class="fa-solid fa-chevron-left text-xs"></i>
             <span data-key="back">Ir atrás</span>
         </button>
 
-        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de
-            Experiencias VIP</span>
+        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de Experiencias VIP</span>
 
         <button onclick="navigateWithAnimation('{{ route('welcome') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none">
@@ -71,31 +70,45 @@
         </button>
     </div>
 
+    <!-- Workspace -->
     <div class="relative z-10 flex flex-row flex-1 h-[calc(100vh-40px)] w-full">
 
-        <div
-            class="w-1/4 min-w-[260px] max-w-[320px] bg-black/40 backdrop-blur-md border-r border-white/10 p-6 flex flex-col gap-6 text-white">
+        <!-- Sidebar Lateral de Filtros Operativos -->
+        <div class="w-1/4 min-w-[280px] max-w-[340px] bg-black/50 backdrop-blur-xl border-r border-white/10 p-5 flex flex-col gap-5 text-white overflow-y-auto no-scrollbar shadow-2xl">
+            
+            <!-- Buscador Dinámico (imagen_06d62a.png) -->
+            <div class="flex flex-col gap-2">
+                <h2 data-key="search_lbl" class="text-xs font-bold tracking-wider text-white/60 uppercase">Buscar Experiencia</h2>
+                <div class="relative">
+                    <input type="text" id="search-input" oninput="applyFiltersAndSorting()" placeholder="Escribe un servicio o lugar..." 
+                        class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#C5A059] transition-all">
+                </div>
+            </div>
+
+            <hr class="border-white/10">
+
+            <!-- Tipo de Actividad (Tipo) -->
             <div>
-                <h2 data-key="filter_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase mb-4">
-                    Tipo de Actividad</h2>
-                <div class="flex flex-col gap-3">
-                    <label class="flex items-center gap-3 cursor-pointer group text-sm">
-                        <div class="w-5 h-5 rounded-full border-2 border-[#A21B54] flex items-center justify-center">
-                            <div class="w-2.5 h-2.5 rounded-full bg-[#A21B54]"></div>
+                <h2 data-key="filter_title" class="text-xs font-bold tracking-wider text-white/60 uppercase mb-3">Tipo de Actividad</h2>
+                <div class="flex flex-col gap-2">
+                    <label class="flex items-center gap-3 cursor-pointer group text-xs">
+                        <input type="radio" name="type-filter" value="all" checked onchange="applyFiltersAndSorting()" class="hidden peer">
+                        <div class="w-4 h-4 rounded-full border border-[#C5A059] flex items-center justify-center peer-checked:bg-[#C5A059]">
+                            <div class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all"></div>
                         </div>
-                        <span data-key="type_all" class="font-medium text-white">Todas las categorías</span>
+                        <span data-key="type_all" class="font-medium text-white group-hover:text-[#C5A059] transition-colors">Todas las categorías</span>
                     </label>
-                    <label
-                        class="flex items-center gap-3 cursor-pointer group text-sm text-white/60 hover:text-white transition-all">
-                        <div
-                            class="w-5 h-5 rounded-full border-2 border-white/30 group-hover:border-white/60 transition-all">
+                    <label class="flex items-center gap-3 cursor-pointer group text-xs text-white/60 hover:text-white transition-all">
+                        <input type="radio" name="type-filter" value="Spa & Bienestar" onchange="applyFiltersAndSorting()" class="hidden peer">
+                        <div class="w-4 h-4 rounded-full border border-[#C5A059] group-hover:border-[#C5A059] flex items-center justify-center peer-checked:border-[#C5A059] peer-checked:bg-[#C5A059]">
+                            <div class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all"></div>
                         </div>
                         <span data-key="type_wellness">Spa & Bienestar</span>
                     </label>
-                    <label
-                        class="flex items-center gap-3 cursor-pointer group text-sm text-white/60 hover:text-white transition-all">
-                        <div
-                            class="w-5 h-5 rounded-full border-2 border-white/30 group-hover:border-white/60 transition-all">
+                    <label class="flex items-center gap-3 cursor-pointer group text-xs text-white/60 hover:text-white transition-all">
+                        <input type="radio" name="type-filter" value="Talleres & Mixología" onchange="applyFiltersAndSorting()" class="hidden peer">
+                        <div class="w-4 h-4 rounded-full border border-[#C5A059] group-hover:border-[#C5A059] flex items-center justify-center peer-checked:border-[#C5A059] peer-checked:bg-[#C5A059]">
+                            <div class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all"></div>
                         </div>
                         <span data-key="type_mixology">Talleres & Mixología</span>
                     </label>
@@ -104,177 +117,308 @@
 
             <hr class="border-white/10">
 
+            <!-- Capacidad de Personas (imagen_06d604.png) -->
+            <div class="flex flex-col gap-2">
+                <h2 data-key="capacity_title" class="text-xs font-bold tracking-wider text-white/60 uppercase">Capacidad (Pax)</h2>
+                <select id="pax-filter" onchange="applyFiltersAndSorting()" 
+                    class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
+                    <option value="all" data-key="pax_all" class="bg-stone-900">Cualquier capacidad</option>
+                    <option value="1" data-key="pax_individual" class="bg-stone-900">Individual (1 Pax)</option>
+                    <option value="2" data-key="pax_couples" class="bg-stone-900">Parejas (2 Pax)</option>
+                    <option value="4" data-key="pax_group" class="bg-stone-900">Grupal (4+ Pax)</option>
+                </select>
+            </div>
+
+            <hr class="border-white/10">
+
+            <!-- Rangos y Órdenes de Precio (imagen_06d5e6.png) -->
             <div class="flex flex-col gap-4">
-                <h2 data-key="search_title" class="text-sm font-semibold tracking-wider text-white/60 uppercase">Filtros
-                    Avanzados</h2>
-                <button
-                    class="w-full text-left py-2 px-3 bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-all text-xs flex justify-between items-center text-white/70">
-                    <span data-key="filter_duration">Duración de la Actividad</span>
-                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                </button>
-                <button
-                    class="w-full text-left py-2 px-3 bg-white/5 hover:bg-white/10 rounded border border-white/10 transition-all text-xs flex justify-between items-center text-white/70">
-                    <span data-key="filter_price">Rango de Precio</span>
-                    <i class="fa-solid fa-chevron-down text-[10px]"></i>
-                </button>
+                <h2 data-key="search_title" class="text-xs font-bold tracking-wider text-white/60 uppercase">Rango & Preferencias</h2>
+                
+                <!-- Rangos Estrictos de Precios -->
+                <div class="space-y-1.5">
+                    <label data-key="range_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Filtrar por Rango</label>
+                    <select id="price-range-filter" onchange="applyFiltersAndSorting()" 
+                        class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
+                        <option value="all" data-key="price_all" class="bg-stone-900">Cualquier precio</option>
+                        <option value="0-1500" data-key="price_up_to_15k" class="bg-stone-900">Hasta $1,500 MXN</option>
+                        <option value="1500-4000" data-key="price_15k_to_4k" class="bg-stone-900">$1,500 MXN - $4,000 MXN</option>
+                        <option value="4000-plus" data-key="price_over_4k" class="bg-stone-900">Más de $4,000 MXN</option>
+                    </select>
+                </div>
+
+                <!-- Sentidos de Ordenamiento Ascendente y Descendente -->
+                <div class="space-y-1.5">
+                    <label data-key="sort_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Ordenar por Precio</label>
+                    <select id="price-sort" onchange="applyFiltersAndSorting()" 
+                        class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
+                        <option value="default" data-key="sort_default" class="bg-stone-900">Predeterminado</option>
+                        <option value="low-high" data-key="sort_asc" class="bg-stone-900">📈 Menor a Mayor precio</option>
+                        <option value="high-low" data-key="sort_desc" class="bg-stone-900">📉 Mayor a Menor precio</option>
+                    </select>
+                </div>
             </div>
         </div>
 
+        <!-- Contenedor Principal de Tarjetas -->
         <div id="experiencias-container"
             class="flex-1 p-6 overflow-y-auto no-scrollbar flex flex-col gap-4 max-w-4xl mx-auto w-full">
-            <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase"><i
-                    class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando experiencias...</div>
+            <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase">
+                <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando experiencias...
+            </div>
         </div>
+    </div>
 
-        <script>
-            const translations = {
-                es: {
-                    back: "Ir atrás",
-                    home: "Inicio",
-                    top_title: "Reservación de Experiencias VIP",
-                    filter_title: "Tipo de Actividad",
-                    type_all: "Todas las categorías",
-                    type_wellness: "Spa & Bienestar",
-                    type_mixology: "Talleres & Mixología",
-                    search_title: "Filtros Avanzados",
-                    filter_duration: "Duración de la Actividad",
-                    filter_price: "Rango de Precio",
-                    loading: "Cargando experiencias...",
-                    tap_view: "Tocar para ver",
-                    duration_lbl: "Duración",
-                    place_lbl: "Lugar",
-                    default_place: "Instalaciones del Hotel"
-                },
-                en: {
-                    back: "Back",
-                    home: "Home",
-                    top_title: "VIP Experiences Reservation",
-                    filter_title: "Activity Type",
-                    type_all: "All Categories",
-                    type_wellness: "Spa & Wellness",
-                    type_mixology: "Workshops & Mixology",
-                    search_title: "Advanced Filters",
-                    filter_duration: "Activity Duration",
-                    filter_price: "Price Range",
-                    loading: "Loading experiences...",
-                    tap_view: "Tap to view",
-                    duration_lbl: "Duration",
-                    place_lbl: "Location",
-                    default_place: "Hotel Facilities"
-                }
-            };
+    <script>
+        const translations = {
+            es: {
+                back: "Ir atrás",
+                home: "Inicio",
+                top_title: "Reservación de Experiencias VIP",
+                filter_title: "Tipo de Actividad",
+                type_all: "Todas las categorías",
+                type_wellness: "Spa & Bienestar",
+                type_mixology: "Talleres & Mixología",
+                search_lbl: "Buscar Experiencia",
+                capacity_title: "Capacidad (Pax)",
+                pax_all: "Cualquier capacidad",
+                pax_individual: "Individual (1 Pax)",
+                pax_couples: "Parejas (2 Pax)",
+                pax_group: "Grupal (4+ Pax)",
+                search_title: "Rango & Preferencias",
+                range_lbl: "Filtrar por Rango",
+                price_all: "Cualquier precio",
+                price_up_to_15k: "Hasta $1,500 MXN",
+                price_15k_to_4k: "$1,500 MXN - $4,000 MXN",
+                price_over_4k: "Más de $4,000 MXN",
+                sort_lbl: "Ordenar por Precio",
+                sort_default: "Predeterminado",
+                sort_asc: "📈 Menor a Mayor precio",
+                sort_desc: "📉 Mayor a Menor precio",
+                loading: "Cargando experiencias...",
+                tap_view: "Tocar para ver",
+                duration_lbl: "Duración",
+                place_lbl: "Lugar",
+                capacity_lbl: "Capacidad",
+                default_place: "Instalaciones del Hotel",
+                no_results: "No se encontraron experiencias con los filtros seleccionados."
+            },
+            en: {
+                back: "Back",
+                home: "Home",
+                top_title: "VIP Experiences Reservation",
+                filter_title: "Activity Type",
+                type_all: "All Categories",
+                type_wellness: "Spa & Wellness",
+                type_mixology: "Workshops & Mixology",
+                search_lbl: "Search Experience",
+                capacity_title: "Capacity (Pax)",
+                pax_all: "Any capacity",
+                pax_individual: "Individual (1 Pax)",
+                pax_couples: "Couples (2 Pax)",
+                pax_group: "Group (4+ Pax)",
+                search_title: "Range & Preferences",
+                range_lbl: "Filter by Range",
+                price_all: "Any price",
+                price_up_to_15k: "Up to $1,500 MXN",
+                price_15k_to_4k: "$1,500 MXN - $4,000 MXN",
+                price_over_4k: "Over $4,000 MXN",
+                sort_lbl: "Sort by Price",
+                sort_default: "Default",
+                sort_asc: "📈 Lowest to Highest price",
+                sort_desc: "📉 Highest to Lowest price",
+                loading: "Loading experiences...",
+                tap_view: "Tap to view",
+                duration_lbl: "Duration",
+                place_lbl: "Location",
+                capacity_lbl: "Capacity",
+                default_place: "Hotel Facilities",
+                no_results: "No experiences found matching the selected filters."
+            }
+        };
 
-            const urlParams = new URLSearchParams(window.location.search);
-            const currentLang = urlParams.get('lang') === 'en' ? 'en' : 'es';
+        const urlParams = new URLSearchParams(window.location.search);
+        const currentLang = urlParams.get('lang') === 'en' ? 'en' : 'es';
+        let allExperiencias = [];
 
-            // Traducir textos estáticos
-            document.querySelectorAll('[data-key]').forEach(element => {
-                const key = element.getAttribute('data-key');
-                if (translations[currentLang] && translations[currentLang][key]) {
-                    const textSpan = element.querySelector('span');
-                    if (textSpan) {
-                        textSpan.innerText = translations[currentLang][key];
-                    } else {
-                        element.innerText = translations[currentLang][key];
-                    }
-                }
-            });
-
-            // Función de traducción automática
-            async function traducirTextoAIngles(textoOriginal) {
-                if (!textoOriginal) return '';
-                try {
-                    const response = await fetch(
-                        `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
-                    const data = await response.json();
-                    if (data.responseData && data.responseData.translatedText) {
-                        return data.responseData.translatedText;
-                    }
-                    return textoOriginal;
-                } catch (error) {
-                    console.error("Error al traducir automáticamente:", error);
-                    return textoOriginal;
+        // Traducir textos estáticos y elementos select options con data-key
+        document.querySelectorAll('[data-key]').forEach(element => {
+            const key = element.getAttribute('data-key');
+            if (translations[currentLang] && translations[currentLang][key]) {
+                const textSpan = element.querySelector('span');
+                if (textSpan) {
+                    textSpan.innerText = translations[currentLang][key];
+                } else {
+                    element.innerText = translations[currentLang][key];
                 }
             }
+        });
 
-            document.addEventListener("DOMContentLoaded", function() {
-                const container = document.getElementById('experiencias-container');
-                container.innerHTML =
-                    `<div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase"><i class="fa-solid fa-circle-notch animate-spin mr-2"></i> ${translations[currentLang].loading}</div>`;
+        // TRADUCCIÓN DINÁMICA DEL PLACEHOLDER (imagen_06d62a.png)
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.placeholder = currentLang === 'en' ? "Type a service or location..." : "Escribe un servicio o lugar...";
+        }
 
-                fetch('/api/hotel/catalog')
-                    .then(response => response.json())
-                    .then(async res => {
-                        if (res.success) {
-                            container.innerHTML = '';
+        async function traducirTextoAIngles(textoOriginal) {
+            if (!textoOriginal) return '';
+            try {
+                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
+                const data = await response.json();
+                return data.responseData?.translatedText || textoOriginal;
+            } catch (error) {
+                console.error("Error al traducir automáticamente:", error);
+                return textoOriginal;
+            }
+        }
 
-                            for (const exp of res.data.experiencias) {
-                                const nombre = currentLang === 'en' ? (exp.name || exp.nombre) : exp.nombre;
-                                const icono = exp.tipo === 'Spa & Bienestar' ? 'fa-spa' :
-                                    'fa-martini-glass-citrus';
+        document.addEventListener("DOMContentLoaded", function() {
+            const container = document.getElementById('experiencias-container');
 
-                                // Campos originales en español de la BD
-                                // Campos originales garantizando el uso de la descripción del modelo
-                                let descripcion = exp.descripcion || '';
-                                let duracion = exp.duracion || '';
-                                let lugar = exp.lugar || translations[currentLang].default_place;
+            fetch('/api/hotel/catalog')
+                .then(response => response.json())
+                .then(async res => {
+                    if (res.success && res.data && res.data.experiencias) {
+                        
+                        allExperiencias = await Promise.all(res.data.experiencias.map(async (exp) => {
+                            let nombre = exp.nombre;
+                            let descripcion = exp.descripcion || exp.Descripcion || '';
+                            let duracion = exp.duracion || exp.Duracion || '';
+                            let lugar = exp.lugar || exp.Lugar || 'Instalaciones del Hotel';
 
-                                // Traducción en vivo si está en inglés
-                                if (currentLang === 'en') {
-                                    descripcion = await traducirTextoAIngles(descripcion);
-                                    duracion = await traducirTextoAIngles(duracion);
-                                    if (exp.lugar) {
-                                        lugar = await traducirTextoAIngles(lugar);
-                                    }
+                            if (currentLang === 'en') {
+                                nombre = exp.name || exp.nombre;
+                                descripcion = await traducirTextoAIngles(descripcion);
+                                duracion = await traducirTextoAIngles(duracion);
+                                if (exp.lugar || exp.Lugar) {
+                                    lugar = await traducirTextoAIngles(lugar);
+                                } else {
+                                    lugar = translations['en'].default_place;
                                 }
-
-                                const t = translations[currentLang];
-
-                                const tarjeta = `
-                                    <div onclick="selectExperiencia('${exp.slug}')" class="bg-black/60 hover:bg-black/70 backdrop-blur-sm border border-white/10 hover:border-[#A21B54]/50 rounded-xl p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.99] group">
-                                        <div class="flex-1 pr-6 text-white">
-                                            <h3 translate="no" class="text-lg font-semibold tracking-wide mb-2 group-hover:text-[#D4AF37] transition-colors">${nombre}</h3>
-                                            <p class="text-xs text-white/70 font-light leading-relaxed mb-3">${descripcion}</p>
-                                            <div class="flex flex-col gap-1 text-[11px] text-white/60">
-                                                <div>• <span>${t.duration_lbl}</span>: <span>${duracion}</span></div>
-                                                <div>• <span>${t.place_lbl}</span>: <span>${lugar}</span></div>
-                                            </div>
-                                            <div class="text-xl font-semibold text-[#D4AF37] mt-3 tracking-wide">$${Number(exp.precio).toLocaleString()} <span class="text-xs text-white/50 font-light">MXN</span></div>
-                                        </div>
-                                        <div class="w-24 h-24 bg-white/5 border border-white/10 rounded-lg flex flex-col justify-center items-center gap-2 p-2 shrink-0">
-                                            <i class="fa-solid ${icono} text-2xl text-[#D4AF37]"></i>
-                                            <span class="text-[9px] uppercase tracking-wider text-white/40 text-center font-medium group-hover:text-white transition-colors">${t.tap_view}</span>
-                                        </div>
-                                    </div>
-                                `;
-                                container.innerHTML += tarjeta;
                             }
-                        }
-                    })
-                    .catch(err => {
-                        console.error("Error al obtener experiencias:", err);
-                        container.innerHTML =
-                            `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
-                    });
+
+                            return {
+                                slug: exp.slug,
+                                tipo: exp.tipo || exp.Tipo || '',
+                                precio: Number(exp.precio || exp.Precio || 0),
+                                numero_personas: Number(exp.numero_personas || 2),
+                                renderedNombre: nombre,
+                                renderedDescripcion: descripcion,
+                                renderedDuracion: duracion,
+                                renderedLugar: lugar
+                            };
+                        }));
+
+                        applyFiltersAndSorting();
+                    } else {
+                        container.innerHTML = `<div class="text-white/40 text-center py-10 text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                    }
+                })
+                .catch(err => {
+                    console.error("Error crítico:", err);
+                    container.innerHTML = `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading catalog data.' : 'Error al cargar los datos.'}</div>`;
+                });
+        });
+
+        function applyFiltersAndSorting() {
+            if (!allExperiencias || allExperiencias.length === 0) return;
+
+            const searchText = document.getElementById('search-input').value.toLowerCase().trim();
+            const selectedTypeElement = document.querySelector('input[name="type-filter"]:checked');
+            const selectedType = selectedTypeElement ? selectedTypeElement.value : 'all';
+            const selectedPax = document.getElementById('pax-filter').value;
+            const selectedPriceRange = document.getElementById('price-range-filter').value;
+
+            let resultados = allExperiencias.filter(exp => {
+                const matchType = (selectedType === 'all' || exp.tipo === selectedType);
+
+                const matchText = !searchText || 
+                    (exp.renderedNombre && exp.renderedNombre.toLowerCase().includes(searchText)) ||
+                    (exp.renderedDescripcion && exp.renderedDescripcion.toLowerCase().includes(searchText)) ||
+                    (exp.renderedLugar && exp.renderedLugar.toLowerCase().includes(searchText));
+
+                let matchPax = true;
+                if (selectedPax !== 'all') {
+                    if (selectedPax === '4') {
+                        matchPax = (exp.numero_personas >= 4);
+                    } else {
+                        matchPax = (exp.numero_personas == selectedPax);
+                    }
+                }
+
+                let matchPriceRange = true;
+                if (selectedPriceRange !== 'all') {
+                    if (selectedPriceRange === '0-1500') matchPriceRange = (exp.precio <= 1500);
+                    else if (selectedPriceRange === '1500-4000') matchPriceRange = (exp.precio > 1500 && exp.precio <= 4000);
+                    else if (selectedPriceRange === '4000-plus') matchPriceRange = (exp.precio > 4000);
+                }
+
+                return matchType && matchText && matchPax && matchPriceRange;
             });
 
-            function navigateWithAnimation(url) {
-                const body = document.getElementById('experiencias-body');
-                body.classList.add('page-exit');
-                setTimeout(() => {
-                    window.location.href = url + '?lang=' + currentLang;
-                }, 400);
+            const sortVal = document.getElementById('price-sort').value;
+            if (sortVal === 'low-high') {
+                resultados.sort((a, b) => a.precio - b.precio);
+            } else if (sortVal === 'high-low') {
+                resultados.sort((a, b) => b.precio - a.precio);
             }
 
-            function selectExperiencia(slug) {
-                const body = document.getElementById('experiencias-body');
-                body.classList.add('page-exit');
-                setTimeout(() => {
-                    // Redirecciona a la nueva ruta premium pasando el slug e idioma
-                    window.location.href = `/hotel/detalle-experiencia/${slug}?lang=${currentLang}`;
-                }, 400);
+            renderExperiencias(resultados);
+        }
+
+        function renderExperiencias(items) {
+            const container = document.getElementById('experiencias-container');
+            if (!container) return;
+            container.innerHTML = '';
+
+            if (items.length === 0) {
+                container.innerHTML = `<div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                return;
             }
-        </script>
+
+            const t = translations[currentLang];
+
+            items.forEach(exp => {
+                const icono = exp.tipo === 'Spa & Bienestar' ? 'fa-spa' : 'fa-martini-glass-citrus';
+
+                const tarjeta = `
+                    <div onclick="selectExperiencia('${exp.slug}')" class="bg-black/60 hover:bg-black/70 backdrop-blur-sm border border-white/10 hover:border-[#A21B54]/50 rounded-xl p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.99] group">
+                        <div class="flex-1 pr-6 text-white">
+                            <h3 translate="no" class="text-lg font-semibold tracking-wide mb-2 group-hover:text-[#D4AF37] transition-colors">${exp.renderedNombre}</h3>
+                            <p class="text-xs text-white/70 font-light leading-relaxed mb-3">${exp.renderedDescripcion}</p>
+                            <div class="flex flex-col gap-1 text-[11px] text-white/60">
+                                <div>• <span>${t.duration_lbl}</span>: <span class="font-medium text-white/80">${exp.renderedDuracion}</span></div>
+                                <div>• <span>${t.place_lbl}</span>: <span class="font-medium text-white/80">${exp.renderedLugar}</span></div>
+                                <div>• <span>${t.capacity_lbl}</span>: <span class="font-medium text-white/80">${exp.numero_personas} Pax</span></div>
+                            </div>
+                            <div class="text-xl font-semibold text-[#D4AF37] mt-3 tracking-wide">$${exp.precio.toLocaleString()} <span class="text-xs text-white/50 font-light">MXN</span></div>
+                        </div>
+                        <div class="w-24 h-24 bg-white/5 border border-white/10 rounded-lg flex flex-col justify-center items-center gap-2 p-2 shrink-0">
+                            <i class="fa-solid ${icono} text-2xl text-[#D4AF37]"></i>
+                            <span class="text-[9px] uppercase tracking-wider text-white/40 text-center font-medium group-hover:text-white transition-colors">${t.tap_view}</span>
+                        </div>
+                    </div>
+                `;
+                container.innerHTML += tarjeta;
+            });
+        }
+
+        function navigateWithAnimation(url) {
+            const body = document.getElementById('experiencias-body');
+            body.classList.add('page-exit');
+            setTimeout(() => {
+                window.location.href = url + (url.includes('?') ? '&' : '?') + 'lang=' + currentLang;
+            }, 400);
+        }
+
+        function selectExperiencia(slug) {
+            const body = document.getElementById('experiencias-body');
+            body.classList.add('page-exit');
+            setTimeout(() => {
+                window.location.href = `/hotel/detalle-experiencia/${slug}?lang=${currentLang}`;
+            }, 400);
+        }
+    </script>
 </body>
 
 </html>

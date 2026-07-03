@@ -2,7 +2,8 @@
     // Dividimos la Ficha_Tecnica original del modelo usando tu separador '|'
     $parts = explode('|', $balinesa->Ficha_Tecnica ?? ($balinesa->ficha_tecnica ?? ''));
     $horario_disponible = isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : 'Todos los días';
-    $botella_incluida = isset($parts[1]) && !empty(trim($parts[1])) ? trim($parts[1]) : '1 botella de Moët & Chandon Brut 750ml';
+    $botella_incluida =
+        isset($parts[1]) && !empty(trim($parts[1])) ? trim($parts[1]) : '1 botella de Moët & Chandon Brut 750ml';
 @endphp
 
 <!DOCTYPE html>
@@ -36,6 +37,7 @@
                 opacity: 0;
                 transform: scale(0.99);
             }
+
             to {
                 opacity: 1;
                 transform: scale(1);
@@ -60,7 +62,8 @@
     <div class="absolute inset-0 bg-black/60 z-0"></div>
 
     <!-- Top Navbar -->
-    <div class="relative z-10 w-full bg-[#C5A059] text-[#2C1A11] flex items-center justify-between px-6 py-2 text-sm shadow-md">
+    <div
+        class="relative z-10 w-full bg-[#C5A059] text-[#2C1A11] flex items-center justify-between px-6 py-2 text-sm shadow-md">
         <button onclick="navigateWithAnimation('{{ route('catalogo') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none font-medium">
             <i class="fa-solid fa-chevron-left text-xs"></i>
@@ -79,38 +82,54 @@
     <!-- Main Workspace -->
     <div class="relative z-10 flex flex-row flex-1 h-[calc(100vh-40px)] w-full">
 
-        <!-- SIDEBAR DE FILTROS REDISEÑADO POR EXPERIENCIA DE BEBIDAS -->
-        <div class="w-1/4 min-w-[280px] max-w-[340px] bg-black/50 backdrop-blur-xl border-r border-white/10 p-6 flex flex-col gap-6 text-white shadow-2xl">
-            
+        <!-- SIDEBAR DE FILTROS AVANZADOS -->
+        <div
+            class="w-1/4 min-w-[280px] max-w-[340px] bg-black/50 backdrop-blur-xl border-r border-white/10 p-5 flex flex-col gap-5 text-white overflow-y-auto no-scrollbar shadow-2xl">
+
+            <!-- Buscador por Nombre de Paquete -->
+            <div class="flex flex-col gap-2">
+                <h2 data-key="search_lbl"
+                    class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-magnifying-glass text-[10px]"></i> Buscar Paquete
+                </h2>
+                <input type="text" id="search-input" oninput="applyFiltersAndSorting()"
+                    placeholder="Escribe un paquete o bebida..."
+                    class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#C5A059] transition-all">
+            </div>
+
+            <hr class="border-white/10">
+
+            <!-- Inclusiones (Bebida) -->
             <div>
-                <h2 data-key="filter_title" class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase mb-4 flex items-center gap-2">
+                <h2 data-key="filter_title"
+                    class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase mb-3 flex items-center gap-2">
                     <i class="fa-solid fa-wine-bottle text-[10px]"></i> Inclusiones (Bebida)
                 </h2>
-                
+
                 <div class="flex flex-col gap-2">
-                    <!-- Opción: Todo -->
                     <button onclick="filterByInclusion('all')" id="inc-all"
-                        class="inclusion-filter-btn flex items-center justify-between w-full p-3 rounded-lg border border-white/5 bg-white/5 text-white text-sm transition-all duration-300 cursor-pointer">
+                        class="inclusion-filter-btn flex items-center justify-between w-full p-2.5 rounded-lg border border-white/5 bg-white/5 text-white text-xs transition-all duration-300 cursor-pointer">
                         <span data-key="inc_all" class="font-medium">Cualquier paquete</span>
-                        <div class="w-4 h-4 rounded-full border-2 border-[#C5A059] flex items-center justify-center p-0.5">
+                        <div
+                            class="w-3.5 h-3.5 rounded-full border-2 border-[#C5A059] flex items-center justify-center p-0.5">
                             <div id="radio-all" class="w-full h-full rounded-full bg-[#C5A059]"></div>
                         </div>
                     </button>
-                    
-                    <!-- Opción: Champagne (Moët, Veuve, etc.) -->
+
                     <button onclick="filterByInclusion('champagne')" id="inc-champagne"
-                        class="inclusion-filter-btn flex items-center justify-between w-full p-3 rounded-lg border border-white/5 bg-transparent text-white/60 text-sm hover:text-white hover:bg-white/[0.02] transition-all duration-300 cursor-pointer">
+                        class="inclusion-filter-btn flex items-center justify-between w-full p-2.5 rounded-lg border border-white/5 bg-transparent text-white/60 text-xs hover:text-white hover:bg-white/[0.02] transition-all duration-300 cursor-pointer">
                         <span data-key="inc_champagne">Con Champagne / Moët</span>
-                        <div class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center p-0.5">
+                        <div
+                            class="w-3.5 h-3.5 rounded-full border border-white/30 flex items-center justify-center p-0.5">
                             <div id="radio-champagne" class="w-full h-full rounded-full bg-transparent"></div>
                         </div>
                     </button>
-                    
-                    <!-- Opción: Destilados Premium u Otras botellas -->
+
                     <button onclick="filterByInclusion('premium')" id="inc-premium"
-                        class="inclusion-filter-btn flex items-center justify-between w-full p-3 rounded-lg border border-white/5 bg-transparent text-white/60 text-sm hover:text-white hover:bg-white/[0.02] transition-all duration-300 cursor-pointer">
+                        class="inclusion-filter-btn flex items-center justify-between w-full p-2.5 rounded-lg border border-white/5 bg-transparent text-white/60 text-xs hover:text-white hover:bg-white/[0.02] transition-all duration-300 cursor-pointer">
                         <span data-key="inc_premium">Licores y Premium Botellas</span>
-                        <div class="w-4 h-4 rounded-full border border-white/30 flex items-center justify-center p-0.5">
+                        <div
+                            class="w-3.5 h-3.5 rounded-full border border-white/30 flex items-center justify-center p-0.5">
                             <div id="radio-premium" class="w-full h-full rounded-full bg-transparent"></div>
                         </div>
                     </button>
@@ -119,19 +138,48 @@
 
             <hr class="border-white/10">
 
-            <!-- Preferencias Avanzadas de Ordenamiento -->
+            <!-- Filtro por Número de Personas (Capacidad) -->
+            <div class="flex flex-col gap-2">
+                <h2 data-key="capacity_title" class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase flex items-center gap-2">
+                    <i class="fa-solid fa-users text-[10px]"></i> Capacidad de Personas
+                </h2>
+                <select id="pax-filter" onchange="applyFiltersAndSorting()" 
+                    class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
+                    <option value="all" data-key="pax_all" class="bg-stone-900">Cualquier capacidad</option>
+                    <option value="2" data-key="pax_up_to_2" class="bg-stone-900">Hasta 2 Personas</option>
+                    <option value="4" data-key="pax_up_to_4" class="bg-stone-900">Hasta 4 Personas</option>
+                    <option value="6" data-key="pax_6_or_more" class="bg-stone-900">6 o más Personas</option>
+                </select>
+            </div>
+
+            <hr class="border-white/10">
+
+            <!-- Rangos y Ordenamiento de Precios -->
             <div class="flex flex-col gap-4">
                 <h2 data-key="search_title" class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase flex items-center gap-2">
-                    <i class="fa-solid fa-sliders text-[10px]"></i> Preferencias
+                    <i class="fa-solid fa-sliders text-[10px]"></i> Rango & Preferencias
                 </h2>
                 
-                <div class="space-y-2">
-                    <label class="text-[10px] uppercase tracking-wider text-white/40 block">Ordenar por Precio</label>
-                    <select id="price-sort" onchange="sortCatalog()" 
-                        class="w-full bg-black/40 border border-white/10 rounded-lg py-2.5 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
-                        <option value="default" class="bg-stone-900">Predeterminado</option>
-                        <option value="low-high" class="bg-stone-900">Menor a Mayor precio</option>
-                        <option value="high-low" class="bg-stone-900">Mayor a Menor precio</option>
+                <!-- Rango de Precios -->
+                <div class="space-y-1.5">
+                    <label data-key="range_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Filtrar por Rango</label>
+                    <select id="price-range-filter" onchange="applyFiltersAndSorting()" 
+                        class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
+                        <option value="all" data-key="price_all" class="bg-stone-900">Cualquier precio</option>
+                        <option value="0-3000" data-key="price_up_to_3k" class="bg-stone-900">Hasta $3,000 MXN</option>
+                        <option value="3000-6000" data-key="price_3k_to_6k" class="bg-stone-900">$3,000 MXN - $6,000 MXN</option>
+                        <option value="6000-plus" data-key="price_over_6k" class="bg-stone-900">Más de $6,000 MXN</option>
+                    </select>
+                </div>
+                
+                <!-- Sentido de Ordenamiento -->
+                <div class="space-y-1.5">
+                    <label data-key="sort_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Ordenar por Precio</label>
+                    <select id="price-sort" onchange="sortCatalog()"
+                        class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
+                        <option value="default" data-key="sort_default" class="bg-stone-900">Predeterminado</option>
+                        <option value="low-high" data-key="sort_asc" class="bg-stone-900">📈 Menor a Mayor precio</option>
+                        <option value="high-low" data-key="sort_desc" class="bg-stone-900">📉 Mayor a Menor precio</option>
                     </select>
                 </div>
             </div>
@@ -156,10 +204,25 @@
                 inc_all: "Cualquier paquete",
                 inc_champagne: "Con Champagne / Moët",
                 inc_premium: "Licores y Premium Botellas",
-                search_title: "Preferencias",
+                search_lbl: "Buscar Paquete",
+                capacity_title: "Capacidad de Personas",
+                pax_all: "Cualquier capacidad",
+                search_title: "Rango & Preferencias",
+                range_lbl: "Filtrar por Rango",
+                price_all: "Cualquier precio",
+                sort_lbl: "Ordenar por Precio",
+                sort_default: "Predeterminado",
+                sort_asc: "📈 Menor a Mayor precio",
+                sort_desc: "📉 Mayor a Menor precio",
                 loading: "Cargando catálogo...",
                 tap_view: "Tocar para ver",
-                no_results: "No se encontraron paquetes con esta selección."
+                no_results: "No se encontraron paquetes con esta selección.",
+                pax_up_to_2: "Hasta 2 Personas",
+                pax_up_to_4: "Hasta 4 Personas",
+                pax_6_or_more: "6 o más Personas",
+                price_up_to_3k: "Hasta $3,000 MXN",
+                price_3k_to_6k: "$3,000 MXN - $6,000 MXN",
+                price_over_6k: "Más de $6,000 MXN"
             },
             en: {
                 back: "Back",
@@ -169,17 +232,32 @@
                 inc_all: "Any Package",
                 inc_champagne: "With Champagne / Moët",
                 inc_premium: "Liquors & Premium Bottles",
-                search_title: "Preferences",
+                search_lbl: "Search Package",
+                capacity_title: "People Capacity",
+                pax_all: "Any capacity",
+                search_title: "Range & Preferences",
+                range_lbl: "Filter by Range",
+                price_all: "Any price",
+                sort_lbl: "Sort by Price",
+                sort_default: "Default",
+                sort_asc: "📈 Lowest to Highest price",
+                sort_desc: "📉 Highest to Lowest price",
                 loading: "Loading catalog...",
                 tap_view: "Tap to view",
-                no_results: "No packages found with this selection."
+                no_results: "No packages found with this selection.",
+                pax_up_to_2: "Up to 2 People",
+                pax_up_to_4: "Up to 4 People",
+                pax_6_or_more: "6 or more People",
+                price_up_to_3k: "Up to $3,000 MXN",
+                price_3k_to_6k: "$3,000 MXN - $6,000 MXN",
+                price_over_6k: "Over $5,000 MXN"
             }
         };
 
         const urlParams = new URLSearchParams(window.location.search);
         const currentLang = urlParams.get('lang') === 'en' ? 'en' : 'es';
 
-        let allBalinesas = []; 
+        let allBalinesas = [];
         let currentFilterInclusion = 'all';
 
         // Traducir elementos estáticos
@@ -195,10 +273,17 @@
             }
         });
 
+        // TRADUCCIÓN DINÁMICA DEL PLACEHOLDER
+        const searchInput = document.getElementById('search-input');
+        if (searchInput) {
+            searchInput.placeholder = currentLang === 'en' ? "Type a package or beverage..." : "Escribe un paquete o bebida...";
+        }
+
         async function traducirTextoAIngles(textoOriginal) {
             if (!textoOriginal || textoOriginal.trim() === "") return "";
             try {
-                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
+                const response = await fetch(
+                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
                 const data = await response.json();
                 return data.responseData?.translatedText || textoOriginal;
             } catch (error) {
@@ -210,29 +295,34 @@
         document.addEventListener("DOMContentLoaded", function() {
             fetch('/api/hotel/catalog')
                 .then(response => response.json())
-                .then(async res => { 
+                .then(async res => {
                     if (res.success) {
                         allBalinesas = await Promise.all(res.data.balinesas.map(async (balinesa) => {
                             const nombre = balinesa.nombre || balinesa.Nombre;
-                            const descripcionOriginal = balinesa.ficha_tecnica || balinesa.Descripcion || '';
+                            const descripcionOriginal = balinesa.ficha_tecnica || balinesa
+                                .Descripcion || '';
                             const partesFicha = descripcionOriginal.split('|');
-                            
-                            let horarioDisponible = partesFicha[0] && partesFicha[0].trim() !== '' 
-                                ? partesFicha[0].trim() 
-                                : (currentLang === 'en' ? 'Every day' : 'Todos los días');
-                            
-                            let botellaIncluida = partesFicha[1] && partesFicha[1].trim() !== '' 
-                                ? partesFicha[1].trim() 
-                                : (currentLang === 'en' ? 'Premium bottle included' : 'Botella premium incluida');
 
-                            // Guardamos una copia del texto original en español para realizar la lógica de filtrado limpia
-                            const botellaOriginalEspañol = partesFicha[1] ? partesFicha[1].toLowerCase() : '';
+                            let horarioDisponible = partesFicha[0] && partesFicha[0]
+                            .trim() !== '' ?
+                                partesFicha[0].trim() :
+                                (currentLang === 'en' ? 'Every day' : 'Todos los días');
+
+                            let botellaIncluida = partesFicha[1] && partesFicha[1]
+                            .trim() !== '' ?
+                                partesFicha[1].trim() :
+                                (currentLang === 'en' ? 'Premium bottle included' :
+                                    'Botella premium incluida');
+
+                            const botellaOriginalEspañol = partesFicha[1] ? partesFicha[1]
+                                .toLowerCase() : '';
 
                             if (currentLang === 'en') {
-                                const [horarioTraducido, botellaTraducida] = await Promise.all([
-                                    traducirTextoAIngles(horarioDisponible),
-                                    traducirTextoAIngles(botellaIncluida)
-                                ]);
+                                const [horarioTraducido, botellaTraducida] = await Promise
+                                    .all([
+                                        traducirTextoAIngles(horarioDisponible),
+                                        traducirTextoAIngles(botellaIncluida)
+                                    ]);
                                 horarioDisponible = horarioTraducido;
                                 botellaIncluida = botellaTraducida;
                             }
@@ -241,9 +331,10 @@
                                 slug: balinesa.slug,
                                 nombre: nombre,
                                 botellaIncluida: botellaIncluida,
-                                botellaRaw: botellaOriginalEspañol, // Atributo clave para el filtro interno
+                                botellaRaw: botellaOriginalEspañol,
                                 horarioDisponible: horarioDisponible,
-                                capacidad_maxima: balinesa.capacidad_maxima || balinesa.Capacidad_Maxima || 4,
+                                capacidad_maxima: balinesa.capacidad_maxima || balinesa
+                                    .Capacidad_Maxima || 4,
                                 precio: Number(balinesa.precio || balinesa.Precio)
                             };
                         }));
@@ -253,15 +344,14 @@
                 })
                 .catch(err => {
                     console.error("Error al obtener catálogo:", err);
-                    document.getElementById('balinesas-container').innerHTML = `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
+                    document.getElementById('balinesas-container').innerHTML =
+                        `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
                 });
         });
 
-        // 🌟 NUEVA FUNCIÓN: FILTRADO POR TIPO DE INCLUSIÓN
         function filterByInclusion(type) {
             currentFilterInclusion = type;
 
-            // Reiniciar botones e indicadores visuales
             document.querySelectorAll('.inclusion-filter-btn').forEach(btn => {
                 btn.classList.remove('bg-white/5', 'text-white');
                 btn.classList.add('bg-transparent', 'text-white/60');
@@ -271,7 +361,6 @@
                 radio.classList.add('bg-transparent');
             });
 
-            // Encender el botón activo
             const activeBtn = document.getElementById(`inc-${type}`);
             const activeRadio = document.getElementById(`radio-${type}`);
             if (activeBtn && activeRadio) {
@@ -285,17 +374,49 @@
         }
 
         function applyFiltersAndSorting() {
-            let filtered = [...allBalinesas];
+            if (!allBalinesas || allBalinesas.length === 0) return;
 
-            // Filtrado según coincidencia de texto en la ficha técnica procesada
-            if (currentFilterInclusion === 'champagne') {
-                filtered = filtered.filter(b => b.botellaRaw.includes('moët') || b.botellaRaw.includes('chandon') || b.botellaRaw.includes('champagne') || b.botellaRaw.includes('brut'));
-            } else if (currentFilterInclusion === 'premium') {
-                // Muestra los que NO son champagne, o licores destilados alternos
-                filtered = filtered.filter(b => !b.botellaRaw.includes('moët') && !b.botellaRaw.includes('chandon') && !b.botellaRaw.includes('champagne'));
-            }
+            const searchText = document.getElementById('search-input').value.toLowerCase().trim();
+            const selectedPax = document.getElementById('pax-filter').value;
+            const selectedPriceRange = document.getElementById('price-range-filter').value;
 
-            // Ordenamiento por precio
+            // 1. Filtrado Cruzado Estricto
+            let filtered = allBalinesas.filter(b => {
+
+                let matchInclusion = true;
+                if (currentFilterInclusion === 'champagne') {
+                    matchInclusion = b.botellaRaw.includes('moët') || b.botellaRaw.includes('chandon') || b
+                        .botellaRaw.includes('champagne') || b.botellaRaw.includes('brut');
+                } else if (currentFilterInclusion === 'premium') {
+                    matchInclusion = !b.botellaRaw.includes('moët') && !b.botellaRaw.includes('chandon') && !b
+                        .botellaRaw.includes('champagne');
+                }
+
+                const matchText = !searchText ||
+                    (b.nombre && b.nombre.toLowerCase().includes(searchText)) ||
+                    (b.botellaIncluida && b.botellaIncluida.toLowerCase().includes(searchText));
+
+                let matchPax = true;
+                if (selectedPax !== 'all') {
+                    if (selectedPax === '6') {
+                        matchPax = (b.capacidad_maxima >= 6);
+                    } else {
+                        matchPax = (b.capacidad_maxima == selectedPax);
+                    }
+                }
+
+                let matchPriceRange = true;
+                if (selectedPriceRange !== 'all') {
+                    const priceVal = b.precio;
+                    if (selectedPriceRange === '0-3000') matchPriceRange = (priceVal <= 3000);
+                    else if (selectedPriceRange === '3000-6000') matchPriceRange = (priceVal > 3000 && priceVal <= 6000);
+                    else if (selectedPriceRange === '6000-plus') matchPriceRange = (priceVal > 6000);
+                }
+
+                return matchInclusion && matchText && matchPax && matchPriceRange;
+            });
+
+            // 2. Ordenamiento por precio
             const sortVal = document.getElementById('price-sort').value;
             if (sortVal === 'low-high') {
                 filtered.sort((a, b) => a.precio - b.precio);
@@ -315,7 +436,8 @@
             container.innerHTML = '';
 
             if (items.length === 0) {
-                container.innerHTML = `<div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                container.innerHTML =
+                    `<div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div>`;
                 return;
             }
 
