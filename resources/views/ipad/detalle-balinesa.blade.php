@@ -366,8 +366,7 @@
         }
 
         function irAlMapaEspacial() {
-            window.location.href = "{{ route('mapa.espacios') }}?package={{ $balinesa->Slug ?? $balinesa->slug }}&lang=" +
-                currentLang;
+            window.location.href = "{{ route('mapa.espacios') }}?package={{ $balinesa->slug }}&package_id={{ $balinesa->Id }}";
         }
     </script>
 

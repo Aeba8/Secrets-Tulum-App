@@ -1,11 +1,17 @@
 <?php
 
-use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\API\CatalogController;
 use App\Http\Controllers\API\ReservaController;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Route;
 
-// Consulta de usuario autenticado
+/*
+|--------------------------------------------------------------------------
+| API Routes - SecretsPad
+|--------------------------------------------------------------------------
+*/
+
+// Consulta de usuario autenticado vía API (Sanctum)
 Route::get('/user', function (Request $request) {
     return $request->user();
 })->middleware('auth:sanctum');
@@ -13,13 +19,9 @@ Route::get('/user', function (Request $request) {
 // Catálogo público de la iPad
 Route::get('/hotel/catalog', [CatalogController::class, 'index']);
 
-// 🔒 GRUPO PROTEGIDO: Las rutas van DENTRO de las llaves del grupo
+// 🔒 GRUPO PROTEGIDO CON SANCTUM (Para peticiones móviles nativas estrictas)
 Route::middleware('auth:sanctum')->group(function () {
     
-    // Endpoint para el mapa de camas/mesas disponibles
-    Route::get('/hotel/espacios-disponibles', [ReservaController::class, 'checkDisponibilidad']);
-
-    // Endpoint para procesar la reservación final con candado anti-overbooking
-    Route::post('/hotel/reservar', [ReservaController::class, 'store']);
     
+
 });
