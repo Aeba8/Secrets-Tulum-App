@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\API\ExperienciaReservaController;
 use App\Http\Controllers\API\ReservaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HotelWebController;
@@ -46,6 +47,10 @@ Route::middleware(['auth', 'role:Operativo'])->group(function () {
     // 🌟 NUEVA RUTA: Guarda la reservación usando la misma sesión activa de la iPad
     Route::post('/hotel/internal-api/reservar', [ReservaController::class, 'store'])
         ->name('api.espacios.reservar');
+
+    // 🌟 NUEVA RUTA EXCLUSIVA: Para reservar experiencias VIP sin mapa
+    Route::post('/hotel/internal-api/reservar-experiencia', [ExperienciaReservaController::class, 'store'])
+        ->name('api.experiencias.reservar');
 
     // Detalles de los Paquetes
     Route::get('/hotel/detalle-balinesa/{slug}', [HotelWebController::class, 'detalleBalinesa'])

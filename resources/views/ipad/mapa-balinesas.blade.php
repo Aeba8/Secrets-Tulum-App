@@ -24,7 +24,17 @@
         }
 
         .secrets-bg {
-            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.93) 20%, rgba(24, 18, 19, 0.90) 100%);
+            /* Capa negra superpuesta combinada con la imagen de fondo */
+            background-image: linear-gradient(rgba(10, 8, 9, 0.75), rgba(10, 8, 9, 0.85)), 
+                              url('{{ asset('storage/Secrets Tulum.jpg') }}'); /* <-- Pon aquí la ruta de tu imagen */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            
+            /* El efecto de difuminado/desenfoque sutil */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         /* Animaciones Premium */
@@ -82,7 +92,7 @@
         <div class="flex items-center gap-3 bg-neutral-900/80 border border-white/10 px-4 py-2 rounded-xl">
             <i class="fa-solid fa-calendar-days text-xs text-[#C5A059]"></i>
             <input type="date" id="fecha_reserva" onchange="cargarDisponibilidad()"
-                value="{{ request('fecha', date('Y-m-d')) }}"
+                value="{{ request('fecha', date('Y-m-d')) }}" min="{{ date('Y-m-d') }}"
                 class="bg-transparent text-xs font-semibold tracking-wide text-white focus:outline-none cursor-pointer [color-scheme:dark]">
         </div>
     </header>
@@ -140,7 +150,7 @@
                     <div>
                         <label
                             class="text-[10px] font-semibold text-stone-400 uppercase tracking-widest block mb-2">Número
-                            de Habitación <span class="text-red-500">*</span></label>
+                            de Habitación <span class="text-red-800">*</span></label>
                         <div class="relative">
                             <i class="fa-solid fa-door-open absolute left-4 top-3.5 text-xs text-stone-500"></i>
                             <input type="text" id="input-habitacion" placeholder="Ej: 1102 (4 dígitos)"
@@ -270,6 +280,22 @@
         let selectedSpaceName = "";
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Obtener la fecha local de hoy en formato YYYY-MM-DD sin desfases de zona horaria
+            const hoy = new Date();
+            const offset = hoy.getTimezoneOffset();
+            const hoyLocal = new Date(hoy.getTime() - (offset * 60 * 1000)).toISOString().split('T')[0];
+
+            const inputFecha = document.getElementById('fecha_reserva');
+            if (inputFecha) {
+                // Forzar el mínimo permitido de manera dinámica
+                inputFecha.min = hoyLocal;
+
+                // Si la fecha que trae la URL es del pasado, la corregimos automáticamente a hoy
+                if (inputFecha.value < hoyLocal) {
+                    inputFecha.value = hoyLocal;
+                }
+            }
+
             cargarDisponibilidad();
         });
 

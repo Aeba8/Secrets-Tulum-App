@@ -61,6 +61,7 @@
     <title>Secrets Pad - Detalle de Experiencia</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Montserrat:wght=300;400;500;600&display=swap');
 
@@ -114,7 +115,6 @@
 
 <body class="secrets-bg text-stone-200 font-sans min-h-screen flex flex-col justify-between select-none overflow-hidden">
 
-    <!-- Top Navbar -->
     <div
         class="bg-[#0C090A] h-14 flex justify-between items-center px-8 shadow-2xl border-b border-[#C5A059]/20 shrink-0 z-20">
         <button onclick="regresarAlCatálogo()"
@@ -132,10 +132,8 @@
         </button>
     </div>
 
-    <!-- Main Workspace -->
     <div class="flex-1 w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 px-8 items-center py-6 z-10">
 
-        <!-- COLUMNA IZQUIERDA: Imagen / Carrusel -->
         <div class="md:col-span-5 flex flex-col justify-center items-center w-full relative">
             <div
                 class="w-full aspect-[16/11] overflow-hidden rounded-xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] border border-white/5 bg-black relative">
@@ -157,7 +155,6 @@
             </div>
         </div>
 
-        <!-- COLUMNA DERECHA: Datos del Modelo (Distribuido exactamente como la imagen de referencia) -->
         <div class="md:col-span-7 flex flex-col justify-center h-full space-y-6 lg:pl-4">
             <div>
                 <span class="text-xs tracking-[0.35em] text-secrets-gold font-semibold uppercase block mb-1 font-mono">
@@ -167,7 +164,6 @@
                     {{ $experiencia->Nombre ?? $experiencia->name }}
                 </h1>
 
-                <!-- Grid de Ficha Técnica Basado en image_0307bf.jpg -->
                 <div class="grid grid-cols-2 gap-4 mt-6 border-b border-white/10 pb-6 text-sm">
                     <div>
                         <p class="text-[10px] text-secrets-gold font-medium uppercase tracking-[0.15em] font-mono">
@@ -208,7 +204,6 @@
                 </div>
             </div>
 
-            <!-- Pestañas Interactivas Dinámicas -->
             <div class="flex space-x-8 text-xs uppercase font-bold border-b border-white/5 tracking-[0.2em]">
                 <button id="tab-descripcion" onclick="switchTab('descripcion')"
                     class="border-b-2 border-secrets-gold pb-2 text-white transition duration-200 cursor-pointer">
@@ -224,7 +219,6 @@
                 </button>
             </div>
 
-            <!-- Contenedores de Texto de las Pestañas -->
             <div class="text-sm text-stone-300/90 leading-relaxed max-w-xl h-[110px] overflow-y-auto no-scrollbar pr-1">
                 <div id="content-descripcion" class="block">
                     <p id="txt-descripcion" class="font-light text-justify tracking-wide fade-text">
@@ -245,10 +239,9 @@
         </div>
     </div>
 
-    <!-- Bottom Action Bar -->
     <div class="border-t border-[#C5A059]/20 p-5 backdrop-blur-xl shrink-0 bg-black/40">
         <div class="max-w-7xl mx-auto flex justify-between items-center px-8">
-            <button onclick="irAlMapaEspacial()"
+            <button onclick="abrirModalReserva()"
                 class="h-12 px-8 bg-secrets-gold hover:bg-[#B38F4B] text-black font-semibold text-[11px] uppercase tracking-[0.25em] rounded-md shadow-2xl transition-all duration-300 transform active:scale-[0.99] cursor-pointer">
                 {{ request('lang') == 'en' ? 'BOOK EXPERIENCE' : 'RESERVAR EXPERIENCIA' }}
             </button>
@@ -256,7 +249,7 @@
             <div class="text-right">
                 <p class="text-4xl font-light text-white tracking-[0.08em]">
                     <span
-                        class="text-secrets-gold font-normal">${{ number_format($experiencia->Precio ?? $experiencia->price) }}</span>
+                        class="text-secrets-gold font-normal">${{ number_format($experiencia->Precio ?? ($experiencia->price ?? 0)) }}</span>
                     <span class="text-xs font-mono text-stone-500 ml-1">MXN</span>
                 </p>
                 <p class="text-[9px] text-stone-500 font-medium mt-0.5 tracking-[0.2em] uppercase font-mono">
@@ -266,10 +259,94 @@
         </div>
     </div>
 
-    <!-- JavaScript de Control Operativo -->
+    <div id="modalReservaDirecta"
+        class="fixed inset-0 bg-black/85 backdrop-blur-md hidden items-center justify-center z-50 p-4 animate-fade-in">
+        <div
+            class="bg-[#0D0F0E] border border-[#C5A059]/30 rounded-xl w-full max-w-md p-6 shadow-[0_0_50px_rgba(0,0,0,0.8)] flex flex-col space-y-4">
+
+            <div class="flex justify-between items-center border-b border-white/5 pb-3">
+                <div class="flex items-center space-x-2">
+                    <div class="w-2 h-2 rounded-full bg-amber-500 shadow-[0_0_10px_#f59e0b]"></div>
+                    <h3 class="text-white font-medium text-base uppercase tracking-wider text-secrets-gold">
+                        {{ request('lang') == 'en' ? 'Booking Details' : 'Detalles de Reservación' }}
+                    </h3>
+                </div>
+                <button onclick="cancelarOperacion()"
+                    class="text-stone-400 hover:text-white text-xl cursor-pointer active:scale-90 transition">&times;</button>
+            </div>
+
+            <div class="space-y-4 text-sm">
+                <div>
+                    <label
+                        class="block text-xs text-stone-400 uppercase tracking-widest mb-1.5 font-mono font-semibold">
+                        * {{ request('lang') == 'en' ? 'Date:' : 'Fecha de la Experiencia:' }}
+                    </label>
+                    <div class="relative">
+                        <input type="date" id="input-fecha"
+                            class="w-full bg-white/[0.04] border border-white/10 rounded px-3 py-2.5 text-white focus:outline-none focus:border-[#C5A059] focus:ring-1 focus:ring-[#C5A059] transition color-scheme-dark">
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-xs text-stone-400 uppercase tracking-widest mb-1.5 font-mono">
+                        * {{ request('lang') == 'en' ? 'Room Number (4 digits):' : 'Número de Habitación (4 dígitos):' }}
+                    </label>
+                    <input type="text" id="input-habitacion" maxlength="4" inputmode="numeric" placeholder="e.g. 4123" 
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        class="w-full bg-white/[0.02] border border-white/10 rounded px-3 py-2.5 text-white placeholder-stone-700 focus:outline-none focus:border-[#C5A059] transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-stone-400 uppercase tracking-widest mb-1.5 font-mono">
+                        * {{ request('lang') == 'en' ? 'Seller ID (6 digits):' : 'Número de Colaborador (6 dígitos):' }}
+                    </label>
+                    <input type="text" id="input-vendedor" maxlength="6" inputmode="numeric" placeholder="e.g. 102405" 
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                        class="w-full bg-white/[0.02] border border-white/10 rounded px-3 py-2.5 text-white placeholder-stone-700 focus:outline-none focus:border-[#C5A059] transition">
+                </div>
+
+                <div>
+                    <label class="block text-xs text-stone-400 uppercase tracking-widest mb-1.5 font-mono">
+                        {{ request('lang') == 'en' ? 'Notes:' : 'Observaciones Adicionales:' }}
+                    </label>
+                    <textarea id="input-observaciones" rows="2" placeholder="..."
+                        class="w-full bg-white/[0.02] border border-white/10 rounded px-3 py-2 text-white placeholder-stone-700 resize-none focus:outline-none focus:border-[#C5A059] transition"></textarea>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="cancelarOperacion()"
+                    class="w-full h-11 bg-neutral-900 hover:bg-neutral-800 text-stone-400 border border-white/10 font-medium text-xs uppercase tracking-widest rounded transition active:scale-[0.98] cursor-pointer">
+                    {{ request('lang') == 'en' ? 'Cancel' : 'Cancelar' }}
+                </button>
+                <button onclick="solicitarConfirmacion()"
+                    class="w-full h-11 bg-secrets-gold hover:bg-[#B38F4B] text-black font-semibold text-xs uppercase tracking-widest rounded shadow-xl transition active:scale-[0.98] cursor-pointer">
+                    {{ request('lang') == 'en' ? 'Book' : 'Reservar' }}
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        .color-scheme-dark {
+            color-scheme: dark;
+        }
+    </style>
+
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const currentLang = urlParams.get('lang') || 'es';
+
+        // Mixin de SweetAlert2 con la paleta de colores de SecretsPad (Fondo oscuro y acentos dorados)
+        const swalCustomButtons = Swal.mixin({
+            customClass: {
+                confirmButton: 'px-5 py-2.5 mx-2 rounded-lg bg-[#C5A059] text-black font-bold text-xs uppercase tracking-widest hover:bg-[#b08e4f] transition-all shadow-lg cursor-pointer',
+                cancelButton: 'px-5 py-2.5 mx-2 rounded-lg bg-neutral-800 text-stone-300 border border-white/10 font-bold text-xs uppercase tracking-widest hover:bg-neutral-700 transition-all cursor-pointer'
+            },
+            buttonsStyling: false,
+            background: 'linear-gradient(to bottom, #141414, #0d0f0e)',
+            color: '#e7e5e4'
+        });
 
         async function traducirTextoAIngles(textoOriginal) {
             if (!textoOriginal || textoOriginal.trim() === "") return "";
@@ -289,7 +366,6 @@
                     'txt-alimentos', 'txt-extras'
                 ];
 
-                // Aplicar opacidad de carga solo a elementos con texto corto o válidos
                 elementos.forEach(id => {
                     const el = document.getElementById(id);
                     if (el && el.innerText.trim() !== "") el.style.opacity = '0.4';
@@ -314,9 +390,10 @@
         // Carrusel
         let currentSlide = 0;
         const track = document.getElementById('carouselTrack');
-        const totalSlides = track.children.length;
+        const totalSlides = track?.children?.length || 0;
 
         function moveCarousel(direction) {
+            if(totalSlides === 0) return;
             currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
@@ -350,9 +427,181 @@
             navigateWithAnimation("{{ route('paquetes.experiencias') }}");
         }
 
-        function irAlMapaEspacial() {
-            window.location.href =
-                "{{ route('mapa.espacios') }}?package={{ $experiencia->slug ?? $experiencia->Slug }}&lang=" + currentLang;
+        function abrirModalReserva() {
+            document.getElementById('modalReservaDirecta').classList.remove('hidden');
+            document.getElementById('modalReservaDirecta').classList.add('flex');
+
+            const hoy = new Date();
+            const offset = hoy.getTimezoneOffset();
+            const hoyLocal = new Date(hoy.getTime() - (offset * 60 * 1000)).toISOString().split('T')[0];
+
+            const inputFecha = document.getElementById('input-fecha');
+            inputFecha.value = hoyLocal;
+            inputFecha.min = hoyLocal; 
+        }
+
+        function cerrarModalReserva() {
+            document.getElementById('modalReservaDirecta').classList.remove('flex');
+            document.getElementById('modalReservaDirecta').classList.add('hidden');
+        }
+
+        /**
+         * Alerta de cancelación estética al cerrar o dar clic en salir
+         */
+        function cancelarOperacion() {
+            swalCustomButtons.fire({
+                title: currentLang === 'en' ? 'ABANDON RESERVATION?' : '¿CANCELAR RESERVA?',
+                text: currentLang === 'en' ? 'Any progress entered will be lost.' : 'Se perderán los datos capturados en este formulario.',
+                icon: 'warning',
+                showCancelButton: true,
+                confirmButtonText: currentLang === 'en' ? 'YES, QUIT' : 'SÍ, CANCELAR',
+                cancelButtonText: currentLang === 'en' ? 'KEEP EDITING' : 'SEGUIR AQUÍ',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    cerrarModalReserva();
+                }
+            });
+        }
+
+        /**
+         * Solicita confirmación explícita del usuario y valida los 4 y 6 dígitos estrictos
+         */
+        function solicitarConfirmacion() {
+            const txtFecha = document.getElementById('input-fecha').value;
+            const txtHabitacion = document.getElementById('input-habitacion').value.trim();
+            const txtVendedor = document.getElementById('input-vendedor').value.trim();
+            const txtObservaciones = document.getElementById('input-observaciones').value;
+
+            // 1. Validar campos obligatorios vacíos
+            if (!txtFecha || !txtHabitacion || !txtVendedor) {
+                swalCustomButtons.fire({
+                    icon: 'error',
+                    title: currentLang === 'en' ? 'MISSING FIELDS' : 'CAMPOS INCOMPLETOS',
+                    text: currentLang === 'en' ? 'Please fill out all required fields (*).' : 'Por favor, completa todos los campos marcados como obligatorios (*).'
+                });
+                return;
+            }
+
+            // 🌟 2. Validación Estricta: Exactamente 4 números para Habitación
+            if (!/^\d{4}$/.test(txtHabitacion)) {
+                swalCustomButtons.fire({
+                    icon: 'warning',
+                    title: currentLang === 'en' ? 'INVALID ROOM' : 'HABITACIÓN INVÁLIDA',
+                    text: currentLang === 'en' ? 'The room number must contain exactly 4 digits (e.g., 4123).' : 'El número de habitación debe ser exactamente de 4 dígitos (ejemplo: 4123).'
+                });
+                return;
+            }
+
+            // 🌟 3. Validación Estricta: Exactamente 6 números para Colaborador
+            if (!/^\d{6}$/.test(txtVendedor)) {
+                swalCustomButtons.fire({
+                    icon: 'warning',
+                    title: currentLang === 'en' ? 'INVALID COLLABORATOR' : 'COLABORADOR INVÁLIDO',
+                    text: currentLang === 'en' ? 'The collaborator ID must contain exactly 6 digits (e.g., 102405).' : 'El número de colaborador debe ser exactamente de 6 dígitos (ejemplo: 102405).'
+                });
+                return;
+            }
+
+            // 🌟 4. Modal estético previo a insertar en SQL Server
+            swalCustomButtons.fire({
+                title: currentLang === 'en' ? 'CONFIRM RESERVATION?' : '¿CONFIRMAR RESERVACIÓN?',
+                html: `
+                    <div class="text-left bg-black/40 border border-white/5 p-4 rounded-xl mt-3 space-y-2 text-xs tracking-wider uppercase text-stone-300 font-mono">
+                        <p><span class="text-stone-500">Habitación:</span> <strong class="text-white">${txtHabitacion}</strong></p>
+                        <p><span class="text-stone-500">Fecha Servicio:</span> <strong class="text-[#C5A059]">${txtFecha}</strong></p>
+                        <p><span class="text-stone-500">Colaborador:</span> <strong class="text-white">${txtVendedor}</strong></p>
+                    </div>
+                `,
+                icon: 'question',
+                showCancelButton: true,
+                confirmButtonText: currentLang === 'en' ? 'CONFIRM AND BOOK' : 'CONFIRMAR Y RESERVAR',
+                cancelButtonText: currentLang === 'en' ? 'REVIEW DATA' : 'REVISAR DATOS',
+                reverseButtons: true
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    enviarReservaAlServidor(txtFecha, txtHabitacion, txtVendedor, txtObservaciones);
+                }
+            });
+        }
+
+        /**
+         * Ejecuta la petición asíncrona hacia el controlador dedicado
+         */
+        async function enviarReservaAlServidor(txtFecha, txtHabitacion, txtVendedor, txtObservaciones) {
+            // Animación de carga para congelar la iPad y evitar doble submit accidental
+            Swal.fire({
+                title: currentLang === 'en' ? 'Processing...' : 'Procesando...',
+                text: currentLang === 'en' ? 'Registering your reservation' : 'Guardando la reservación en el sistema...',
+                allowOutsideClick: false,
+                allowEscapeKey: false,
+                background: 'linear-gradient(to bottom, #141414, #0d0f0e)',
+                color: '#fff',
+                didOpen: () => {
+                    Swal.showLoading();
+                }
+            });
+
+            const datosReserva = {
+                serviciable_type: "App\\Models\\Experiencia",
+                serviciable_id: parseInt("{{ $experiencia->Id ?? ($experiencia->id ?? 1) }}"),
+                fecha: txtFecha,
+                habitacion: txtHabitacion,
+                numero_colaborador_vendedor: txtVendedor,
+                observaciones: txtObservaciones || null
+            };
+
+            try {
+                // Apunta directamente a la nueva API exclusiva para experiencias
+                const response = await fetch("{{ route('api.experiencias.reservar') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'X-Requested-With': 'XMLHttpRequest'
+                    },
+                    credentials: 'include', 
+                    body: JSON.stringify(datosReserva)
+                });
+
+                if (!response.ok) {
+                    const resultadoError = await response.json();
+                    throw new Error(resultadoError.message || "Error 500");
+                }
+
+                const resultado = await response.json();
+
+                if (resultado.success) {
+                    // Toast de éxito temporal
+                    Swal.fire({
+                        icon: 'success',
+                        title: currentLang === 'en' ? 'SUCCESSFULLY BOOKED!' : '¡RESERVA EXITOSA!',
+                        text: currentLang === 'en' ? 'The experience has been secured.' : 'La experiencia ha sido reservada de forma correcta.',
+                        timer: 2000,
+                        showConfirmButton: false,
+                        background: 'linear-gradient(to bottom, #141414, #0d0f0e)',
+                        color: '#fff'
+                    });
+
+                    document.body.classList.add('page-exit');
+                    setTimeout(() => {
+                        window.location.href = "{{ route('welcome') }}?lang=" + currentLang;
+                    }, 2000);
+                } else {
+                    swalCustomButtons.fire({
+                        icon: 'error',
+                        title: 'Ups...',
+                        text: resultado.message
+                    });
+                }
+            } catch (error) {
+                console.error("Error crítico en la petición:", error);
+                swalCustomButtons.fire({
+                    icon: 'error',
+                    title: 'Error de Servidor',
+                    text: 'No se pudo registrar la reserva. Detalle: ' + error.message
+                });
+            }
         }
     </script>
 </body>

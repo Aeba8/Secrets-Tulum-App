@@ -24,7 +24,17 @@
         }
 
         .secrets-bg {
-            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.93) 20%, rgba(24, 18, 19, 0.90) 100%);
+            /* Capa negra superpuesta combinada con la imagen de fondo */
+            background-image: linear-gradient(rgba(10, 8, 9, 0.75), rgba(10, 8, 9, 0.85)), 
+                              url('{{ asset('storage/Secrets Tulum.jpg') }}'); /* <-- Pon aquí la ruta de tu imagen */
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            background-repeat: no-repeat;
+            
+            /* El efecto de difuminado/desenfoque sutil */
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
         }
 
         .fade-in {
@@ -81,7 +91,7 @@
         <div class="flex items-center gap-3 bg-neutral-900/80 border border-white/10 px-4 py-2 rounded-xl">
             <i class="fa-solid fa-calendar-days text-xs text-[#C5A059]"></i>
             <input type="date" id="fecha_reserva" onchange="cargarDisponibilidad()"
-                value="{{ request('fecha', date('Y-m-d')) }}"
+                value="{{ request('fecha', date('Y-m-d')) }}" min="{{ date('Y-m-d') }}"
                 class="bg-transparent text-xs font-semibold tracking-wide text-white focus:outline-none cursor-pointer [color-scheme:dark]">
         </div>
     </header>
@@ -211,8 +221,8 @@
     </div>
 
     <script>
-            // 🟢 Leemos los parámetros directamente de la URL de la iPad de forma limpia y dinámica
-            const urlParams = new URLSearchParams(window.location.search);
+        // 🟢 Leemos los parámetros directamente de la URL de la iPad de forma limpia y dinámica
+        const urlParams = new URLSearchParams(window.location.search);
 
         const packageSlug = urlParams.get('package') || "{{ $packageSlug }}";
 
@@ -256,6 +266,22 @@
         let selectedSpaceName = "";
 
         document.addEventListener("DOMContentLoaded", () => {
+            // Obtener la fecha local de hoy en formato YYYY-MM-DD sin desfase horario
+            const hoy = new Date();
+            const offset = hoy.getTimezoneOffset();
+            const hoyLocal = new Date(hoy.getTime() - (offset * 60 * 1000)).toISOString().split('T')[0];
+
+            const inputFecha = document.getElementById('fecha_reserva');
+            if (inputFecha) {
+                // Forzar el mínimo nativo en el navegador/iPad
+                inputFecha.min = hoyLocal;
+
+                // Si la fecha actual en el input es menor a hoy (por un parámetro viejo en la URL), la corregimos a hoy
+                if (inputFecha.value < hoyLocal) {
+                    inputFecha.value = hoyLocal;
+                }
+            }
+
             cargarDisponibilidad();
         });
 
