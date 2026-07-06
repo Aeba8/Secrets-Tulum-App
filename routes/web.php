@@ -34,6 +34,11 @@ Route::middleware(['auth', 'role:Operativo'])->group(function () {
         return view('ipad.mapa-balinesas');
     })->name('mapa.espacios');
 
+    // En web.php (Dentro del grupo de middleware 'auth' y 'role:Operativo')
+    Route::get('/hotel/mapa-mesas', function () {
+        return view('ipad.mapa-cenas'); // Apunta a tu nueva vista
+    })->name('mapa.mesas');
+
     // 🌟 API Interna Segura: Consulta disponibilidad usando la sesión activa del navegador
     Route::get('/hotel/internal-api/espacios-disponibles', [ReservaController::class, 'checkDisponibilidad'])
         ->name('api.espacios.disponibles');

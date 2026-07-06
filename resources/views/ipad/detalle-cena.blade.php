@@ -7,7 +7,8 @@
 
     // Ficha técnica para detalles adicionales (Ej: Botella de cortesía, etc.)
     $parts = explode('|', $cena->ficha_tecnica ?? ($cena->Ficha_Tecnica ?? ''));
-    $detalle_adicional = isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : '1 botella de Moët & Chandon Brut 750ml';
+    $detalle_adicional =
+        isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : '1 botella de Moët & Chandon Brut 750ml';
 @endphp
 
 <!DOCTYPE html>
@@ -48,10 +49,21 @@
         }
 
         /* Identidad de Marca Dorada de Secrets */
-        .text-secrets-gold { color: #C5A059; }
-        .border-secrets-gold { border-color: #C5A059; }
-        .bg-secrets-gold { background-color: #C5A059; }
-        .hover\:bg-secrets-gold-dark:hover { background-color: #B38F4B; }
+        .text-secrets-gold {
+            color: #C5A059;
+        }
+
+        .border-secrets-gold {
+            border-color: #C5A059;
+        }
+
+        .bg-secrets-gold {
+            background-color: #C5A059;
+        }
+
+        .hover\:bg-secrets-gold-dark:hover {
+            background-color: #B38F4B;
+        }
 
         .page-exit {
             opacity: 0;
@@ -68,7 +80,8 @@
 <body class="secrets-bg text-stone-200 font-sans min-h-screen flex flex-col justify-between select-none overflow-hidden">
 
     <!-- Top Navbar -->
-    <div class="bg-[#0C090A] h-14 flex justify-between items-center px-8 shadow-2xl border-b border-[#C5A059]/20 shrink-0 z-20">
+    <div
+        class="bg-[#0C090A] h-14 flex justify-between items-center px-8 shadow-2xl border-b border-[#C5A059]/20 shrink-0 z-20">
         <button onclick="regresarAlPaquete()"
             class="text-stone-300 hover:text-white text-sm font-medium flex items-center space-x-1.5 active:scale-95 transition cursor-pointer">
             <span class="text-xl text-secrets-gold">‹</span>
@@ -89,18 +102,22 @@
 
         <!-- COLUMNA IZQUIERDA: Carrusel Inmersivo con Imagen de Muestra -->
         <div class="md:col-span-6 flex flex-col justify-center items-center w-full relative group">
-            <div class="w-full aspect-[16/10] overflow-hidden rounded-xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] border border-white/5 bg-black relative">
+            <div
+                class="w-full aspect-[16/10] overflow-hidden rounded-xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] border border-white/5 bg-black relative">
 
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     <div class="min-w-full h-full shrink-0">
                         <!-- Imagen inspirada en el set frente a la piscina/playa de image_f6c89b.jpg -->
-                        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800" class="w-full h-full object-cover" alt="Romantic Scene 1">
+                        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800"
+                            class="w-full h-full object-cover" alt="Romantic Scene 1">
                     </div>
                     <div class="min-w-full h-full shrink-0">
-                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800" class="w-full h-full object-cover" alt="Romantic Scene 2">
+                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800"
+                            class="w-full h-full object-cover" alt="Romantic Scene 2">
                     </div>
                     <div class="min-w-full h-full shrink-0">
-                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800" class="w-full h-full object-cover" alt="Romantic Scene 3">
+                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800"
+                            class="w-full h-full object-cover" alt="Romantic Scene 3">
                     </div>
                 </div>
 
@@ -114,9 +131,12 @@
                 </button>
 
                 <div id="carouselDots" class="absolute bottom-5 left-0 right-0 flex justify-center space-x-2.5 z-10">
-                    <span class="w-2 h-2 rounded-full bg-white transition-all duration-300 cursor-pointer" onclick="setSlide(0)"></span>
-                    <span class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300 cursor-pointer" onclick="setSlide(1)"></span>
-                    <span class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300 cursor-pointer" onclick="setSlide(2)"></span>
+                    <span class="w-2 h-2 rounded-full bg-white transition-all duration-300 cursor-pointer"
+                        onclick="setSlide(0)"></span>
+                    <span class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300 cursor-pointer"
+                        onclick="setSlide(1)"></span>
+                    <span class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300 cursor-pointer"
+                        onclick="setSlide(2)"></span>
                 </div>
             </div>
         </div>
@@ -164,24 +184,30 @@
             </div>
 
             <!-- Tabs de navegación basadas en los 4 Tiempos de image_f6c89b.jpg -->
-            <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs uppercase font-bold border-b border-white/5 tracking-[0.2em]">
-                <button id="tab-entrada" onclick="switchTab('entrada')" class="border-b-2 border-secrets-gold pb-3 text-white transition duration-200 cursor-pointer">
+            <div
+                class="flex flex-wrap gap-x-6 gap-y-2 text-xs uppercase font-bold border-b border-white/5 tracking-[0.2em]">
+                <button id="tab-entrada" onclick="switchTab('entrada')"
+                    class="border-b-2 border-secrets-gold pb-3 text-white transition duration-200 cursor-pointer">
                     {{ request('lang') == 'en' ? 'STARTER' : 'ENTRADA' }}
                 </button>
-                <button id="tab-crema" onclick="switchTab('crema')" class="pb-3 text-stone-500 hover:text-stone-300 transition duration-200 cursor-pointer">
+                <button id="tab-crema" onclick="switchTab('crema')"
+                    class="pb-3 text-stone-500 hover:text-stone-300 transition duration-200 cursor-pointer">
                     {{ request('lang') == 'en' ? 'SOUP / CREAM' : 'CREMA' }}
                 </button>
-                <button id="tab-fuerte" onclick="switchTab('fuerte')" class="pb-3 text-stone-500 hover:text-stone-300 transition duration-200 cursor-pointer">
+                <button id="tab-fuerte" onclick="switchTab('fuerte')"
+                    class="pb-3 text-stone-500 hover:text-stone-300 transition duration-200 cursor-pointer">
                     {{ request('lang') == 'en' ? 'MAIN COURSE' : 'PLATO FUERTE' }}
                 </button>
-                <button id="tab-postre" onclick="switchTab('postre')" class="pb-3 text-stone-500 hover:text-stone-300 transition duration-200 cursor-pointer">
+                <button id="tab-postre" onclick="switchTab('postre')"
+                    class="pb-3 text-stone-500 hover:text-stone-300 transition duration-200 cursor-pointer">
                     {{ request('lang') == 'en' ? 'DESSERT' : 'POSTRE' }}
                 </button>
             </div>
 
             <!-- Contenedores Dinámicos de los Platos -->
-            <div class="text-base text-stone-300/90 leading-relaxed max-w-xl h-[130px] overflow-y-auto no-scrollbar pr-1">
-                
+            <div
+                class="text-base text-stone-300/90 leading-relaxed max-w-xl h-[130px] overflow-y-auto no-scrollbar pr-1">
+
                 <div id="content-entrada" class="block">
                     <p id="txt-entrada" class="font-light text-stone-300/90 text-justify tracking-wide fade-text">
                         {{ $entrada ?: 'Mar y bosque - Sea and Forest. Lingote de atún ennegrecido, emulsión de aguacate con menta, jalea de frutos rojos del bosque y chile serrano.' }}
@@ -221,7 +247,8 @@
 
             <div class="text-right">
                 <p class="text-4xl font-light text-white tracking-[0.08em]">
-                    <span class="text-secrets-gold font-normal">${{ number_format($cena->Precio ?? ($cena->precio ?? 0)) }}</span>
+                    <span
+                        class="text-secrets-gold font-normal">${{ number_format($cena->Precio ?? ($cena->precio ?? 0)) }}</span>
                     <span class="text-xs font-mono text-stone-500 ml-1">MXN</span>
                 </p>
                 <p class="text-[9px] text-stone-500 font-medium mt-1 tracking-[0.2em] uppercase font-mono">
@@ -233,14 +260,21 @@
 
     <!-- Script de Control Operativo y Traducción API en Vivo -->
     <script>
+        // Lee los parámetros directamente de la URL del iPad
         const urlParams = new URLSearchParams(window.location.search);
+        const packageSlug = urlParams.get('package') || '';
+        // Busca 'package_id' o 'id' desde la URL, y si no hay ninguno, usa 1
+        const packageId = parseInt(urlParams.get('package_id')) || parseInt(urlParams.get('id')) || 1;
         const currentLang = urlParams.get('lang') || 'es';
+
+        const serviciableType = "App\\Models\\CenaEspecial";
 
         // Motor asíncrono de traducción
         async function traducirTextoAIngles(textoOriginal) {
             if (!textoOriginal || textoOriginal.trim() === "") return "";
             try {
-                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
+                const response = await fetch(
+                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
                 const data = await response.json();
                 return data.responseData?.translatedText || textoOriginal;
             } catch (error) {
@@ -259,7 +293,9 @@
                 const elPostre = document.getElementById('txt-postre');
 
                 const elementos = [elRestaurante, elBotella, elEntrada, elCrema, elFuerte, elPostre];
-                elementos.forEach(el => { if(el) el.style.opacity = '0.4'; });
+                elementos.forEach(el => {
+                    if (el) el.style.opacity = '0.4';
+                });
 
                 const [tRest, tBot, tEnt, tCre, tFuer, tPost] = await Promise.all([
                     traducirTextoAIngles(elRestaurante?.innerText),
@@ -270,12 +306,30 @@
                     traducirTextoAIngles(elPostre?.innerText)
                 ]);
 
-                if (elRestaurante) { elRestaurante.innerText = tRest; elRestaurante.style.opacity = '1'; }
-                if (elBotella) { elBotella.innerText = tBot; elBotella.style.opacity = '1'; }
-                if (elEntrada) { elEntrada.innerText = tEnt; elEntrada.style.opacity = '1'; }
-                if (elCrema) { elCrema.innerText = tCre; elCrema.style.opacity = '1'; }
-                if (elFuerte) { elFuerte.innerText = tFuer; elFuerte.style.opacity = '1'; }
-                if (elPostre) { elPostre.innerText = tPost; elPostre.style.opacity = '1'; }
+                if (elRestaurante) {
+                    elRestaurante.innerText = tRest;
+                    elRestaurante.style.opacity = '1';
+                }
+                if (elBotella) {
+                    elBotella.innerText = tBot;
+                    elBotella.style.opacity = '1';
+                }
+                if (elEntrada) {
+                    elEntrada.innerText = tEnt;
+                    elEntrada.style.opacity = '1';
+                }
+                if (elCrema) {
+                    elCrema.innerText = tCre;
+                    elCrema.style.opacity = '1';
+                }
+                if (elFuerte) {
+                    elFuerte.innerText = tFuer;
+                    elFuerte.style.opacity = '1';
+                }
+                if (elPostre) {
+                    elPostre.innerText = tPost;
+                    elPostre.style.opacity = '1';
+                }
             }
         });
 
@@ -312,11 +366,11 @@
         // Control Dinámico de Pestañas (4 Tiempos Gastronómicos)
         function switchTab(activeTab) {
             const tabs = ['entrada', 'crema', 'fuerte', 'postre'];
-            
+
             tabs.forEach(tab => {
                 const tabElement = document.getElementById(`tab-${tab}`);
                 const contentElement = document.getElementById(`content-${tab}`);
-                
+
                 if (tab === activeTab) {
                     tabElement.classList.add('border-b-2', 'border-secrets-gold', 'text-white');
                     tabElement.classList.remove('text-stone-500');
@@ -342,8 +396,17 @@
         }
 
         function irAlMapaEspacial() {
-            window.location.href = "{{ route('mapa.espacios') }}?package={{ $cena->Slug ?? ($cena->slug ?? '') }}&lang=" + currentLang;
+            // 🟢 Apuntamos a 'Id' con mayúscula que es como viene de tu SQL Server
+            const packageId = "{{ $cena->Id ?? ($cena->id ?? 1) }}";
+
+            // 🟢 Apuntamos a 'Slug' con mayúscula para jalar el nombre correcto
+            const packageSlug = "{{ $cena->Slug ?? ($cena->slug ?? '') }}";
+
+            // Redireccionamos arrastrando los parámetros correctos
+            window.location.href = "{{ route('mapa.mesas') }}?package=" + packageSlug +
+                "&package_id=" + packageId + "&lang=" + currentLang;
         }
     </script>
 </body>
+
 </html>
