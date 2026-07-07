@@ -106,19 +106,16 @@
                 class="w-full aspect-[16/10] overflow-hidden rounded-xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] border border-white/5 bg-black relative">
 
                 <div id="carouselTrack" class="carousel-track h-full w-full">
+                    @forelse($cena->imagenes ?? [] as $foto)
                     <div class="min-w-full h-full shrink-0">
-                        <!-- Imagen inspirada en el set frente a la piscina/playa de image_f6c89b.jpg -->
-                        <img src="https://images.unsplash.com/photo-1544025162-d76694265947?q=80&w=800"
-                            class="w-full h-full object-cover" alt="Romantic Scene 1">
+                        <img src="{{ $foto }}" class="w-full h-full object-cover" alt="Slide {{ $loop->iteration }}">
                     </div>
+                    @empty
                     <div class="min-w-full h-full shrink-0">
                         <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800"
-                            class="w-full h-full object-cover" alt="Romantic Scene 2">
+                            class="w-full h-full object-cover" alt="Slide 1">
                     </div>
-                    <div class="min-w-full h-full shrink-0">
-                        <img src="https://images.unsplash.com/photo-1504674900247-0877df9cc836?q=80&w=800"
-                            class="w-full h-full object-cover" alt="Romantic Scene 3">
-                    </div>
+                    @endforelse
                 </div>
 
                 <button onclick="moveCarousel(-1)"
@@ -131,12 +128,13 @@
                 </button>
 
                 <div id="carouselDots" class="absolute bottom-5 left-0 right-0 flex justify-center space-x-2.5 z-10">
+                    @forelse($cena->imagenes ?? [] as $foto)
+                    <span class="w-2 h-2 rounded-full {{ $loop->first ? 'bg-white' : 'bg-white/40' }} transition-all duration-300 cursor-pointer"
+                        onclick="setSlide({{ $loop->index }})"></span>
+                    @empty
                     <span class="w-2 h-2 rounded-full bg-white transition-all duration-300 cursor-pointer"
                         onclick="setSlide(0)"></span>
-                    <span class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300 cursor-pointer"
-                        onclick="setSlide(1)"></span>
-                    <span class="w-2 h-2 rounded-full bg-white/40 transition-all duration-300 cursor-pointer"
-                        onclick="setSlide(2)"></span>
+                    @endforelse
                 </div>
             </div>
         </div>

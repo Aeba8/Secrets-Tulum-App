@@ -138,14 +138,16 @@
             <div
                 class="w-full aspect-[16/11] overflow-hidden rounded-xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] border border-white/5 bg-black relative">
                 <div id="carouselTrack" class="carousel-track h-full w-full">
+                    @forelse($experiencia->imagenes ?? [] as $foto)
+                    <div class="min-w-full h-full shrink-0">
+                        <img src="{{ $foto }}" class="w-full h-full object-cover" alt="Slide {{ $loop->iteration }}">
+                    </div>
+                    @empty
                     <div class="min-w-full h-full shrink-0">
                         <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800"
                             class="w-full h-full object-cover" alt="Slide 1">
                     </div>
-                    <div class="min-w-full h-full shrink-0">
-                        <img src="https://images.unsplash.com/photo-1519690889869-e49694ae0ec2?q=80&w=800"
-                            class="w-full h-full object-cover" alt="Slide 2">
-                    </div>
+                    @endforelse
                 </div>
 
                 <button onclick="moveCarousel(-1)"

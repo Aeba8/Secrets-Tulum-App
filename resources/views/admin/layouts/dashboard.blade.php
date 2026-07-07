@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="es">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,7 +9,9 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@400;600;700&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Cinzel:wght@400;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
@@ -36,6 +39,7 @@
                             900: '#5A4620',
                         },
                         sand: {
+                            40: '#FDFBF7',
                             50: '#FAF7F4',
                             100: '#F5F0EB',
                             200: '#EBE3D9',
@@ -47,10 +51,46 @@
                             800: '#6F5B45',
                             900: '#5B4A39',
                         },
-                        emerald: {
-                            deep: '#0D5E3F',
-                            dark: '#0A4B32',
-                            light: '#E8F5F0',
+                        navy: {
+                            50: '#F0F4FA',
+                            100: '#D6E0F0',
+                            200: '#ADC0E0',
+                            300: '#84A0D0',
+                            400: '#5B80C0',
+                            500: '#3B6BB5',
+                            600: '#2A5A9F',
+                            700: '#1A4280',
+                            800: '#0F3B6E',
+                            900: '#0A2D55',
+                            deep: '#0F4C75',
+                            dark: '#0A3D6E',
+                            light: '#E8F0FE',
+                        },
+                        sapphire: {
+                            50: '#EFF4FA',
+                            100: '#D6E2F2',
+                            200: '#ADC5E6',
+                            300: '#84A8D9',
+                            400: '#5B8BCC',
+                            500: '#2F5F9F',
+                            600: '#254E85',
+                            700: '#1B3C6B',
+                            800: '#112B51',
+                            900: '#081A37',
+                        },
+                        'sidebar-light': '#1C2B3E',
+                        'sidebar-dark': '#1C2B3E',
+                        charcoal: {
+                            50: '#F0F0F1',
+                            100: '#D6D7DA',
+                            200: '#ABADB3',
+                            300: '#80838C',
+                            400: '#555965',
+                            500: '#2A2E36',
+                            600: '#1E232A',
+                            700: '#12161A',
+                            800: '#121418',
+                            900: '#0A0B0D',
                         },
                     }
                 }
@@ -59,140 +99,312 @@
     </script>
 
     <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { font-family: 'Inter', sans-serif; background-color: #F5F0EB; color: #1F2937; overflow: hidden; }
-        .dark body { background-color: #0D1B12; color: #E5E7EB; }
-        ::-webkit-scrollbar { width: 6px; }
-        ::-webkit-scrollbar-track { background: transparent; }
-        ::-webkit-scrollbar-thumb { background: rgba(197, 160, 89, 0.3); border-radius: 3px; }
-        ::-webkit-scrollbar-thumb:hover { background: rgba(197, 160, 89, 0.5); }
-        .sidebar-transition { transition: width 0.3s ease; }
-        .nav-item-active { background-color: rgba(197, 160, 89, 0.08); color: #C5A059; border-color: rgba(197, 160, 89, 0.2); }
-        .dark .nav-item-active { background-color: rgba(197, 160, 89, 0.12); }
-        .nav-item { color: #6B7280; }
-        .dark .nav-item { color: #9CA3AF; }
-        .nav-item:hover { background-color: #EBE3D9; color: #374151; }
-        .dark .nav-item:hover { background-color: rgba(255,255,255,0.05); color: #E5E7EB; }
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #FDFBF7;
+            color: #1F2937;
+            overflow: hidden;
+        }
+
+        .dark body {
+            background-color: #1A1D23;
+            color: #E5E7EB;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: rgba(197, 160, 89, 0.3);
+            border-radius: 3px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: rgba(197, 160, 89, 0.5);
+        }
+
+        .sidebar-transition {
+            transition: width 0.3s ease;
+        }
+
+        *:focus-visible {
+            outline: 2px solid rgba(47, 95, 159, 0.5);
+            outline-offset: 2px;
+            border-radius: 4px;
+        }
+
+        .dark *:focus-visible {
+            outline-color: rgba(197, 160, 89, 0.5);
+        }
+
+        /* Sidebar Navy (light mode) */
+        .sidebar-navy {
+            background-color: #1C2B3E;
+            border-right-color: #182535;
+        }
+
+        .sidebar-navy .nav-label,
+        .sidebar-navy .nav-item,
+        .sidebar-navy a:not(.nav-item-active),
+        .sidebar-navy button:not(.nav-item-active) {
+            color: rgba(255, 255, 255, 0.75);
+        }
+
+        .sidebar-navy .nav-item:hover,
+        .sidebar-navy a:not(.nav-item-active):hover,
+        .sidebar-navy button:not(.nav-item-active):hover {
+            background-color: rgba(255, 255, 255, 0.08);
+            color: #fff;
+        }
+
+        .sidebar-navy .nav-item-active {
+            background-color: rgba(197, 160, 89, 0.12);
+            border-left: 2px solid #C5A880;
+            border-radius: 10px;
+            color: #C5A880;
+        }
+
+        .sidebar-navy .nav-item-active i {
+            color: #C5A880;
+        }
+
+        .sidebar-navy .nav-item-active .nav-label {
+            color: #C5A880;
+        }
+
+        .sidebar-navy .sidebar-border {
+            border-color: rgba(255, 255, 255, 0.08);
+        }
+
+        .sidebar-navy .sidebar-text-muted {
+            color: rgba(255, 255, 255, 0.45);
+        }
+
+        .sidebar-navy .sidebar-toggle-hover:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-navy .sidebar-submenu-border {
+            border-color: rgba(197, 160, 89, 0.25);
+        }
+
+        .sidebar-navy #sidebar-brand-text {
+            color: #C5A880;
+        }
+
+        /* Dark mode sidebar */
+        .dark .sidebar-dark {
+            background-color: #1C2B3E;
+            border-right-color: #1E232A;
+        }
+
+        .dark .sidebar-dark .sidebar-border {
+            border-color: rgba(255, 255, 255, 0.06);
+        }
+
+        .dark .sidebar-dark .nav-label,
+        .dark .sidebar-dark .nav-item,
+        .dark .sidebar-dark a:not(.nav-item-active),
+        .dark .sidebar-dark button:not(.nav-item-active) {
+            color: rgba(255, 255, 255, 0.65);
+        }
+
+        .dark .sidebar-dark .nav-item:hover,
+        .dark .sidebar-dark a:not(.nav-item-active):hover,
+        .dark .sidebar-dark button:not(.nav-item-active):hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #fff;
+        }
+
+        .dark .sidebar-dark .nav-item-active {
+            background-color: rgba(197, 160, 89, 0.08);
+            border-left: 2px solid #C5A880;
+            border-radius: 10px;
+            color: #C5A880;
+        }
+
+        .dark .sidebar-dark .nav-item-active i {
+            color: #C5A880;
+        }
+
+        .dark .sidebar-dark .nav-item-active .nav-label {
+            color: #C5A880;
+        }
+
+        .dark .sidebar-dark #sidebar-brand-text {
+            color: #C5A880;
+        }
+
+        .dark .sidebar-dark #sidebar-logo-svg {
+            color: #C5A880;
+        }
+
+        .dark .sidebar-dark .sidebar-text-muted {
+            color: rgba(255, 255, 255, 0.3);
+        }
+
+        .dark .sidebar-dark .sidebar-submenu-border {
+            border-color: rgba(255, 255, 255, 0.06);
+        }
     </style>
 </head>
+
 <body class="">
 
-    <div class="flex h-screen overflow-hidden bg-sand-100 dark:bg-[#0D1B12]">
+    <div class="flex h-screen overflow-hidden bg-sand-40 dark:bg-charcoal-700">
 
         {{-- Sidebar --}}
-        <aside id="sidebar" class="sidebar-transition flex-shrink-0 h-full bg-white dark:bg-[#16281D] border-r border-sand-200 dark:border-[#2D4A36] flex flex-col z-30 overflow-hidden"
-               style="width: 260px;">
+        <aside id="sidebar"
+            class="sidebar-transition flex-shrink-0 h-full sidebar-navy sidebar-dark bg-sidebar-light dark:bg-sidebar-dark border-r border-navy-800 dark:border-charcoal-600 flex flex-col z-30 overflow-hidden"
+            style="width: 260px;">
 
             {{-- Logo + toggle --}}
-            <div class="flex items-center justify-between h-16 px-5 border-b border-sand-200 dark:border-[#2D4A36] flex-shrink-0">
+            <div class="sidebar-border flex items-center justify-between h-16 px-5 border-b flex-shrink-0">
                 <div class="flex items-center gap-3 overflow-hidden">
-                    
-                    <span class="font-serif text-gold-500 text-lg font-semibold whitespace-nowrap" id="sidebar-brand-text">SecretsPad</span>
+                    <div
+                        class="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-500 to-gold-700 flex items-center justify-center flex-shrink-0">
+                        <svg id="sidebar-logo-svg" class="w-[18px] h-[18px] text-white" viewBox="0 0 24 24"
+                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+                            <path
+                                d="M19.5 8.5c0-4.14-3.36-7.5-7.5-7.5S4.5 4.36 4.5 8.5c0 1.44.42 2.78 1.13 3.92L12 22l6.37-9.58A7.48 7.48 0 0019.5 8.5zM12 5.5c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z" />
+                            <path d="M10 12.5c.6.3 1.3.5 2 .5s1.4-.2 2-.5L12 18l-2-5.5z" />
+                        </svg>
+                    </div>
+                    <span class="font-serif text-gold-400 text-lg font-semibold whitespace-nowrap"
+                        id="sidebar-brand-text">SecretsPad</span>
                 </div>
-                <button id="sidebar-toggle" class="w-7 h-7 rounded-lg hover:bg-sand-100 dark:hover:bg-[#2D4A36] flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-400 transition-colors flex-shrink-0">
+                <button id="sidebar-toggle"
+                    class="sidebar-toggle-hover w-7 h-7 rounded-lg flex items-center justify-center text-white/50 hover:text-white/80 transition-colors flex-shrink-0">
                     <i id="sidebar-toggle-icon" class="fa-solid fa-bars text-sm"></i>
                 </button>
             </div>
 
+            <div class="sidebar-border border-t dark:border-white/5"></div>
+
             {{-- Navigation --}}
-            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-0.5">
+            <nav class="flex-1 overflow-y-auto py-4 px-3 space-y-0.5 dark:space-y-1">
 
                 {{-- Dashboard General (toggle padre) --}}
                 <button id="dashboard-parent-toggle"
-                   class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 nav-item-active w-full text-left">
+                    class="flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200 nav-item-active w-full text-left">
                     <i class="fa-solid fa-gauge-high w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label flex-1">Dashboard General</span>
-                    <i id="dashboard-chevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-300 nav-label"></i>
+                    <i id="dashboard-chevron"
+                        class="fa-solid fa-chevron-down text-xs transition-transform duration-300 nav-label"></i>
                 </button>
 
                 {{-- Sub-apartados (colapsable) --}}
-                <div id="submenu-container" class="ml-2 border-l-2 border-gold-500/20 dark:border-gold-500/30 pl-2 space-y-0.5 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
-                    <span class="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-semibold ml-3 nav-label block mt-2 mb-1">Módulos de Métricas</span>
+                <div id="submenu-container"
+                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 dark:space-y-1 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
+                    <span
+                        class="sidebar-text-muted text-[10px] uppercase tracking-widest font-semibold ml-3 nav-label block mt-2 mb-1">Módulos
+                        de Métricas</span>
 
                     <a href="#bcg" data-section="bcg"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-star w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Matriz BCG</span>
                     </a>
 
                     <a href="#inventory" data-section="inventory"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-boxes-stacked w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Previsiones Inventario</span>
                     </a>
 
                     <a href="#financial" data-section="financial"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-chart-line w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Métricas Financieras</span>
                     </a>
 
                     <a href="#occupancy" data-section="occupancy"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-calendar-day w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Ocupación y Demanda</span>
                     </a>
 
                     <a href="#operations" data-section="operations"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-gears w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Operación y Logística</span>
                     </a>
 
                     <a href="#team" data-section="team"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Rendimiento del Equipo</span>
                     </a>
                 </div>
 
                 {{-- Divider --}}
-                <div class="border-t border-sand-200 dark:border-[#2D4A36] my-3"></div>
+                <div class="sidebar-border border-t my-3"></div>
 
                 {{-- Agenda (active) --}}
                 <a href="#agenda" data-section="agenda"
-                   class="nav-item nav-section-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200">
+                    class="nav-item nav-section-link flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200">
                     <i class="fa-solid fa-calendar-days w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label">Agenda de Reservas</span>
                 </a>
 
+                <div class="sidebar-border border-t dark:border-white/5 my-2"></div>
+
                 {{-- Gestión de Servicios (toggle padre) --}}
                 <button id="services-parent-toggle"
-                   class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
                     <i class="fa-solid fa-concierge-bell w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label flex-1">Gestión de Servicios</span>
-                    <i id="services-chevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-300 nav-label"></i>
+                    <i id="services-chevron"
+                        class="fa-solid fa-chevron-down text-xs transition-transform duration-300 nav-label"></i>
                 </button>
 
                 {{-- Sub-CRUDs (colapsable) --}}
-                <div id="services-submenu" class="ml-2 border-l-2 border-gold-500/20 dark:border-gold-500/30 pl-2 space-y-0.5 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
-                    <span class="text-[10px] uppercase tracking-widest text-gray-400 dark:text-gray-500 font-semibold ml-3 nav-label block mt-2 mb-1">Administración de Catálogo</span>
+                <div id="services-submenu"
+                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 dark:space-y-1 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
+                    <span
+                        class="sidebar-text-muted text-[10px] uppercase tracking-widest font-semibold ml-3 nav-label block mt-2 mb-1">Administración
+                        de Catálogo</span>
 
                     <a href="#cenas" data-section="cenas"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-utensils w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Cenas Especiales</span>
                     </a>
 
                     <a href="#paquetes" data-section="paquetes"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-gift w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Paquetes de Eventos</span>
                     </a>
 
                     <a href="#balinesas" data-section="balinesas"
-                       class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Experiencias VIP (Balinesas)</span>
                     </a>
                 </div>
             </nav>
 
+            <div class="sidebar-border border-t dark:border-white/5 my-2"></div>
+
             {{-- Footer --}}
-            <div class="px-4 py-3 border-t border-sand-200 dark:border-[#2D4A36] flex-shrink-0">
+            <div class="sidebar-border px-4 py-3 border-t dark:border-white/5 flex-shrink-0">
                 <div class="flex items-center justify-between">
-                    <span class="text-xs text-gray-400 nav-label">v1.0.0</span>
-                    <a href="{{ route('logout') }}" onclick="event.preventDefault(); document.getElementById('logout-form').submit();" class="text-xs text-gray-400 hover:text-red-500 transition-colors flex items-center gap-1.5">
+                    <span class="sidebar-text-muted text-xs nav-label">v1.0.0</span>
+                    <a href="{{ route('logout') }}"
+                        onclick="event.preventDefault(); document.getElementById('logout-form').submit();"
+                        class="sidebar-text-muted hover:text-red-400 transition-colors text-xs flex items-center gap-1.5">
                         <i class="fa-solid fa-right-from-bracket text-xs"></i>
                         <span class="nav-label">Salir</span>
                     </a>
@@ -205,38 +417,46 @@
         <main id="main-content" class="flex-1 flex flex-col h-full overflow-hidden">
 
             {{-- Top Bar --}}
-            <header class="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-sand-200 dark:border-[#2D4A36] bg-white dark:bg-[#16281D]">
+            <header
+                class="h-16 flex-shrink-0 flex items-center justify-between px-6 border-b border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-600">
                 <div>
-                    <h1 class="text-gray-900 dark:text-gray-100 font-semibold text-base" id="page-title">Dashboard General</h1>
+                    <h1 class="text-gray-900 dark:text-gray-100 font-semibold text-base" id="page-title">Dashboard
+                        General</h1>
                     <p class="text-xs text-gray-500 dark:text-gray-400 mt-0.5">Departamento de Alimentos & Bebidas</p>
                 </div>
                 <div class="flex items-center gap-3">
-                    <div id="current-date" class="text-sm text-gray-500 dark:text-gray-400 font-medium hidden md:block"></div>
+                    <div id="current-date"
+                        class="text-sm text-gray-500 dark:text-gray-400 font-medium hidden md:block"></div>
 
                     {{-- Dark mode toggle --}}
-                    <button id="darkModeToggle" class="w-8 h-8 rounded-lg hover:bg-sand-100 dark:hover:bg-[#2D4A36] flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gold-500 transition-colors">
+                    <button id="darkModeToggle"
+                        class="w-8 h-8 rounded-lg hover:bg-sand-100 dark:hover:bg-charcoal-500 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gold-500 transition-colors">
                         <i id="darkModeIcon" class="fa-solid fa-moon text-sm"></i>
                     </button>
 
                     {{-- Profile --}}
-                    <div class="flex items-center gap-2.5 pl-3 border-l border-sand-200 dark:border-[#2D4A36]">
+                    <div class="flex items-center gap-2.5 pl-3 border-l border-sand-200 dark:border-charcoal-500">
                         <div class="text-right hidden sm:block">
-                            <p class="text-gray-900 dark:text-gray-100 text-sm font-medium truncate max-w-[140px]">{{ auth()->user()->Nombre ?? 'Admin' }}</p>
-                            <p class="text-gold-500 dark:text-gold-400 text-xs font-medium">{{ auth()->user()->Rol ?? 'Admin' }}</p>
+                            <p class="text-gray-900 dark:text-gray-100 text-sm font-medium truncate max-w-[140px]">
+                                {{ auth()->user()->Nombre ?? 'Admin' }}</p>
+                            <p class="text-gold-500 dark:text-gold-400 text-xs font-medium">
+                                {{ auth()->user()->Rol ?? 'Admin' }}</p>
                         </div>
-                        <div class="w-9 h-9 rounded-full bg-gradient-to-br from-gold-500 to-gold-700 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ring-2 ring-gold-500/20">
+                        <div
+                            class="w-9 h-9 rounded-full bg-gradient-to-br from-gold-500 to-gold-700 flex items-center justify-center text-white font-semibold text-sm flex-shrink-0 ring-2 ring-gold-500/20">
                             {{ substr(auth()->user()->Nombre ?? 'A', 0, 1) }}{{ substr(auth()->user()->Nombre ?? 'D', 1, 1) ?? '' }}
                         </div>
                     </div>
 
-                    <button onclick="toggleFullscreen()" class="w-8 h-8 rounded-lg hover:bg-sand-100 dark:hover:bg-[#2D4A36] flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
+                    <button onclick="toggleFullscreen()"
+                        class="w-8 h-8 rounded-lg hover:bg-sand-100 dark:hover:bg-charcoal-500 flex items-center justify-center text-gray-400 hover:text-gray-600 dark:text-gray-400 dark:hover:text-gray-200 transition-colors">
                         <i class="fa-solid fa-expand text-sm"></i>
                     </button>
                 </div>
             </header>
 
             {{-- Page Content --}}
-            <div class="flex-1 overflow-y-auto p-6 bg-sand-100 dark:bg-[#0D1B12]">
+            <div class="flex-1 overflow-y-auto p-6 bg-sand-100 dark:bg-charcoal-700">
                 @yield('content')
             </div>
         </main>
@@ -244,17 +464,50 @@
 
     <script>
         const sectionNames = {
-            'general':   { title: 'Dashboard General',      icon: 'fa-gauge-high' },
-            'bcg':       { title: 'Matriz BCG',              icon: 'fa-star' },
-            'inventory': { title: 'Previsiones Inventario',  icon: 'fa-boxes-stacked' },
-            'financial': { title: 'Métricas Financieras',    icon: 'fa-chart-line' },
-            'occupancy': { title: 'Ocupación y Demanda',     icon: 'fa-calendar-day' },
-            'operations':{ title: 'Operación y Logística',   icon: 'fa-gears' },
-            'team':      { title: 'Rendimiento del Equipo',  icon: 'fa-users' },
-            'agenda':    { title: 'Agenda de Reservas',      icon: 'fa-calendar-days' },
-            'cenas':     { title: 'Cenas Especiales',        icon: 'fa-utensils' },
-            'paquetes':  { title: 'Paquetes de Eventos',     icon: 'fa-gift' },
-            'balinesas': { title: 'Experiencias VIP',        icon: 'fa-umbrella-beach' },
+            'general': {
+                title: 'Dashboard General',
+                icon: 'fa-gauge-high'
+            },
+            'bcg': {
+                title: 'Matriz BCG',
+                icon: 'fa-star'
+            },
+            'inventory': {
+                title: 'Previsiones Inventario',
+                icon: 'fa-boxes-stacked'
+            },
+            'financial': {
+                title: 'Métricas Financieras',
+                icon: 'fa-chart-line'
+            },
+            'occupancy': {
+                title: 'Ocupación y Demanda',
+                icon: 'fa-calendar-day'
+            },
+            'operations': {
+                title: 'Operación y Logística',
+                icon: 'fa-gears'
+            },
+            'team': {
+                title: 'Rendimiento del Equipo',
+                icon: 'fa-users'
+            },
+            'agenda': {
+                title: 'Agenda de Reservas',
+                icon: 'fa-calendar-days'
+            },
+            'cenas': {
+                title: 'Cenas Especiales',
+                icon: 'fa-utensils'
+            },
+            'paquetes': {
+                title: 'Paquetes de Eventos',
+                icon: 'fa-gift'
+            },
+            'balinesas': {
+                title: 'Experiencias VIP',
+                icon: 'fa-umbrella-beach'
+            },
         };
 
         // Sidebar toggle
@@ -289,7 +542,8 @@
 
         if (parentToggle && submenuContainer && dashboardChevron) {
             parentToggle.addEventListener('click', () => {
-                const isCollapsed = submenuContainer.style.maxHeight === '0px' || submenuContainer.classList.contains('max-h-0');
+                const isCollapsed = submenuContainer.style.maxHeight === '0px' || submenuContainer.classList
+                    .contains('max-h-0');
                 if (isCollapsed) {
                     submenuContainer.style.maxHeight = submenuContainer.scrollHeight + 'px';
                     submenuContainer.style.opacity = '1';
@@ -312,7 +566,8 @@
 
         if (servicesToggle && servicesSubmenu && servicesChevron) {
             servicesToggle.addEventListener('click', () => {
-                const isCollapsed = servicesSubmenu.style.maxHeight === '0px' || servicesSubmenu.classList.contains('max-h-0');
+                const isCollapsed = servicesSubmenu.style.maxHeight === '0px' || servicesSubmenu.classList.contains(
+                    'max-h-0');
                 if (isCollapsed) {
                     servicesSubmenu.style.maxHeight = servicesSubmenu.scrollHeight + 'px';
                     servicesSubmenu.style.opacity = '1';
@@ -324,6 +579,9 @@
                     servicesSubmenu.classList.add('max-h-0');
                     servicesChevron.style.transform = 'rotate(-90deg)';
                 }
+
+                // NUEVO: Mostrar automáticamente el blade de los CRUDs
+                showSection('cenas');
             });
         }
 
@@ -357,7 +615,12 @@
         // Current date
         const dateEl = document.getElementById('current-date');
         const now = new Date();
-        const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+        const options = {
+            weekday: 'long',
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+        };
         dateEl.textContent = now.toLocaleDateString('es-MX', options);
 
         // Fullscreen
@@ -389,7 +652,8 @@
                 const crudTab = document.querySelector('.crud-tab[data-crud="' + sectionId + '"]');
                 if (crudTab) {
                     document.querySelectorAll('.crud-tab').forEach(t => {
-                        t.className = 'crud-tab px-4 py-2 rounded-xl text-xs font-medium bg-sand-100 dark:bg-[#1E3327] text-gray-600 dark:text-gray-400 hover:bg-sand-200 dark:hover:bg-[#2D4A36]';
+                        t.className =
+                            'crud-tab px-4 py-2 rounded-xl text-xs font-medium bg-sand-100 dark:bg-charcoal-500 text-gray-600 dark:text-gray-400 hover:bg-sand-200 dark:hover:bg-charcoal-500';
                     });
                     crudTab.className = 'crud-tab px-4 py-2 rounded-xl text-xs font-medium bg-gold-500 text-white';
                     document.querySelectorAll('.crud-panel').forEach(p => p.classList.add('hidden'));
@@ -405,14 +669,35 @@
             }
 
             // Update nav active states
-            document.querySelectorAll('.nav-section-link').forEach(el => {
-                el.classList.remove('nav-item-active');
-                el.classList.add('nav-item');
-            });
+            // 1. Quitamos el color dorado de TODOS los enlaces y botones principales
+            document.querySelectorAll('.nav-section-link, #dashboard-parent-toggle, #services-parent-toggle').forEach(
+                el => {
+                    el.classList.remove('nav-item-active');
+                    el.classList.add('nav-item');
+                });
+
+            // 2. Iluminamos el sub-enlace exacto que el usuario seleccionó
             const activeLink = document.querySelector('.nav-section-link[data-section="' + sectionId + '"]');
             if (activeLink) {
                 activeLink.classList.remove('nav-item');
                 activeLink.classList.add('nav-item-active');
+            }
+
+            // 3. Lógica para mantener los apartados padre en dorado si estamos en sus submenús
+            const dashboardParent = document.getElementById('dashboard-parent-toggle');
+            const servicesParent = document.getElementById('services-parent-toggle');
+
+            const dashboardSections = ['general', 'bcg', 'inventory', 'financial', 'occupancy', 'operations', 'team'];
+            const servicesSections = ['cenas', 'paquetes', 'balinesas'];
+
+            if (dashboardSections.includes(sectionId) && dashboardParent) {
+                dashboardParent.classList.remove('nav-item');
+                dashboardParent.classList.add('nav-item-active');
+            }
+
+            if (servicesSections.includes(sectionId) && servicesParent) {
+                servicesParent.classList.remove('nav-item');
+                servicesParent.classList.add('nav-item-active');
             }
 
             // Re-render charts that might be in the shown section
@@ -450,6 +735,19 @@
             }
         });
 
+        // NUEVO: Sincronizar clics en las pestañas internas del CRUD con el menú lateral
+        document.addEventListener('click', (e) => {
+            const crudTab = e.target.closest('.crud-tab');
+            if (crudTab) {
+                // Obtenemos qué sección quiere ver (cenas, paquetes o balinesas) basado en su data-crud
+                const section = crudTab.dataset.crud;
+                if (section) {
+                    // Llamamos a showSection para que sincronice la vista, el título y el sidebar
+                    showSection(section);
+                }
+            }
+        });
+
         // Alert dismiss
         document.addEventListener('click', (e) => {
             if (e.target.closest('.alert-dismiss')) {
@@ -460,4 +758,5 @@
 
     @stack('scripts')
 </body>
+
 </html>

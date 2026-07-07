@@ -13,7 +13,8 @@ class CenaEspecial extends Model
     // Campos habilitados para la tablet y control
     protected $fillable = [
     'Nombre', 'Precio', 'Slug', 'Restaurant', 'Numero_Personas', 'Is_Active', 'Id_Categoria', 'Ficha_Tecnica',
-    'name', 'slug', 'price', 'restaurant', 'numero_personas', 'is_active', 'id_categoria', 'ficha_tecnica'
+    'name', 'slug', 'price', 'restaurant', 'numero_personas', 'is_active', 'id_categoria', 'ficha_tecnica',
+    'imagenes',
 ];
 
     // Transforma el JSON de SQL Server automáticamente en array de PHP
@@ -23,6 +24,7 @@ class CenaEspecial extends Model
             'Ficha_Tecnica' => 'array',
             'Numero_Personas' => 'integer',
             'Is_Active' => 'boolean',
+            'imagenes' => 'array',
         ];
     }
 
