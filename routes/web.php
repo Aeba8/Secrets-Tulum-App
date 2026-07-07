@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\API\ExperienciaReservaController;
+use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\API\ReservaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HotelWebController;
@@ -74,4 +75,9 @@ Route::middleware(['auth', 'role:Operativo'])->group(function () {
     Route::get('/hotel/experiencias-vip', function () {
         return view('ipad.experiencias');
     })->name('paquetes.experiencias');
+});
+
+// 🔐 Rutas del Panel de Administración (exclusivo Admin/SuperAdmin)
+Route::middleware(['auth', 'role:Admin,SuperAdmin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 });
