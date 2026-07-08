@@ -1,9 +1,10 @@
+{{--  CÓDIGO NUEVO SIMPLIFICADO --}}
 @php
-    // Dividimos la Ficha_Tecnica original del modelo usando tu separador '|'
-    $parts = explode('|', $balinesa->Ficha_Tecnica ?? ($balinesa->ficha_tecnica ?? ''));
-    $horario_disponible = isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : 'Todos los días';
-    $botella_incluida =
-        isset($parts[1]) && !empty(trim($parts[1])) ? trim($parts[1]) : '1 botella de Moët & Chandon Brut 750ml';
+    // Mapeo directo a los nuevos campos limpios de la base de datos
+    $horario_disponible = !empty(trim($balinesa->Dias)) ? trim($balinesa->Dias) : 'Todos los días';
+    $botella_incluida = !empty(trim($balinesa->ficha_tecnica))
+        ? trim($balinesa->ficha_tecnica)
+        : '1 botella de Moët & Chandon Brut 750ml';
 @endphp
 
 <!DOCTYPE html>
@@ -99,14 +100,15 @@
 
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     @forelse($balinesa->imagenes ?? [] as $foto)
-                    <div class="min-w-full h-full shrink-0">
-                        <img src="{{ $foto }}" class="w-full h-full object-cover" alt="Slide {{ $loop->iteration }}">
-                    </div>
+                        <div class="min-w-full h-full shrink-0">
+                            <img src="{{ $foto }}" class="w-full h-full object-cover"
+                                alt="Slide {{ $loop->iteration }}">
+                        </div>
                     @empty
-                    <div class="min-w-full h-full shrink-0">
-                        <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=800"
-                            class="w-full h-full object-cover" alt="Slide 1">
-                    </div>
+                        <div class="min-w-full h-full shrink-0">
+                            <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=800"
+                                class="w-full h-full object-cover" alt="Slide 1">
+                        </div>
                     @endforelse
                 </div>
 
@@ -121,11 +123,12 @@
 
                 <div id="carouselDots" class="absolute bottom-5 left-0 right-0 flex justify-center space-x-2.5 z-10">
                     @forelse($balinesa->imagenes ?? [] as $foto)
-                    <span class="w-2 h-2 rounded-full {{ $loop->first ? 'bg-white' : 'bg-white/40' }} transition-all duration-300 cursor-pointer"
-                        onclick="setSlide({{ $loop->index }})"></span>
+                        <span
+                            class="w-2 h-2 rounded-full {{ $loop->first ? 'bg-white' : 'bg-white/40' }} transition-all duration-300 cursor-pointer"
+                            onclick="setSlide({{ $loop->index }})"></span>
                     @empty
-                    <span class="w-2 h-2 rounded-full bg-white transition-all duration-300 cursor-pointer"
-                        onclick="setSlide(0)"></span>
+                        <span class="w-2 h-2 rounded-full bg-white transition-all duration-300 cursor-pointer"
+                            onclick="setSlide(0)"></span>
                     @endforelse
                 </div>
             </div>
@@ -157,7 +160,8 @@
                     <div class="bg-white/[0.02] p-3.5 rounded-lg border border-white/5 shadow-2xl">
                         <p class="text-[10px] text-secrets-gold font-medium uppercase tracking-[0.2em] font-mono">
                             {{ request('lang') == 'en' ? 'Max Capacity:' : 'Capacidad Máxima:' }}</p>
-                        <p class="text-base font-light text-stone-100 mt-1">{{ $balinesa->capacidad_maxima }} pax</p>
+                        <p class="text-base font-light text-stone-100 mt-1">{{ $balinesa->capacidad_maxima ?? 2 }} pax
+                        </p>
                     </div>
                     <!-- Botella Incluida -->
                     <div class="col-span-2 bg-white/[0.02] p-3.5 rounded-lg border border-white/5 shadow-2xl">
@@ -355,7 +359,7 @@
             }
             setTimeout(() => {
                 window.location.href = targetUrl + (targetUrl.includes('?') ? '&' : '?') + "lang=" +
-                currentLang;
+                    currentLang;
             }, 400);
         }
 
@@ -365,7 +369,8 @@
         }
 
         function irAlMapaEspacial() {
-            window.location.href = "{{ route('mapa.espacios') }}?package={{ $balinesa->slug }}&package_id={{ $balinesa->Id }}";
+            window.location.href =
+                "{{ route('mapa.espacios') }}?package={{ $balinesa->slug }}&package_id={{ $balinesa->getKey() }}";
         }
     </script>
 

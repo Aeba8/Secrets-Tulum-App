@@ -1,7 +1,10 @@
 <?php
 
-use App\Http\Controllers\API\ExperienciaReservaController;
+use App\Http\Controllers\Admin\BalinesaController;
+use App\Http\Controllers\Admin\CenaEspecialController;
 use App\Http\Controllers\Admin\DashboardController;
+use App\Http\Controllers\Admin\ExperienciaController;
+use App\Http\Controllers\API\ExperienciaReservaController;
 use App\Http\Controllers\API\ReservaController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HotelWebController;
@@ -80,4 +83,19 @@ Route::middleware(['auth', 'role:Operativo'])->group(function () {
 // 🔐 Rutas del Panel de Administración (exclusivo Admin/SuperAdmin)
 Route::middleware(['auth', 'role:Admin,SuperAdmin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    Route::post('/balinesas', [BalinesaController::class, 'store'])->name('balinesas.store');
+    Route::put('/balinesas/{id}', [BalinesaController::class, 'update'])->name('balinesas.update');
+    Route::delete('/balinesas/{id}', [BalinesaController::class, 'destroy'])->name('balinesas.destroy');
+    Route::patch('/balinesas/{id}/activate', [BalinesaController::class, 'activate'])->name('balinesas.activate');
+
+    Route::post('/cenas', [CenaEspecialController::class, 'store'])->name('cenas.store');
+    Route::put('/cenas/{id}', [CenaEspecialController::class, 'update'])->name('cenas.update');
+    Route::delete('/cenas/{id}', [CenaEspecialController::class, 'destroy'])->name('cenas.destroy');
+    Route::patch('/cenas/{id}/activate', [CenaEspecialController::class, 'activate'])->name('cenas.activate');
+
+    Route::post('/experiencias', [ExperienciaController::class, 'store'])->name('experiencias.store');
+    Route::put('/experiencias/{id}', [ExperienciaController::class, 'update'])->name('experiencias.update');
+    Route::delete('/experiencias/{id}', [ExperienciaController::class, 'destroy'])->name('experiencias.destroy');
+    Route::patch('/experiencias/{id}/activate', [ExperienciaController::class, 'activate'])->name('experiencias.activate');
 });

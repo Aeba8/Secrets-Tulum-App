@@ -3,6 +3,9 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Balinesa;
+use App\Models\CenaEspecial;
+use App\Models\Experiencia;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -188,30 +191,9 @@ class DashboardController extends Controller
             ['label' => 'Completadas', 'count' => 1, 'color' => '#9CA3AF'],
         ];
 
-        $cenasEspeciales = [
-            ['id' => 1, 'lugar' => 'The Grotto', 'descripcion' => 'Cena romántica en cueva privada con mariachi', 'precio' => 8500, 'capacidad' => 12, 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 2, 'lugar' => 'Terraza Mar', 'descripcion' => 'Cena al atardecer frente al mar', 'precio' => 5200, 'capacidad' => 40, 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 3, 'lugar' => 'Balcón Colonial', 'descripcion' => 'Cena privada en mirador colonial', 'precio' => 6800, 'capacidad' => 8, 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 4, 'lugar' => 'Jardín Secreto', 'descripcion' => 'Cena rodeada de vegetación exótica', 'precio' => 4800, 'capacidad' => 20, 'status' => 'Inactivo', 'imagenes' => []],
-            ['id' => 5, 'lugar' => 'Pool Club Noche', 'descripcion' => 'Cena iluminada junto a la alberca infinita', 'precio' => 6100, 'capacidad' => 30, 'status' => 'Activo', 'imagenes' => []],
-        ];
-
-        $paquetesEventos = [
-            ['id' => 1, 'nombre' => 'Paquete Mundial', 'descripcion' => 'Evento con pantalla gigante y buffet', 'precio' => 35000, 'fecha' => '2026-07-15', 'disponible' => 50, 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 2, 'nombre' => 'Cata de Tequila Premium', 'descripcion' => 'Degustación guiada con sommelier', 'precio' => 2800, 'fecha' => '2026-07-20', 'disponible' => 20, 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 3, 'nombre' => 'Noche de Jazz & Vinos', 'descripcion' => 'Música en vivo y maridaje', 'precio' => 4200, 'fecha' => '2026-07-28', 'disponible' => 35, 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 4, 'nombre' => 'Fiesta de Año Nuevo', 'descripcion' => 'Cena de gala y cotillón incluido', 'precio' => 12000, 'fecha' => '2026-12-31', 'disponible' => 100, 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 5, 'nombre' => 'Brunch Dominical', 'descripcion' => 'Bufer dominical con estaciones gourmet', 'precio' => 1800, 'fecha' => '2026-07-14', 'disponible' => 60, 'status' => 'Inactivo', 'imagenes' => []],
-        ];
-
-        $balinesas = [
-            ['id' => 1, 'ubicacion' => 'Playa Norte', 'tarifa' => 3200, 'capacidad' => 4, 'tipo' => 'Sombrilla', 'vistas' => 'Mar', 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 2, 'ubicacion' => 'Playa Central', 'tarifa' => 2800, 'capacidad' => 2, 'tipo' => 'Sol', 'vistas' => 'Mar', 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 3, 'ubicacion' => 'Alberca Infinity', 'tarifa' => 2500, 'capacidad' => 4, 'tipo' => 'Sombrilla', 'vistas' => 'Jardín', 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 4, 'ubicacion' => 'Sunset Deck', 'tarifa' => 3800, 'capacidad' => 6, 'tipo' => 'VIP', 'vistas' => 'Atardecer', 'status' => 'Activo', 'imagenes' => []],
-            ['id' => 5, 'ubicacion' => 'Playa Privada', 'tarifa' => 4500, 'capacidad' => 6, 'tipo' => 'VIP', 'vistas' => 'Mar Abierto', 'status' => 'Inactivo', 'imagenes' => []],
-            ['id' => 6, 'ubicacion' => 'Pool Club', 'tarifa' => 2200, 'capacidad' => 2, 'tipo' => 'Sol', 'vistas' => 'Alberca', 'status' => 'Activo', 'imagenes' => []],
-        ];
+        $balinesas = Balinesa::all();
+        $cenasEspeciales = CenaEspecial::all();
+        $paquetesEventos = Experiencia::all();
 
         $fondos = [];
 

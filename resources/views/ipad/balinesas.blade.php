@@ -1,10 +1,3 @@
-@php
-    // Dividimos la Ficha_Tecnica original del modelo usando tu separador '|'
-    $parts = explode('|', $balinesa->Ficha_Tecnica ?? ($balinesa->ficha_tecnica ?? ''));
-    $horario_disponible = isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : 'Todos los días';
-    $botella_incluida =
-        isset($parts[1]) && !empty(trim($parts[1])) ? trim($parts[1]) : '1 botella de Moët & Chandon Brut 750ml';
-@endphp
 
 <!DOCTYPE html>
 <html lang="{{ request('lang', 'es') }}">
@@ -70,7 +63,8 @@
             <span data-key="back">Ir atrás</span>
         </button>
 
-        <span data-key="top_title" class="tracking-[0.2em] font-medium uppercase text-xs md:text-sm">Reservación de Camas Balinesas</span>
+        <span data-key="top_title" class="tracking-[0.2em] font-medium uppercase text-xs md:text-sm">Reservación de
+            Camas Balinesas</span>
 
         <button onclick="navigateWithAnimation('{{ route('welcome') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none font-medium">
@@ -140,10 +134,11 @@
 
             <!-- Filtro por Número de Personas (Capacidad) -->
             <div class="flex flex-col gap-2">
-                <h2 data-key="capacity_title" class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase flex items-center gap-2">
+                <h2 data-key="capacity_title"
+                    class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase flex items-center gap-2">
                     <i class="fa-solid fa-users text-[10px]"></i> Capacidad de Personas
                 </h2>
-                <select id="pax-filter" onchange="applyFiltersAndSorting()" 
+                <select id="pax-filter" onchange="applyFiltersAndSorting()"
                     class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
                     <option value="all" data-key="pax_all" class="bg-stone-900">Cualquier capacidad</option>
                     <option value="2" data-key="pax_up_to_2" class="bg-stone-900">Hasta 2 Personas</option>
@@ -156,30 +151,37 @@
 
             <!-- Rangos y Ordenamiento de Precios -->
             <div class="flex flex-col gap-4">
-                <h2 data-key="search_title" class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase flex items-center gap-2">
+                <h2 data-key="search_title"
+                    class="text-[11px] font-bold tracking-[0.2em] text-[#C5A059] uppercase flex items-center gap-2">
                     <i class="fa-solid fa-sliders text-[10px]"></i> Rango & Preferencias
                 </h2>
-                
+
                 <!-- Rango de Precios -->
                 <div class="space-y-1.5">
-                    <label data-key="range_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Filtrar por Rango</label>
-                    <select id="price-range-filter" onchange="applyFiltersAndSorting()" 
+                    <label data-key="range_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Filtrar
+                        por Rango</label>
+                    <select id="price-range-filter" onchange="applyFiltersAndSorting()"
                         class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
                         <option value="all" data-key="price_all" class="bg-stone-900">Cualquier precio</option>
                         <option value="0-3000" data-key="price_up_to_3k" class="bg-stone-900">Hasta $3,000 MXN</option>
-                        <option value="3000-6000" data-key="price_3k_to_6k" class="bg-stone-900">$3,000 MXN - $6,000 MXN</option>
-                        <option value="6000-plus" data-key="price_over_6k" class="bg-stone-900">Más de $6,000 MXN</option>
+                        <option value="3000-6000" data-key="price_3k_to_6k" class="bg-stone-900">$3,000 MXN - $6,000 MXN
+                        </option>
+                        <option value="6000-plus" data-key="price_over_6k" class="bg-stone-900">Más de $6,000 MXN
+                        </option>
                     </select>
                 </div>
-                
+
                 <!-- Sentido de Ordenamiento -->
                 <div class="space-y-1.5">
-                    <label data-key="sort_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Ordenar por Precio</label>
+                    <label data-key="sort_lbl"
+                        class="text-[10px] uppercase tracking-wider text-white/40 block">Ordenar por Precio</label>
                     <select id="price-sort" onchange="sortCatalog()"
                         class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
                         <option value="default" data-key="sort_default" class="bg-stone-900">Predeterminado</option>
-                        <option value="low-high" data-key="sort_asc" class="bg-stone-900">📈 Menor a Mayor precio</option>
-                        <option value="high-low" data-key="sort_desc" class="bg-stone-900">📉 Mayor a Menor precio</option>
+                        <option value="low-high" data-key="sort_asc" class="bg-stone-900">📈 Menor a Mayor precio
+                        </option>
+                        <option value="high-low" data-key="sort_desc" class="bg-stone-900">📉 Mayor a Menor precio
+                        </option>
                     </select>
                 </div>
             </div>
@@ -276,7 +278,8 @@
         // TRADUCCIÓN DINÁMICA DEL PLACEHOLDER
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
-            searchInput.placeholder = currentLang === 'en' ? "Type a package or beverage..." : "Escribe un paquete o bebida...";
+            searchInput.placeholder = currentLang === 'en' ? "Type a package or beverage..." :
+                "Escribe un paquete o bebida...";
         }
 
         async function traducirTextoAIngles(textoOriginal) {
@@ -299,46 +302,42 @@
                     if (res.success) {
                         allBalinesas = await Promise.all(res.data.balinesas.map(async (balinesa) => {
                             const nombre = balinesa.nombre || balinesa.Nombre;
-                            const descripcionOriginal = balinesa.ficha_tecnica || balinesa
-                                .Descripcion || '';
-                            const partesFicha = descripcionOriginal.split('|');
 
-                            let horarioDisponible = partesFicha[0] && partesFicha[0]
-                            .trim() !== '' ?
-                                partesFicha[0].trim() :
+                            // Mapeo estricto de los campos que vienen de la Base de Datos
+                            const dbHorario = balinesa.dias || balinesa.Dias || '';
+                            const dbBotella = balinesa.ficha_tecnica || balinesa.Ficha_Tecnica || '';
+
+                            let horarioDisponible = dbHorario.trim() !== '' ?
+                                dbHorario.trim() :
                                 (currentLang === 'en' ? 'Every day' : 'Todos los días');
 
-                            let botellaIncluida = partesFicha[1] && partesFicha[1]
-                            .trim() !== '' ?
-                                partesFicha[1].trim() :
-                                (currentLang === 'en' ? 'Premium bottle included' :
-                                    'Botella premium incluida');
+                            let botellaIncluida = dbBotella.trim() !== '' ?
+                                dbBotella.trim() :
+                                (currentLang === 'en' ? 'Premium bottle included' : 'Botella premium incluida');
 
-                            const botellaOriginalEspañol = partesFicha[1] ? partesFicha[1]
-                                .toLowerCase() : '';
+                            const botellaOriginalEspañol = dbBotella.toLowerCase();
 
                             if (currentLang === 'en') {
-                                const [horarioTraducido, botellaTraducida] = await Promise
-                                    .all([
-                                        traducirTextoAIngles(horarioDisponible),
-                                        traducirTextoAIngles(botellaIncluida)
-                                    ]);
+                                const [horarioTraducido, botellaTraducida] = await Promise.all([
+                                    traducirTextoAIngles(horarioDisponible),
+                                    traducirTextoAIngles(botellaIncluida)
+                                ]);
                                 horarioDisponible = horarioTraducido;
                                 botellaIncluida = botellaTraducida;
                             }
 
                             return {
-                                slug: balinesa.slug,
+                                slug: balinesa.slug || balinesa.Slug,
                                 nombre: nombre,
                                 botellaIncluida: botellaIncluida,
                                 botellaRaw: botellaOriginalEspañol,
-                                horarioDisponible: horarioDisponible,
-                                capacidad_maxima: balinesa.capacidad_maxima || balinesa
-                                    .Capacidad_Maxima || 4,
+                                horarioDisponible: horarioDisponible, // <- Esto es lo que va a leer tu render
+                                capacidad_maxima: balinesa.capacidad_maxima || balinesa.Capacidad_Maxima || 2,
                                 precio: Number(balinesa.precio || balinesa.Precio)
                             };
-                        }));
+                        }));                                   
 
+                        // Renderizar el catálogo original
                         renderCatalog(allBalinesas);
                     }
                 })
@@ -409,7 +408,8 @@
                 if (selectedPriceRange !== 'all') {
                     const priceVal = b.precio;
                     if (selectedPriceRange === '0-3000') matchPriceRange = (priceVal <= 3000);
-                    else if (selectedPriceRange === '3000-6000') matchPriceRange = (priceVal > 3000 && priceVal <= 6000);
+                    else if (selectedPriceRange === '3000-6000') matchPriceRange = (priceVal > 3000 && priceVal <=
+                        6000);
                     else if (selectedPriceRange === '6000-plus') matchPriceRange = (priceVal > 6000);
                 }
 

@@ -30,13 +30,13 @@ class CloudinaryService
             $options['resource_type'] = 'image';
         }
 
-        $uploaded = Cloudinary::upload($file->getRealPath(), $options);
+        $uploaded = Cloudinary::uploadApi()->upload($file->getRealPath(), $options);
 
-        return $uploaded->getSecurePath();
+        return $uploaded['secure_url'];
     }
 
     public function deleteImage(string $publicId): void
     {
-        Cloudinary::destroy($publicId);
+        Cloudinary::uploadApi()->destroy($publicId);
     }
 }

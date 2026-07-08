@@ -382,16 +382,16 @@
                         <span class="whitespace-nowrap nav-label">Cenas Especiales</span>
                     </a>
 
-                    <a href="#paquetes" data-section="paquetes"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
-                        <i class="fa-solid fa-gift w-4 text-center flex-shrink-0"></i>
-                        <span class="whitespace-nowrap nav-label">Paquetes de Eventos</span>
-                    </a>
-
                     <a href="#balinesas" data-section="balinesas"
                         class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i>
-                        <span class="whitespace-nowrap nav-label">Experiencias VIP (Balinesas)</span>
+                        <span class="whitespace-nowrap nav-label">Balinesas</span>
+                    </a>
+
+                    <a href="#experiencias" data-section="experiencias"
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
+                        <i class="fa-solid fa-gem w-4 text-center flex-shrink-0"></i>
+                        <span class="whitespace-nowrap nav-label">Experiencias VIP</span>
                     </a>
                 </div>
             </nav>
@@ -500,13 +500,13 @@
                 title: 'Cenas Especiales',
                 icon: 'fa-utensils'
             },
-            'paquetes': {
-                title: 'Paquetes de Eventos',
-                icon: 'fa-gift'
-            },
             'balinesas': {
-                title: 'Experiencias VIP',
+                title: 'Balinesas',
                 icon: 'fa-umbrella-beach'
+            },
+            'experiencias': {
+                title: 'Experiencias VIP',
+                icon: 'fa-gem'
             },
         };
 
@@ -636,7 +636,7 @@
         function showSection(sectionId) {
             // Map CRUD sub-sections to parent section-cenas
             let actualSection = sectionId;
-            if (sectionId === 'paquetes' || sectionId === 'balinesas') {
+            if (sectionId === 'paquetes' || sectionId === 'balinesas' || sectionId === 'experiencias') {
                 actualSection = 'cenas';
             }
 
@@ -688,7 +688,7 @@
             const servicesParent = document.getElementById('services-parent-toggle');
 
             const dashboardSections = ['general', 'bcg', 'inventory', 'financial', 'occupancy', 'operations', 'team'];
-            const servicesSections = ['cenas', 'paquetes', 'balinesas'];
+            const servicesSections = ['cenas', 'balinesas', 'experiencias'];
 
             if (dashboardSections.includes(sectionId) && dashboardParent) {
                 dashboardParent.classList.remove('nav-item');
