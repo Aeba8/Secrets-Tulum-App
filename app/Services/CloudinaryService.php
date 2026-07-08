@@ -39,4 +39,16 @@ class CloudinaryService
     {
         Cloudinary::uploadApi()->destroy($publicId);
     }
+
+    public function deleteImagesByUrls(array $urls): void
+    {
+        foreach ($urls as $url) {
+            if (empty($url)) continue;
+            $url = strtok($url, '?');
+            if (preg_match('#/upload/(?:v\d+/)?(.+)$#', $url, $m)) {
+                $publicId = preg_replace('/\.[^.]+$/', '', $m[1]);
+                Cloudinary::uploadApi()->destroy($publicId);
+            }
+        }
+    }
 }

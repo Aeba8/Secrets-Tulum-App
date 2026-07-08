@@ -17,20 +17,25 @@ class BalinesaController extends Controller
         $this->cloudinary = $cloudinary;
     }
 
-    public function store(Request $request)
+    protected function reglasValidacion(): array
     {
-        $validated = $request->validate([
+        return [
             'nombre' => 'required|string|max:150',
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
-            'capacidad' => 'nullable|integer|min:1',
+            'descripcion' => 'nullable|string|max:1000',
+            'precio' => 'required|numeric|min:0|max:999999.99',
+            'capacidad' => 'nullable|integer|min:1|max:500',
             'horario' => 'nullable|string|max:100',
             'botella_incluida' => 'nullable|string|max:255',
-            'alimentos_bebidas' => 'nullable|string',
-            'costo_operativo' => 'nullable|numeric|min:0',
+            'alimentos_bebidas' => 'nullable|string|max:1000',
+            'costo_operativo' => 'nullable|numeric|min:0|max:999999.99',
             'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'activo' => 'boolean',
-        ]);
+        ];
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate($this->reglasValidacion());
 
         $imagenes = [];
 
@@ -45,21 +50,20 @@ class BalinesaController extends Controller
 
         Balinesa::create([
             'Nombre' => $validated['nombre'],
-            'Descripcion' => $validated['descripcion'],
+            'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
             'Precio' => $validated['precio'],
             'Slug' => $slug,
             'capacidad_maxima' => $validated['capacidad'] ?? 2,
-            'Dias' => $validated['horario'],
-            'ficha_tecnica' => $validated['botella_incluida'],
-            'Productos' => $validated['alimentos_bebidas'],
+            'Dias' => strip_tags($validated['horario'] ?? ''),
+            'ficha_tecnica' => strip_tags($validated['botella_incluida'] ?? ''),
+            'Productos' => strip_tags($validated['alimentos_bebidas'] ?? ''),
             'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
             'imagenes' => $imagenes,
-            'Is_Active' => $request->boolean('activo', true),
-            'Estado' => $request->boolean('activo', true) ? 'Activo' : 'Inactivo',
+            'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
             'Id_Categoria' => 1,
         ]);
 
-        return redirect()->route('admin.dashboard', '#balinesas')
+        return redirect(route('admin.dashboard') . '#balinesas')
             ->with('success', 'Balinesa creada correctamente.');
     }
 
@@ -67,20 +71,16 @@ class BalinesaController extends Controller
     {
         $balinesa = Balinesa::findOrFail($id);
 
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:150',
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
-            'capacidad' => 'nullable|integer|min:1',
-            'horario' => 'nullable|string|max:100',
-            'botella_incluida' => 'nullable|string|max:255',
-            'alimentos_bebidas' => 'nullable|string',
-            'costo_operativo' => 'nullable|numeric|min:0',
-            'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'activo' => 'boolean',
-        ]);
+        $validated = $request->validate($this->reglasValidacion());
 
         $imagenes = $balinesa->imagenes ?? [];
+
+        $eliminar = $request->input('imagenes_eliminar', '');
+        if (!empty($eliminar)) {
+            $urlsEliminar = array_filter(explode(',', $eliminar));
+            $this->cloudinary->deleteImagesByUrls($urlsEliminar);
+            $imagenes = array_values(array_diff($imagenes, $urlsEliminar));
+        }
 
         if ($request->hasFile('imagenes')) {
             $nuevas = $this->cloudinary->uploadImages(
@@ -92,19 +92,18 @@ class BalinesaController extends Controller
 
         $balinesa->update([
             'Nombre' => $validated['nombre'],
-            'Descripcion' => $validated['descripcion'],
+            'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
             'Precio' => $validated['precio'],
             'capacidad_maxima' => $validated['capacidad'] ?? 2,
-            'Dias' => $validated['horario'],
-            'ficha_tecnica' => $validated['botella_incluida'],
-            'Productos' => $validated['alimentos_bebidas'],
+            'Dias' => strip_tags($validated['horario'] ?? ''),
+            'ficha_tecnica' => strip_tags($validated['botella_incluida'] ?? ''),
+            'Productos' => strip_tags($validated['alimentos_bebidas'] ?? ''),
             'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
             'imagenes' => $imagenes,
-            'Is_Active' => $request->boolean('activo', true),
-            'Estado' => $request->boolean('activo', true) ? 'Activo' : 'Inactivo',
+            'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
         ]);
 
-        return redirect()->route('admin.dashboard', '#balinesas')
+        return redirect(route('admin.dashboard') . '#balinesas')
             ->with('success', 'Balinesa actualizada correctamente.');
     }
 
@@ -113,11 +112,10 @@ class BalinesaController extends Controller
         $balinesa = Balinesa::findOrFail($id);
 
         $balinesa->update([
-            'Is_Active' => false,
             'Estado' => 'Inactivo',
         ]);
 
-        return redirect()->route('admin.dashboard', '#balinesas')
+        return redirect(route('admin.dashboard') . '#balinesas')
             ->with('success', 'Balinesa desactivada correctamente.');
     }
 
@@ -126,11 +124,10 @@ class BalinesaController extends Controller
         $balinesa = Balinesa::findOrFail($id);
 
         $balinesa->update([
-            'Is_Active' => true,
             'Estado' => 'Activo',
         ]);
 
-        return redirect()->route('admin.dashboard', '#balinesas')
+        return redirect(route('admin.dashboard') . '#balinesas')
             ->with('success', 'Balinesa reactivada correctamente.');
     }
 }

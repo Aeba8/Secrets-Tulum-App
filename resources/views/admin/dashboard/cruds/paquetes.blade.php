@@ -257,5 +257,43 @@
                     reader.readAsDataURL(file);
                 }
             });
+
+            // Bloquear 'e', '-', '+' en inputs number
+            document.querySelectorAll('#experienciaModal input[type="number"]').forEach(function(input) {
+                input.addEventListener('keydown', function(e) {
+                    if (e.key === 'e' || e.key === 'E' || e.key === '-' || e.key === '+') {
+                        e.preventDefault();
+                    }
+                });
+                input.addEventListener('paste', function(e) {
+                    e.preventDefault();
+                    const text = (e.clipboardData || window.clipboardData).getData('text');
+                    const clean = text.replace(/[^0-9.]/g, '');
+                    if (clean) { this.value = clean; }
+                    this.dispatchEvent(new Event('input'));
+                });
+                input.addEventListener('blur', function() {
+                    const max = parseFloat(this.max);
+                    const min = parseFloat(this.min);
+                    let val = parseFloat(this.value);
+                    if (this.value !== '' && !isNaN(val)) {
+                        if (!isNaN(max) && val > max) this.value = max;
+                        if (!isNaN(min) && val < min) this.value = min;
+                    }
+                });
+            });
+
+            // Limpiar HTML al pegar en textareas y text inputs
+            document.querySelectorAll('#experienciaModal textarea, #experienciaModal input[type="text"]').forEach(function(input) {
+                input.addEventListener('paste', function(e) {
+                    const text = (e.clipboardData || window.clipboardData).getData('text');
+                    e.preventDefault();
+                    const start = this.selectionStart;
+                    const end = this.selectionEnd;
+                    this.value = this.value.substring(0, start) + text + this.value.substring(end);
+                    this.selectionStart = this.selectionEnd = start + text.length;
+                    this.dispatchEvent(new Event('input'));
+                });
+            });
         </script>
         @endpush

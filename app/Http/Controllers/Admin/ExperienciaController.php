@@ -46,12 +46,12 @@ class ExperienciaController extends Controller
 
         Experiencia::create([
             'Nombre' => $validated['nombre'],
-            'Descripcion' => $validated['descripcion'],
+            'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
             'Precio' => $validated['precio'],
-            'Tipo' => $validated['tipo'],
-            'Lugar' => $validated['lugar'],
-            'Duracion' => $validated['duracion'],
-            'Horario' => $validated['horario'],
+            'Tipo' => strip_tags($validated['tipo'] ?? ''),
+            'Lugar' => strip_tags($validated['lugar'] ?? ''),
+            'Duracion' => strip_tags($validated['duracion'] ?? ''),
+            'Horario' => strip_tags($validated['horario'] ?? ''),
             'Numero_Personas' => $validated['numero_personas'] ?? 2,
             'Costo_Operativo' => $validated['costo_operativo'],
             'Slug' => $slug,
@@ -61,7 +61,7 @@ class ExperienciaController extends Controller
             'Id_Categoria' => 1,
         ]);
 
-        return redirect()->route('admin.dashboard', '#experiencias')
+        return redirect(route('admin.dashboard') . '#experiencias')
             ->with('success', 'Experiencia creada correctamente.');
     }
 
@@ -95,12 +95,12 @@ class ExperienciaController extends Controller
 
         $experiencia->update([
             'Nombre' => $validated['nombre'],
-            'Descripcion' => $validated['descripcion'],
+            'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
             'Precio' => $validated['precio'],
-            'Tipo' => $validated['tipo'],
-            'Lugar' => $validated['lugar'],
-            'Duracion' => $validated['duracion'],
-            'Horario' => $validated['horario'],
+            'Tipo' => strip_tags($validated['tipo'] ?? ''),
+            'Lugar' => strip_tags($validated['lugar'] ?? ''),
+            'Duracion' => strip_tags($validated['duracion'] ?? ''),
+            'Horario' => strip_tags($validated['horario'] ?? ''),
             'Numero_Personas' => $validated['numero_personas'] ?? 2,
             'Costo_Operativo' => $validated['costo_operativo'],
             'imagenes' => $imagenes,
@@ -108,7 +108,7 @@ class ExperienciaController extends Controller
             'Estado' => $request->boolean('activo', true) ? 'Activo' : 'Inactivo',
         ]);
 
-        return redirect()->route('admin.dashboard', '#experiencias')
+        return redirect(route('admin.dashboard') . '#experiencias')
             ->with('success', 'Experiencia actualizada correctamente.');
     }
 
@@ -121,7 +121,7 @@ class ExperienciaController extends Controller
             'Estado' => 'Inactivo',
         ]);
 
-        return redirect()->route('admin.dashboard', '#experiencias')
+        return redirect(route('admin.dashboard') . '#experiencias')
             ->with('success', 'Experiencia desactivada correctamente.');
     }
 
@@ -134,7 +134,7 @@ class ExperienciaController extends Controller
             'Estado' => 'Activo',
         ]);
 
-        return redirect()->route('admin.dashboard', '#experiencias')
+        return redirect(route('admin.dashboard') . '#experiencias')
             ->with('success', 'Experiencia reactivada correctamente.');
     }
 }

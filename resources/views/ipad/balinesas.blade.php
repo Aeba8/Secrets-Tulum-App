@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="{{ request('lang', 'es') }}">
 
@@ -303,9 +302,26 @@
                         allBalinesas = await Promise.all(res.data.balinesas.map(async (balinesa) => {
                             const nombre = balinesa.nombre || balinesa.Nombre;
 
-                            // Mapeo estricto de los campos que vienen de la Base de Datos
+                            // Mapeo estricto de los campos que vienen de tu Base de Datos / Resource corregido
                             const dbHorario = balinesa.dias || balinesa.Dias || '';
                             const dbBotella = balinesa.ficha_tecnica || balinesa.Ficha_Tecnica || '';
+
+                            // 🌟 EXTRAER LA PRIMERA IMAGEN DE FORMA SEGURA
+                            let primeraImagen = 'https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=300'; // Imagen de respaldo si no hay
+                            if (balinesa.imagenes) {
+                                try {
+                                    // Por si viene como string JSON desde el Resource de la API
+                                    const arrayImg = typeof balinesa.imagenes === 'string' ? JSON.parse(balinesa.imagenes) : balinesa.imagenes;
+                                    if (Array.isArray(arrayImg) && arrayImg.length > 0) {
+                                        primeraImagen = arrayImg[0];
+                                    }
+                                } catch (e) {
+                                    // Si ya es un array nativo o falla el parse, intentamos asignarlo directo
+                                    if (Array.isArray(balinesa.imagenes) && balinesa.imagenes.length > 0) {
+                                        primeraImagen = balinesa.imagenes[0];
+                                    }
+                                }
+                            }
 
                             let horarioDisponible = dbHorario.trim() !== '' ?
                                 dbHorario.trim() :
@@ -331,9 +347,10 @@
                                 nombre: nombre,
                                 botellaIncluida: botellaIncluida,
                                 botellaRaw: botellaOriginalEspañol,
-                                horarioDisponible: horarioDisponible, // <- Esto es lo que va a leer tu render
+                                horarioDisponible: horarioDisponible,
                                 capacidad_maxima: balinesa.capacidad_maxima || balinesa.Capacidad_Maxima || 2,
-                                precio: Number(balinesa.precio || balinesa.Precio)
+                                precio: Number(balinesa.precio || balinesa.Precio),
+                                imagen: primeraImagen // 🌟 Pasamos la URL limpia lista para el render
                             };
                         }));                                   
 
@@ -443,24 +460,32 @@
 
             items.forEach(balinesa => {
                 const card = `
-                    <div onclick="selectBalinesa('${balinesa.slug}')" class="bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#C5A059]/40 rounded-xl p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.995] group">
-                        <div class="flex-1 pr-6 text-white">
-                            <h3 translate="no" class="text-lg font-medium tracking-wide mb-1.5 group-hover:text-[#C5A059] transition-colors">${balinesa.nombre}</h3>
-                            <p class="text-xs text-white/70 font-light leading-relaxed mb-3">${balinesa.botellaIncluida}</p>
-                            
-                            <div class="flex flex-col gap-1 text-[11px] text-white/50">
-                                <div>• <span>${currentLang === 'en' ? 'Availability' : 'Disponibilidad'}</span>: <span class="text-emerald-400/90 font-medium">${balinesa.horarioDisponible}</span></div>
-                                <div>• <span>${currentLang === 'en' ? 'Max Capacity' : 'Capacidad Máxima'}</span>: <span>${balinesa.capacidad_maxima} Pax</span></div>
-                            </div>
-                            
-                            <div class="text-xl font-light text-[#C5A059] mt-3 tracking-wide">$${balinesa.precio.toLocaleString()} <span class="text-xs text-white/40 font-light">MXN</span></div>
-                        </div>
-                        <div class="w-24 h-24 bg-white/[0.02] border border-white/10 rounded-lg flex flex-col justify-center items-center gap-2 p-2 shrink-0 group-hover:border-[#C5A059]/30 transition-colors">
-                            <i class="fa-solid fa-umbrella-beach text-2xl text-[#C5A059]/80 group-hover:scale-110 transition-transform duration-300"></i>
-                            <span class="text-[9px] uppercase tracking-wider text-white/40 text-center font-medium group-hover:text-white transition-colors">${translations[currentLang].tap_view}</span>
-                        </div>
+            <div onclick="selectBalinesa('${balinesa.slug}')" class="bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#C5A059]/40 rounded-xl p-4 sm:p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.995] group gap-4 sm:gap-6">
+                
+                <div class="flex-1 text-white">
+                    <h3 translate="no" class="text-base sm:text-lg font-medium tracking-wide mb-1.5 group-hover:text-[#C5A059] transition-colors">${balinesa.nombre}</h3>
+                    <p class="text-[11px] sm:text-xs text-white/70 font-light leading-relaxed mb-3 line-clamp-2">${balinesa.botellaIncluida}</p>
+                    
+                    <div class="flex flex-col gap-1 text-[10px] sm:text-[11px] text-white/50">
+                        <div>• <span>${currentLang === 'en' ? 'Availability' : 'Disponibilidad'}</span>: <span class="text-emerald-400/90 font-medium">${balinesa.horarioDisponible}</span></div>
+                        <div>• <span>${currentLang === 'en' ? 'Max Capacity' : 'Capacidad Máxima'}</span>: <span>${balinesa.capacidad_maxima} Pax</span></div>
                     </div>
-                `;
+                    
+                    <div class="text-lg sm:text-xl font-light text-[#C5A059] mt-3 tracking-wide">$${balinesa.precio.toLocaleString()} <span class="text-[10px] sm:text-xs text-white/40 font-light">MXN</span></div>
+                </div>
+
+                <div class="w-32 h-32 sm:w-44 sm:h-36 md:w-52 md:h-40 bg-stone-900 border border-white/10 rounded-lg shrink-0 overflow-hidden relative group-hover:border-[#C5A059]/40 transition-colors shadow-inner">
+                    <img src="${balinesa.imagen}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" alt="${balinesa.nombre}">
+                    
+                    <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex items-end justify-center pb-2.5">
+                        <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-white/90 text-center font-medium group-hover:text-[#C5A059] transition-colors drop-shadow-lg flex items-center gap-1.5">
+                            ${translations[currentLang].tap_view} 
+                            <i class="fa-solid fa-arrow-right text-[9px] opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300"></i>
+                        </span>
+                    </div>
+                </div>
+            </div>
+        `;
                 container.innerHTML += card;
             });
         }

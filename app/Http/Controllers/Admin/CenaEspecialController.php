@@ -41,7 +41,7 @@ class CenaEspecialController extends Controller
 
         CenaEspecial::create([
             'Nombre' => $validated['nombre'],
-            'Restaurant' => $validated['restaurant'],
+            'Restaurant' => strip_tags($validated['restaurant'] ?? ''),
             'Precio' => $validated['precio'],
             'Numero_Personas' => $validated['numero_personas'] ?? 2,
             'Slug' => $slug,
@@ -50,7 +50,7 @@ class CenaEspecialController extends Controller
             'Id_Categoria' => 1,
         ]);
 
-        return redirect()->route('admin.dashboard', '#cenas')
+        return redirect(route('admin.dashboard') . '#cenas')
             ->with('success', 'Cena creada correctamente.');
     }
 
@@ -79,14 +79,14 @@ class CenaEspecialController extends Controller
 
         $cena->update([
             'Nombre' => $validated['nombre'],
-            'Restaurant' => $validated['restaurant'],
+            'Restaurant' => strip_tags($validated['restaurant'] ?? ''),
             'Precio' => $validated['precio'],
             'Numero_Personas' => $validated['numero_personas'] ?? 2,
             'imagenes' => $imagenes,
             'Is_Active' => $request->boolean('activo', true),
         ]);
 
-        return redirect()->route('admin.dashboard', '#cenas')
+        return redirect(route('admin.dashboard') . '#cenas')
             ->with('success', 'Cena actualizada correctamente.');
     }
 
@@ -98,7 +98,7 @@ class CenaEspecialController extends Controller
             'Is_Active' => false,
         ]);
 
-        return redirect()->route('admin.dashboard', '#cenas')
+        return redirect(route('admin.dashboard') . '#cenas')
             ->with('success', 'Cena desactivada correctamente.');
     }
 
@@ -110,7 +110,7 @@ class CenaEspecialController extends Controller
             'Is_Active' => true,
         ]);
 
-        return redirect()->route('admin.dashboard', '#cenas')
+        return redirect(route('admin.dashboard') . '#cenas')
             ->with('success', 'Cena reactivada correctamente.');
     }
 }

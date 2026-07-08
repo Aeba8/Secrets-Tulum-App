@@ -35,7 +35,7 @@ class BalinesaResource extends JsonResource
             'is_active'        => (bool) $this->is_active,
             'descripcion'      => $this->Descripcion,
             'productos'        => $this->Productos,
-
+            'imagenes'         => $this->imagenes,
             // 🌟 Atributos corregidos según tus indicaciones:
             'ficha_tecnica'    => $botellaIncluida, // Muestra únicamente la Botella incluida
             'dias'             => $diasHorario,     // Muestra el Horario o Disponibilidad

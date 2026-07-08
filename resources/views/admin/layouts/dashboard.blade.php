@@ -457,10 +457,18 @@
 
             {{-- Page Content --}}
             <div class="flex-1 overflow-y-auto p-6 bg-sand-100 dark:bg-charcoal-700">
+                @if(session('success'))
+                    <script>document.addEventListener('DOMContentLoaded', function() { showToast('{{ session('success') }}', 'success'); });</script>
+                @endif
+                @if(session('error'))
+                    <script>document.addEventListener('DOMContentLoaded', function() { showToast('{{ session('error') }}', 'error'); });</script>
+                @endif
                 @yield('content')
             </div>
         </main>
     </div>
+
+    <div id="toast-container" class="fixed top-24 right-8 z-[100] flex flex-col gap-3 pointer-events-none"></div>
 
     <script>
         const sectionNames = {
@@ -747,6 +755,27 @@
                 }
             }
         });
+
+        // Toast notifications
+        function showToast(message, type) {
+            const container = document.getElementById('toast-container');
+            if (!container) return;
+            const toast = document.createElement('div');
+            const colors = type === 'success'
+                ? 'bg-sapphire-50 dark:bg-sapphire-900/20 border-sapphire-200 dark:border-sapphire-800 text-sapphire-700 dark:text-sapphire-300'
+                : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300';
+            const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
+            toast.className = 'pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-xl border shadow-lg ' + colors + ' transform transition-all duration-300 translate-x-full opacity-0';
+            toast.innerHTML = '<i class="fa-solid ' + icon + ' text-sm"></i><span class="text-sm font-medium">' + message + '</span>';
+            container.appendChild(toast);
+            requestAnimationFrame(() => {
+                toast.classList.remove('translate-x-full', 'opacity-0');
+            });
+            setTimeout(() => {
+                toast.classList.add('translate-x-full', 'opacity-0');
+                setTimeout(() => toast.remove(), 300);
+            }, 4000);
+        }
 
         // Alert dismiss
         document.addEventListener('click', (e) => {
