@@ -17,8 +17,8 @@ class CatalogController extends Controller
     {
         try {
             // 1. Consultar colecciones filtradas desde SQL Server
-            $cenas = CenaEspecial::where('Is_Active', true)->get();
-            $experiencias = Experiencia::where('Is_Active', true)->get();
+            $cenas = CenaEspecial::where('Estado', 'Activo')->get();
+            $experiencias = Experiencia::where('Estado', 'Activo')->get();
             $balinesas = Balinesa::where('Estado', 'Activo')->get();
 
             // 2. Retornar la respuesta pasando los datos por los transformadores limpios

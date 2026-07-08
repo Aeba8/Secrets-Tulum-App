@@ -22,8 +22,9 @@ class CenaEspecialResource extends JsonResource
             'precio'          => (float) $this->Precio,
             'restaurant'      => $this->restaurant,
             'numero_personas' => (int) $this->numero_personas,
-            'is_active'       => (bool) $this->is_active,
+            'is_active'       => ($this->Estado ?? 'Inactivo') === 'Activo',
             'ficha_tecnica'   => $this->ficha_tecnica,
+            'imagenes'        => $this->imagenes,
             
             // 🌟 Agregamos el desglose del menú al JSON de salida:
             'entrada'         => $this->Entrada,

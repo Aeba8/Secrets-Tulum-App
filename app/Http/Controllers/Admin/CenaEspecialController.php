@@ -17,16 +17,27 @@ class CenaEspecialController extends Controller
         $this->cloudinary = $cloudinary;
     }
 
-    public function store(Request $request)
+    protected function reglasValidacion(): array
     {
-        $validated = $request->validate([
+        return [
             'nombre' => 'required|string|max:150',
-            'restaurant' => 'nullable|string|max:150',
-            'precio' => 'required|numeric|min:0',
-            'numero_personas' => 'nullable|integer|min:1',
+            'restaurant' => 'required|string|max:150',
+            'entrada' => 'nullable|string|max:255',
+            'crema' => 'nullable|string|max:255',
+            'plato_fuerte' => 'nullable|string|max:255',
+            'postre' => 'nullable|string|max:255',
+            'precio' => 'required|numeric|min:0|max:999999.99',
+            'costo_operativo' => 'nullable|numeric|min:0|max:999999.99',
+            'numero_personas' => 'nullable|integer|min:1|max:500',
+            'ficha_tecnica' => 'nullable|string|max:1000',
             'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'activo' => 'boolean',
-        ]);
+        ];
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate($this->reglasValidacion());
 
         $imagenes = [];
 
@@ -41,13 +52,19 @@ class CenaEspecialController extends Controller
 
         CenaEspecial::create([
             'Nombre' => $validated['nombre'],
-            'Restaurant' => strip_tags($validated['restaurant'] ?? ''),
+            'restaurant' => $validated['restaurant'],
+            'Entrada' => strip_tags($validated['entrada'] ?? ''),
+            'Crema' => strip_tags($validated['crema'] ?? ''),
+            'Plato_fuerte' => strip_tags($validated['plato_fuerte'] ?? ''),
+            'Postre' => strip_tags($validated['postre'] ?? ''),
             'Precio' => $validated['precio'],
-            'Numero_Personas' => $validated['numero_personas'] ?? 2,
+            'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
+            'numero_personas' => $validated['numero_personas'] ?? 2,
+            'ficha_tecnica' => strip_tags($validated['ficha_tecnica'] ?? ''),
             'Slug' => $slug,
             'imagenes' => $imagenes,
-            'Is_Active' => $request->boolean('activo', true),
-            'Id_Categoria' => 1,
+            'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
+            'id_categoria' => 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#cenas')
@@ -58,16 +75,16 @@ class CenaEspecialController extends Controller
     {
         $cena = CenaEspecial::findOrFail($id);
 
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:150',
-            'restaurant' => 'nullable|string|max:150',
-            'precio' => 'required|numeric|min:0',
-            'numero_personas' => 'nullable|integer|min:1',
-            'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'activo' => 'boolean',
-        ]);
+        $validated = $request->validate($this->reglasValidacion());
 
         $imagenes = $cena->imagenes ?? [];
+
+        $eliminar = $request->input('imagenes_eliminar', '');
+        if (!empty($eliminar)) {
+            $urlsEliminar = array_filter(explode(',', $eliminar));
+            $this->cloudinary->deleteImagesByUrls($urlsEliminar);
+            $imagenes = array_values(array_diff($imagenes, $urlsEliminar));
+        }
 
         if ($request->hasFile('imagenes')) {
             $nuevas = $this->cloudinary->uploadImages(
@@ -79,11 +96,17 @@ class CenaEspecialController extends Controller
 
         $cena->update([
             'Nombre' => $validated['nombre'],
-            'Restaurant' => strip_tags($validated['restaurant'] ?? ''),
+            'restaurant' => $validated['restaurant'],
+            'Entrada' => strip_tags($validated['entrada'] ?? ''),
+            'Crema' => strip_tags($validated['crema'] ?? ''),
+            'Plato_fuerte' => strip_tags($validated['plato_fuerte'] ?? ''),
+            'Postre' => strip_tags($validated['postre'] ?? ''),
             'Precio' => $validated['precio'],
-            'Numero_Personas' => $validated['numero_personas'] ?? 2,
+            'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
+            'numero_personas' => $validated['numero_personas'] ?? 2,
+            'ficha_tecnica' => strip_tags($validated['ficha_tecnica'] ?? ''),
             'imagenes' => $imagenes,
-            'Is_Active' => $request->boolean('activo', true),
+            'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
         ]);
 
         return redirect(route('admin.dashboard') . '#cenas')
@@ -95,7 +118,7 @@ class CenaEspecialController extends Controller
         $cena = CenaEspecial::findOrFail($id);
 
         $cena->update([
-            'Is_Active' => false,
+            'Estado' => 'Inactivo',
         ]);
 
         return redirect(route('admin.dashboard') . '#cenas')
@@ -107,7 +130,7 @@ class CenaEspecialController extends Controller
         $cena = CenaEspecial::findOrFail($id);
 
         $cena->update([
-            'Is_Active' => true,
+            'Estado' => 'Activo',
         ]);
 
         return redirect(route('admin.dashboard') . '#cenas')

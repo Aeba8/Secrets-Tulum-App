@@ -8,27 +8,23 @@ class CenaEspecial extends Model
 {
     protected $table = 'Cenas_Especiales';
     protected $primaryKey = 'Id';
-    public $timestamps = false; // Se mantiene false como lo tienes originalmente
+    public $timestamps = false;
 
-    // Campos habilitados para la tablet y control
     protected $fillable = [
-    'Nombre', 'Precio', 'Slug', 'Restaurant', 'Numero_Personas', 'Is_Active', 'Id_Categoria', 'Ficha_Tecnica',
-    'name', 'slug', 'price', 'restaurant', 'numero_personas', 'is_active', 'id_categoria', 'ficha_tecnica',
-    'imagenes',
-];
+        'Nombre', 'Precio', 'Costo_Operativo', 'Slug', 'id_categoria', 'imagenes',
+        'restaurant', 'numero_personas',
+        'Entrada', 'Crema', 'Plato_fuerte', 'Postre', 'ficha_tecnica', 'Estado',
+    ];
 
-    // Transforma el JSON de SQL Server automáticamente en array de PHP
     protected function casts(): array
     {
         return [
-            'Ficha_Tecnica' => 'array',
-            'Numero_Personas' => 'integer',
-            'Is_Active' => 'boolean',
             'imagenes' => 'array',
+            'Costo_Operativo' => 'decimal:2',
+            'numero_personas' => 'integer',
         ];
     }
 
-    // Tu relación inversa del polimorfismo intacta
     public function reservas()
     {
         return $this->morphMany(Reserva::class, 'serviciable', 'serviciable_type', 'serviciable_id');

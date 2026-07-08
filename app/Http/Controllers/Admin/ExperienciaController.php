@@ -17,21 +17,29 @@ class ExperienciaController extends Controller
         $this->cloudinary = $cloudinary;
     }
 
-    public function store(Request $request)
+    protected function reglasValidacion(): array
     {
-        $validated = $request->validate([
+        return [
             'nombre' => 'required|string|max:150',
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
+            'descripcion' => 'nullable|string|max:1000',
+            'precio' => 'required|numeric|min:0|max:999999.99',
             'tipo' => 'nullable|string|max:100',
             'lugar' => 'nullable|string|max:150',
             'duracion' => 'nullable|string|max:100',
             'horario' => 'nullable|string|max:100',
-            'numero_personas' => 'nullable|integer|min:1',
-            'costo_operativo' => 'nullable|numeric|min:0',
+            'numero_personas' => 'nullable|integer|min:1|max:500',
+            'costo_operativo' => 'nullable|numeric|min:0|max:999999.99',
+            'productos' => 'nullable|string|max:1000',
+            'botella' => 'nullable|string|max:255',
+            'servicio_extra' => 'nullable|string|max:255',
             'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'activo' => 'boolean',
-        ]);
+        ];
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $request->validate($this->reglasValidacion());
 
         $imagenes = [];
 
@@ -44,6 +52,10 @@ class ExperienciaController extends Controller
 
         $slug = \Str::slug($validated['nombre']);
 
+        $botella = strip_tags($validated['botella'] ?? '');
+        $servicio_extra = strip_tags($validated['servicio_extra'] ?? '');
+        $ficha_tecnica = $botella . ($servicio_extra ? '|' . $servicio_extra : '');
+
         Experiencia::create([
             'Nombre' => $validated['nombre'],
             'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
@@ -53,12 +65,13 @@ class ExperienciaController extends Controller
             'Duracion' => strip_tags($validated['duracion'] ?? ''),
             'Horario' => strip_tags($validated['horario'] ?? ''),
             'Numero_Personas' => $validated['numero_personas'] ?? 2,
-            'Costo_Operativo' => $validated['costo_operativo'],
+            'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
+            'Productos' => strip_tags($validated['productos'] ?? ''),
+            'ficha_tecnica' => $ficha_tecnica,
             'Slug' => $slug,
             'imagenes' => $imagenes,
-            'Is_Active' => $request->boolean('activo', true),
-            'Estado' => $request->boolean('activo', true) ? 'Activo' : 'Inactivo',
-            'Id_Categoria' => 1,
+            'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
+            'id_categoria' => 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#experiencias')
@@ -69,21 +82,16 @@ class ExperienciaController extends Controller
     {
         $experiencia = Experiencia::findOrFail($id);
 
-        $validated = $request->validate([
-            'nombre' => 'required|string|max:150',
-            'descripcion' => 'nullable|string',
-            'precio' => 'required|numeric|min:0',
-            'tipo' => 'nullable|string|max:100',
-            'lugar' => 'nullable|string|max:150',
-            'duracion' => 'nullable|string|max:100',
-            'horario' => 'nullable|string|max:100',
-            'numero_personas' => 'nullable|integer|min:1',
-            'costo_operativo' => 'nullable|numeric|min:0',
-            'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
-            'activo' => 'boolean',
-        ]);
+        $validated = $request->validate($this->reglasValidacion());
 
         $imagenes = $experiencia->imagenes ?? [];
+
+        $eliminar = $request->input('imagenes_eliminar', '');
+        if (!empty($eliminar)) {
+            $urlsEliminar = array_filter(explode(',', $eliminar));
+            $this->cloudinary->deleteImagesByUrls($urlsEliminar);
+            $imagenes = array_values(array_diff($imagenes, $urlsEliminar));
+        }
 
         if ($request->hasFile('imagenes')) {
             $nuevas = $this->cloudinary->uploadImages(
@@ -92,6 +100,10 @@ class ExperienciaController extends Controller
             );
             $imagenes = array_merge($imagenes, $nuevas);
         }
+
+        $botella = strip_tags($validated['botella'] ?? '');
+        $servicio_extra = strip_tags($validated['servicio_extra'] ?? '');
+        $ficha_tecnica = $botella . ($servicio_extra ? '|' . $servicio_extra : '');
 
         $experiencia->update([
             'Nombre' => $validated['nombre'],
@@ -102,10 +114,11 @@ class ExperienciaController extends Controller
             'Duracion' => strip_tags($validated['duracion'] ?? ''),
             'Horario' => strip_tags($validated['horario'] ?? ''),
             'Numero_Personas' => $validated['numero_personas'] ?? 2,
-            'Costo_Operativo' => $validated['costo_operativo'],
+            'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
+            'Productos' => strip_tags($validated['productos'] ?? ''),
+            'ficha_tecnica' => $ficha_tecnica,
             'imagenes' => $imagenes,
-            'Is_Active' => $request->boolean('activo', true),
-            'Estado' => $request->boolean('activo', true) ? 'Activo' : 'Inactivo',
+            'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
         ]);
 
         return redirect(route('admin.dashboard') . '#experiencias')
@@ -117,7 +130,6 @@ class ExperienciaController extends Controller
         $experiencia = Experiencia::findOrFail($id);
 
         $experiencia->update([
-            'Is_Active' => false,
             'Estado' => 'Inactivo',
         ]);
 
@@ -130,7 +142,6 @@ class ExperienciaController extends Controller
         $experiencia = Experiencia::findOrFail($id);
 
         $experiencia->update([
-            'Is_Active' => true,
             'Estado' => 'Activo',
         ]);
 

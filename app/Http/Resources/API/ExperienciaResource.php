@@ -7,11 +7,6 @@ use Illuminate\Http\Resources\Json\JsonResource;
 
 class ExperienciaResource extends JsonResource
 {
-    /**
-     * Transform the resource into an array.
-     *
-     * @return array<string, mixed>
-     */
     public function toArray(Request $request): array
     {
         return [
@@ -24,12 +19,12 @@ class ExperienciaResource extends JsonResource
             'lugar'           => $this->Lugar,
             'duracion'        => $this->Duracion,
             'horario'         => $this->Horario,
-            'numero_personas' => (int) $this->numero_personas,
-            'is_active'       => (bool) $this->is_active,
+            'numero_personas' => (int) $this->Numero_Personas,
+            'is_active'       => ($this->Estado ?? 'Inactivo') === 'Activo',
             'ficha_tecnica'   => $this->ficha_tecnica,
             'descripcion'     => $this->Descripcion,
-            'productos'       => $this->Productos, // Si activaste el cast a array, se enviará como objeto/lista limpia
-            'imagenes'        => $this->imagenes,  // Si activaste el cast a array, se enviará como lista de URLs
+            'productos'       => $this->Productos,
+            'imagenes'        => $this->imagenes,
             'costo_operativo' => (float) $this->Costo_Operativo,
             'estado'          => $this->Estado,
         ];
