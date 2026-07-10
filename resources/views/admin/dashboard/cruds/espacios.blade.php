@@ -392,7 +392,7 @@
             });
         });
 
-        let activeEstadoFiltro = 'all';
+        let activeEstadoFiltroEsp = 'all';
         let activeZonaFiltro = 'all';
 
         function aplicarFiltros() {
@@ -400,7 +400,7 @@
             if (!panel) return;
             const rows = panel.querySelectorAll('tbody tr[data-activo]');
             rows.forEach(function(row) {
-                let estadoOk = activeEstadoFiltro === 'all' || row.dataset.activo === (activeEstadoFiltro ===
+                let estadoOk = activeEstadoFiltroEsp === 'all' || row.dataset.activo === (activeEstadoFiltroEsp ===
                     'activo' ? '1' : '0');
                 let zonaOk = activeZonaFiltro === 'all' || row.dataset.zona === activeZonaFiltro;
                 row.style.display = (estadoOk && zonaOk) ? '' : 'none';
@@ -447,7 +447,7 @@
                 if (panel) panel.classList.remove('hidden');
                 mostrarZonas(tipo);
                 // Reset both filters
-                activeEstadoFiltro = 'all';
+                activeEstadoFiltroEsp = 'all';
                 activeZonaFiltro = 'all';
                 document.getElementById('estadoFilterLabel').textContent = 'Todos';
                 // Reset dropdown visual state
@@ -473,10 +473,17 @@
                     btnNuevo.setAttribute('onclick', "openEspacioModal('Mesa')");
                 }
 
-                // Sincronizar sidebar con la pestaña activa del panel
-                if (typeof window.showSection === 'function') {
-                    window.showSection(tipo === 'Balinesa' ? 'espacios-balinesas' : 'espacios-mesas');
-                }
+                // Sincronizar hash con la pestaña activa del panel
+                const sectionId = tipo === 'Balinesa' ? 'espacios-balinesas' : 'espacios-mesas';
+                history.pushState(null, '', '#' + sectionId);
+
+                // Sincronizar highlight del sidebar
+                document.querySelectorAll('.nav-section-link, #dashboard-parent-toggle, #services-parent-toggle, #espacios-parent-toggle')
+                    .forEach(el => { el.classList.remove('nav-item-active'); el.classList.add('nav-item'); });
+                const activeLink = document.querySelector('.nav-section-link[data-section="' + sectionId + '"]');
+                if (activeLink) { activeLink.classList.remove('nav-item'); activeLink.classList.add('nav-item-active'); }
+                const espaciosParent = document.getElementById('espacios-parent-toggle');
+                if (espaciosParent) { espaciosParent.classList.remove('nav-item'); espaciosParent.classList.add('nav-item-active'); }
             });
         });
 
@@ -503,7 +510,7 @@
                 });
                 this.className =
                     'estado-filter-option w-full text-left px-3 py-2 text-xs rounded-lg bg-gold-500 text-white';
-                activeEstadoFiltro = filtro;
+                activeEstadoFiltroEsp = filtro;
                 aplicarFiltros();
             });
         });

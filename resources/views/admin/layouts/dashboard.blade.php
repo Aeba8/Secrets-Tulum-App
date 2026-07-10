@@ -712,7 +712,13 @@
         }
 
         // ── Navigation by hash sections ──
+        let _showSectionBusy = false;
+
         function showSection(sectionId) {
+            if (_showSectionBusy) return;
+            _showSectionBusy = true;
+            try {
+
             // Map CRUD sub-sections to parent blade
             let actualSection = sectionId;
             if (sectionId === 'paquetes' || sectionId === 'balinesas' || sectionId === 'experiencias') {
@@ -804,6 +810,10 @@
 
             // Update URL hash
             history.pushState(null, '', '#' + sectionId);
+
+            } finally {
+                _showSectionBusy = false;
+            }
         }
 
         // Click handlers for nav links

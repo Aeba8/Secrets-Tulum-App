@@ -1,7 +1,12 @@
 @php
     $hoyJs = \Carbon\Carbon::today()->format('Y-m-d');
     $mananaJs = \Carbon\Carbon::tomorrow()->format('Y-m-d');
-    $semanaFinJs = \Carbon\Carbon::today()->addDays(7)->format('Y-m-d');
+    $semanaInicioJs = \Carbon\Carbon::today()->startOfWeek()->format('Y-m-d');
+    $semanaFinJs = \Carbon\Carbon::today()->endOfWeek()->format('Y-m-d');
+    $mesFinJs = \Carbon\Carbon::today()->endOfMonth()->format('Y-m-d');
+    $agendaMinJs = $inicioConsulta->format('Y-m-d');
+    $agendaMaxJs = $finConsulta->format('Y-m-d');
+    $mesInicioJs = \Carbon\Carbon::today()->startOfMonth()->format('Y-m-d');
 @endphp
 
 <div class="flex items-center gap-3 mb-6">
@@ -35,28 +40,21 @@
             </div>
         </div>
 
-        {{-- Date range --}}
-        <div class="flex items-center gap-1">
-            <i class="fa-solid fa-calendar text-gray-400 text-xs"></i>
-            <input type="date" id="agenda-fecha-desde"
-                class="agenda-date-input w-[140px] px-3 py-2 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition">
-            <span class="text-gray-400 text-xs">—</span>
-            <input type="date" id="agenda-fecha-hasta"
-                class="agenda-date-input w-[140px] px-3 py-2 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition">
-        </div>
-
-        {{-- Estado toggle --}}
-        <div class="flex gap-1 bg-sand-100 dark:bg-charcoal-500 rounded-xl p-0.5">
-            <button class="agenda-estado-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 shadow-sm"
-                data-estado="Confirmado">
-                <span class="w-1.5 h-1.5 rounded-full bg-sapphire-500 inline-block mr-1.5 align-middle"></span>
-                Confirmado
+        {{-- Estado filter --}}
+        <div class="agenda-filter-dropdown relative" data-filter="estado" data-filtro="all">
+            <button class="agenda-filter-toggle text-xs px-3 py-2 rounded-lg bg-sand-100 dark:bg-charcoal-500 text-gray-600 dark:text-gray-400 hover:bg-sand-200 dark:hover:bg-charcoal-500 transition-colors whitespace-nowrap">
+                <i class="fa-solid fa-circle mr-1 text-[8px]"></i>
+                <span class="agenda-filter-label">Todos</span>
+                <i class="fa-solid fa-chevron-down ml-1 text-[10px]"></i>
             </button>
-            <button class="agenda-estado-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-transparent"
-                data-estado="Cancelado">
-                <span class="w-1.5 h-1.5 rounded-full bg-red-500 inline-block mr-1.5 align-middle"></span>
-                Cancelado
-            </button>
+            <div class="agenda-filter-menu fixed w-44 bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-xl shadow-lg z-50 hidden overflow-hidden">
+                <div class="p-1 space-y-0.5">
+                    <button class="agenda-filter-option w-full text-left px-3 py-2 text-xs rounded-lg bg-gold-500 text-white" data-filtro="all">Todos</button>
+                    <button class="agenda-filter-option w-full text-left px-3 py-2 text-xs rounded-lg text-gray-600 dark:text-gray-400 hover:bg-sand-100 dark:hover:bg-charcoal-500" data-filtro="Confirmado">Confirmado</button>
+                    <button class="agenda-filter-option w-full text-left px-3 py-2 text-xs rounded-lg text-gray-600 dark:text-gray-400 hover:bg-sand-100 dark:hover:bg-charcoal-500" data-filtro="Completado">Completado</button>
+                    <button class="agenda-filter-option w-full text-left px-3 py-2 text-xs rounded-lg text-gray-600 dark:text-gray-400 hover:bg-sand-100 dark:hover:bg-charcoal-500" data-filtro="Cancelado">Cancelado</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -66,14 +64,27 @@
     </button>
 </div>
 
-{{-- Period tabs --}}
-<div class="flex gap-1 mb-6 bg-sand-100 dark:bg-charcoal-500 rounded-xl p-1 w-fit">
-    @foreach ($agendaPeriods as $i => $ap)
-    <button class="agenda-period-tab px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200 {{ $i === 0 ? 'bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-transparent' }}"
-            data-period="{{ $ap['key'] }}" data-start="{{ $ap['start'] ?? '' }}" data-end="{{ $ap['end'] ?? '' }}">
-        {{ $ap['label'] }} <span class="font-mono ml-1">({{ $ap['count'] }})</span>
-    </button>
-    @endforeach
+{{-- Period tabs + Calendar --}}
+<div class="flex items-center gap-2 mb-6 flex-wrap">
+    <div class="flex gap-1 bg-sand-100 dark:bg-charcoal-500 rounded-xl p-1">
+        @foreach ($agendaPeriods as $i => $ap)
+        <button class="agenda-period-tab px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200 {{ $i === 0 ? 'bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 shadow-sm' : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-transparent' }}"
+                data-period="{{ $ap['key'] }}">
+            {{ $ap['label'] }} <span class="font-mono ml-1">({{ $ap['count'] }})</span>
+        </button>
+        @endforeach
+    </div>
+    <div class="flex items-center gap-1">
+        <input type="date" id="agenda-fecha-desde"
+            class="w-[140px] px-3 py-2 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition"
+            min="{{ $inicioConsulta->format('Y-m-d') }}" max="{{ $finConsulta->format('Y-m-d') }}">
+        <span class="text-gray-400 text-xs">—</span>
+        <input type="date" id="agenda-fecha-hasta"
+            class="w-[140px] px-3 py-2 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition"
+            min="{{ $inicioConsulta->format('Y-m-d') }}" max="{{ $finConsulta->format('Y-m-d') }}">
+        <button id="btn-aplicar-fecha"
+            class="text-xs px-3 py-2 rounded-lg bg-gold-500 text-white font-medium hover:bg-gold-600 transition-colors">Aplicar</button>
+    </div>
 </div>
 
 {{-- Table --}}
@@ -85,6 +96,7 @@
                     <th class="text-left px-5 py-3 font-medium">Mesa / Lugar</th>
                     <th class="text-left px-5 py-3 font-medium">Servicio</th>
                     <th class="text-center px-5 py-3 font-medium">Tipo</th>
+                    <th class="text-left px-5 py-3 font-medium col-restaurante hidden">Restaurante</th>
                     <th class="text-left px-5 py-3 font-medium">Habitación</th>
                     <th class="text-center px-5 py-3 font-medium">Fecha</th>
                     <th class="text-center px-5 py-3 font-medium">Estado</th>
@@ -110,11 +122,12 @@
                     $servicioNombre = $res->serviciable?->Nombre ?? '—';
                     $espacioNombre = $res->espacio?->Nombre ?? '—';
                     $estado = $res->Estado ?? '—';
+                    $restauranteNombre = ($tipoKey === 'CenaEspecial' && $res->serviciable) ? ($res->serviciable->restaurant ?? '—') : '—';
                     $statusBadge = match($estado) {
                         'Confirmado' => 'bg-sapphire-50 dark:bg-sapphire-900/20 text-sapphire-600 dark:text-sapphire-400 border-sapphire-200 dark:border-sapphire-800',
                         'Pendiente' => 'bg-amber-50 dark:bg-amber-900/20 text-amber-600 dark:text-amber-400 border-amber-200 dark:border-amber-800',
                         'No-Show' => 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800',
-                        'Completado' => 'bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700',
+                        'Completado' => 'bg-emerald-50 dark:bg-emerald-900/20 text-emerald-600 dark:text-emerald-400 border-emerald-200 dark:border-emerald-800',
                         'Cancelado' => 'bg-red-50 dark:bg-red-900/20 text-red-600 dark:text-red-400 border-red-200 dark:border-red-800',
                         default => 'bg-gray-50 text-gray-500 border-gray-200',
                     };
@@ -128,6 +141,7 @@
                     <td class="px-5 py-3.5 text-center">
                         <span class="text-xs px-2 py-0.5 rounded-md bg-sand-100 dark:bg-charcoal-500 text-gray-600 dark:text-gray-400">{{ $tipoLabel }}</span>
                     </td>
+                    <td class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-xs col-restaurante hidden">{{ $restauranteNombre }}</td>
                     <td class="px-5 py-3.5 text-gray-500 dark:text-gray-400 font-mono text-xs">{{ $res->Habitacion ?? '—' }}</td>
                     <td class="px-5 py-3.5 text-gray-700 dark:text-gray-300 text-center text-xs">{{ \Carbon\Carbon::parse($res->Dia)->format('d/m/Y') }}</td>
                     <td class="px-5 py-3.5 text-center">
@@ -170,7 +184,7 @@
                 </tr>
                 @empty
                 <tr class="fila-vacia">
-                    <td colspan="8" class="px-5 py-8 text-center text-gray-400 dark:text-gray-500 text-sm">No hay reservas en este período.</td>
+                    <td colspan="9" class="px-5 py-8 text-center text-gray-400 dark:text-gray-500 text-sm">No hay reservas en este período.</td>
                 </tr>
                 @endforelse
             </tbody>
@@ -227,7 +241,7 @@
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Habitación *</label>
-                        <input type="text" id="agenda_habitacion" name="habitacion" required maxlength="50"
+                        <input type="text" id="agenda_habitacion" name="habitacion" required maxlength="4" pattern="\d{4}" inputmode="numeric"
                             class="w-full px-3 py-2.5 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition">
                     </div>
                 </div>
@@ -238,23 +252,22 @@
                         <select id="agenda_estado" name="estado" required
                             class="w-full px-3 py-2.5 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition">
                             <option value="Confirmado">Confirmado</option>
-                            <option value="Pendiente">Pendiente</option>
-                            <option value="No-Show">No-Show</option>
                             <option value="Completado">Completado</option>
                             <option value="Cancelado">Cancelado</option>
                         </select>
                     </div>
                     <div>
                         <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Colaborador</label>
-                        <input type="text" id="agenda_colaborador" name="colaborador" maxlength="20"
+                        <input type="text" id="agenda_colaborador" name="colaborador" maxlength="6" pattern="\d{6}" inputmode="numeric"
                             class="w-full px-3 py-2.5 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition">
                     </div>
                 </div>
 
                 <div>
                     <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Observaciones</label>
-                    <textarea id="agenda_observaciones" name="observaciones" rows="3" maxlength="1000"
+                    <textarea id="agenda_observaciones" name="observaciones" rows="3"
                         class="w-full px-3 py-2.5 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition resize-none"></textarea>
+                    <div id="agenda-word-count" class="text-xs text-gray-400 dark:text-gray-500 mt-1 text-right">0/100 palabras</div>
                 </div>
             </div>
 
@@ -288,14 +301,14 @@
     // ── Datos embebidos para selects dependientes ──
     const agendaServicios = {
         'App\\Models\\Balinesa': {!! $balinesas->map(function ($b) { return ['id' => $b->Id, 'nombre' => $b->Nombre]; })->toJson() !!},
-        'App\\Models\\CenaEspecial': {!! $cenasEspeciales->map(function ($c) { return ['id' => $c->Id, 'nombre' => $c->Nombre]; })->toJson() !!},
+        'App\\Models\\CenaEspecial': {!! $cenasEspeciales->map(function ($c) { return ['id' => $c->Id, 'nombre' => $c->Nombre, 'restaurant' => $c->restaurant]; })->toJson() !!},
         'App\\Models\\Experiencia': {!! $paquetesEventos->map(function ($e) { return ['id' => $e->Id, 'nombre' => $e->Nombre]; })->toJson() !!},
     };
 
     const agendaEspacios = {
-        'App\\Models\\Balinesa': {!! $espacios->where('Tipo', 'Balinesa')->map(function ($e) { return ['id' => $e->Id, 'nombre' => $e->Nombre]; })->values()->toJson() !!},
-        'App\\Models\\CenaEspecial': {!! $espacios->where('Tipo', 'Mesa')->map(function ($e) { return ['id' => $e->Id, 'nombre' => $e->Nombre]; })->values()->toJson() !!},
-        'App\\Models\\Experiencia': [],
+        'App\\Models\\Balinesa': {!! $espacios->where('Tipo', 'Balinesa')->where('Is_Active', 1)->map(function ($e) { return ['id' => $e->Id, 'nombre' => $e->Nombre]; })->values()->toJson() !!},
+        'App\\Models\\CenaEspecial': {!! $espacios->where('Tipo', 'Mesa')->where('Is_Active', 1)->map(function ($e) { return ['id' => $e->Id, 'nombre' => $e->Nombre, 'zona' => $e->Zona]; })->values()->toJson() !!},
+        'App\\Models\\Experiencia': [{ id: 61, nombre: 'Zona Experiencias' }],
     };
 
     // ── Confirm dialog ──
@@ -348,11 +361,12 @@
         });
     }
 
-    function poblarAgendaEspacios(tipo) {
+    function poblarAgendaEspacios(tipo, restauranteFiltro) {
         const sel = document.getElementById('agenda_id_espacio');
         sel.innerHTML = '<option value="">Sin espacio</option>';
         const items = agendaEspacios[tipo] || [];
         items.forEach(function(item) {
+            if (restauranteFiltro && item.zona !== restauranteFiltro) return;
             const opt = document.createElement('option');
             opt.value = item.id;
             opt.textContent = item.nombre;
@@ -364,6 +378,14 @@
         const tipo = this.value;
         poblarAgendaServicios(tipo);
         poblarAgendaEspacios(tipo);
+    });
+
+    document.getElementById('agenda_serviciable_id')?.addEventListener('change', function() {
+        const tipo = document.getElementById('agenda_serviciable_type').value;
+        if (tipo !== 'App\\Models\\CenaEspecial') return;
+        const cenas = agendaServicios['App\\Models\\CenaEspecial'] || [];
+        const cena = cenas.find(function(c) { return c.id == this.value; }.bind(this));
+        poblarAgendaEspacios(tipo, cena ? cena.restaurant : null);
     });
 
     // ── Open / Close modal ──
@@ -425,17 +447,22 @@
     });
 
     // ── Filtros de agenda ──
+    let activePeriodoAgenda = 'today';
     let activeTipoFiltro = 'all';
     let activeEstadoFiltro = 'all';
 
     const hoyAgenda = '{{ $hoyJs }}';
     const mananaAgenda = '{{ $mananaJs }}';
+    const semanaInicioAgenda = '{{ $semanaInicioJs }}';
     const semanaFinAgenda = '{{ $semanaFinJs }}';
+    const mesFinAgenda = '{{ $mesFinJs }}';
+    const agendaMinFecha = '{{ $agendaMinJs }}';
+    const agendaMaxFecha = '{{ $agendaMaxJs }}';
+    const mesInicioAgenda = '{{ $mesInicioJs }}';
 
-    // Set initial date range (today & +7 days)
+    // Initial: set date range to this week + filter
     document.getElementById('agenda-fecha-desde').value = hoyAgenda;
     document.getElementById('agenda-fecha-hasta').value = semanaFinAgenda;
-    // Initial filter
     aplicarFiltrosAgenda();
 
     // ── Dropdown filter (tipo) toggle & select ──
@@ -445,6 +472,9 @@
             e.stopPropagation();
             const menu = toggle.parentElement.querySelector('.agenda-filter-menu');
             if (menu) {
+                document.querySelectorAll('.agenda-filter-menu:not(.hidden)').forEach(function(m) {
+                    if (m !== menu) m.classList.add('hidden');
+                });
                 const rect = toggle.getBoundingClientRect();
                 menu.style.top = (rect.bottom + 4) + 'px';
                 menu.style.left = rect.left + 'px';
@@ -471,18 +501,21 @@
             });
             option.className = 'agenda-filter-option w-full text-left px-3 py-2 text-xs rounded-lg bg-gold-500 text-white';
 
-            if (filterType === 'tipo') activeTipoFiltro = value;
+            if (filterType === 'tipo') {
+                activeTipoFiltro = value;
+                toggleRestauranteColumn(value);
+            }
+            if (filterType === 'estado') activeEstadoFiltro = value;
             aplicarFiltrosAgenda();
             return;
         }
 
-        // Close open menus on outside click
         document.querySelectorAll('.agenda-filter-menu:not(.hidden)').forEach(function(m) {
             m.classList.add('hidden');
         });
     });
 
-    // ── Period tabs — set date range + highlight tab ──
+    // ── Period tabs — set range + highlight + auto-filter ──
     document.querySelectorAll('.agenda-period-tab').forEach(function(tab) {
         tab.addEventListener('click', function() {
             document.querySelectorAll('.agenda-period-tab').forEach(function(t) {
@@ -490,49 +523,40 @@
             });
             this.className = 'agenda-period-tab px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200 bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 shadow-sm';
 
-            const period = this.dataset.period;
-            if (period === 'today') {
+            activePeriodoAgenda = this.dataset.period;
+            if (activePeriodoAgenda === 'today') {
                 document.getElementById('agenda-fecha-desde').value = hoyAgenda;
                 document.getElementById('agenda-fecha-hasta').value = hoyAgenda;
-            } else if (period === 'tomorrow') {
+            } else if (activePeriodoAgenda === 'tomorrow') {
                 document.getElementById('agenda-fecha-desde').value = mananaAgenda;
                 document.getElementById('agenda-fecha-hasta').value = mananaAgenda;
-            } else if (period === 'week') {
-                document.getElementById('agenda-fecha-desde').value = hoyAgenda;
+            } else if (activePeriodoAgenda === 'week') {
+                document.getElementById('agenda-fecha-desde').value = semanaInicioAgenda;
                 document.getElementById('agenda-fecha-hasta').value = semanaFinAgenda;
+            } else if (activePeriodoAgenda === 'month') {
+                document.getElementById('agenda-fecha-desde').value = mesInicioAgenda;
+                document.getElementById('agenda-fecha-hasta').value = mesFinAgenda;
             }
             aplicarFiltrosAgenda();
         });
     });
 
-    // ── Date range inputs ──
-    document.querySelectorAll('.agenda-date-input').forEach(function(input) {
-        input.addEventListener('change', function() {
-            document.querySelectorAll('.agenda-period-tab').forEach(function(t) {
-                t.className = 'agenda-period-tab px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-transparent';
-            });
-            aplicarFiltrosAgenda();
+    // ── Date range manual: deselect tabs (no auto-filter) ──
+    document.getElementById('agenda-fecha-desde').addEventListener('change', function() {
+        document.querySelectorAll('.agenda-period-tab').forEach(function(t) {
+            t.className = 'agenda-period-tab px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-transparent';
+        });
+    });
+    document.getElementById('agenda-fecha-hasta').addEventListener('change', function() {
+        document.querySelectorAll('.agenda-period-tab').forEach(function(t) {
+            t.className = 'agenda-period-tab px-4 py-2 rounded-lg text-xs font-medium transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-transparent';
         });
     });
 
-    // ── Estado toggle ──
-    document.querySelectorAll('.agenda-estado-btn').forEach(function(btn) {
-        btn.addEventListener('click', function() {
-            const estado = this.dataset.estado;
-            const isActive = this.classList.contains('bg-white');
-
-            document.querySelectorAll('.agenda-estado-btn').forEach(function(b) {
-                b.className = 'agenda-estado-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 bg-transparent';
-            });
-
-            if (isActive) {
-                activeEstadoFiltro = 'all';
-            } else {
-                this.className = 'agenda-estado-btn px-3 py-1.5 rounded-lg text-xs font-medium transition-all duration-200 bg-white dark:bg-charcoal-600 text-gray-900 dark:text-gray-100 shadow-sm';
-                activeEstadoFiltro = estado;
-            }
-            aplicarFiltrosAgenda();
-        });
+    // ── Aplicar button ──
+    document.getElementById('btn-aplicar-fecha').addEventListener('click', function() {
+        activePeriodoAgenda = 'range';
+        aplicarFiltrosAgenda();
     });
 
     // ── Search input ──
@@ -557,8 +581,20 @@
             // Tipo filter
             const tipoOk = activeTipoFiltro === 'all' || tipo === activeTipoFiltro;
 
-            // Date range filter
-            const fechaOk = (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
+            // Date filter
+            let fechaOk = false;
+            if (activePeriodoAgenda === 'today') {
+                fechaOk = fecha === hoyAgenda;
+            } else if (activePeriodoAgenda === 'tomorrow') {
+                fechaOk = fecha === mananaAgenda;
+            } else if (activePeriodoAgenda === 'week') {
+                fechaOk = fecha >= semanaInicioAgenda && fecha <= semanaFinAgenda;
+            } else if (activePeriodoAgenda === 'month') {
+                fechaOk = fecha >= mesInicioAgenda && fecha <= mesFinAgenda;
+            } else {
+                // 'range' — manual date range
+                fechaOk = (!desde || fecha >= desde) && (!hasta || fecha <= hasta);
+            }
 
             // Estado filter
             const estadoOk = activeEstadoFiltro === 'all' || estado === activeEstadoFiltro;
@@ -569,6 +605,16 @@
             row.style.display = (tipoOk && fechaOk && estadoOk && textoOk) ? '' : 'none';
         });
     }
+
+    // ── Toggle Restaurante column visibility ──
+    function toggleRestauranteColumn(tipo) {
+        document.querySelectorAll('.col-restaurante').forEach(function(el) {
+            el.classList.toggle('hidden', tipo !== 'CenaEspecial');
+        });
+    }
+
+    // Initial: hide restaurante column (default tipo = 'all')
+    toggleRestauranteColumn('all');
 
     // Handle validation errors: re-open modal if errors exist
     @if ($errors->any())
@@ -586,4 +632,12 @@
         });
     });
     @endif
+
+    // ── Word counter for observaciones ──
+    document.getElementById('agenda_observaciones')?.addEventListener('input', function() {
+        const count = this.value.trim() ? this.value.trim().split(/\s+/).length : 0;
+        const el = document.getElementById('agenda-word-count');
+        el.textContent = count + '/100 palabras';
+        el.className = 'text-xs mt-1 text-right ' + (count > 100 ? 'text-red-500 font-medium' : 'text-gray-400 dark:text-gray-500');
+    });
 </script>

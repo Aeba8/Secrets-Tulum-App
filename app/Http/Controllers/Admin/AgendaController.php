@@ -16,16 +16,25 @@ class AgendaController extends Controller
             'serviciable_id' => 'required|integer',
             'id_espacio' => 'nullable|integer',
             'fecha' => 'required|date_format:Y-m-d',
-            'habitacion' => 'required|string|max:50',
+            'habitacion' => 'required|digits:4',
             'estado' => 'required|string|max:30',
-            'colaborador' => 'nullable|string|max:20',
-            'observaciones' => 'nullable|string|max:1000',
+            'colaborador' => ['nullable', 'digits:6'],
+            'observaciones' => ['nullable', 'string', function ($attr, $value, $fail) {
+                if (str_word_count($value) > 100) {
+                    $fail('Las observaciones no pueden exceder 100 palabras.');
+                }
+            }],
         ]);
+
+        $id_espacio = $validated['id_espacio'] ?? null;
+        if ($id_espacio === null && $validated['serviciable_type'] === 'App\Models\Experiencia') {
+            $id_espacio = 61;
+        }
 
         DB::table('Reservas')->insert([
             'serviciable_type' => $validated['serviciable_type'],
             'serviciable_id' => $validated['serviciable_id'],
-            'id_espacio' => $validated['id_espacio'],
+            'id_espacio' => $id_espacio,
             'Dia' => $validated['fecha'],
             'Habitacion' => $validated['habitacion'],
             'Numero_de_colaborador_vendedor' => $validated['colaborador'] ?? '',
@@ -49,18 +58,27 @@ class AgendaController extends Controller
             'serviciable_id' => 'required|integer',
             'id_espacio' => 'nullable|integer',
             'fecha' => 'required|date_format:Y-m-d',
-            'habitacion' => 'required|string|max:50',
+            'habitacion' => 'required|digits:4',
             'estado' => 'required|string|max:30',
-            'colaborador' => 'nullable|string|max:20',
-            'observaciones' => 'nullable|string|max:1000',
+            'colaborador' => ['nullable', 'digits:6'],
+            'observaciones' => ['nullable', 'string', function ($attr, $value, $fail) {
+                if (str_word_count($value) > 100) {
+                    $fail('Las observaciones no pueden exceder 100 palabras.');
+                }
+            }],
         ]);
+
+        $id_espacio = $validated['id_espacio'] ?? $reserva->id_espacio;
+        if ($id_espacio === null && $validated['serviciable_type'] === 'App\Models\Experiencia') {
+            $id_espacio = 61;
+        }
 
         DB::table('Reservas')
             ->where('Id', $id)
             ->update([
                 'serviciable_type' => $validated['serviciable_type'],
                 'serviciable_id' => $validated['serviciable_id'],
-                'id_espacio' => $validated['id_espacio'],
+                'id_espacio' => $id_espacio,
                 'Dia' => $validated['fecha'],
                 'Habitacion' => $validated['habitacion'],
                 'Numero_de_colaborador_vendedor' => $validated['colaborador'] ?? '',

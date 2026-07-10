@@ -16,6 +16,11 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Auto-completar reservas pasadas que siguen como Confirmado
+        Reserva::whereDate('Dia', '<', Carbon::today())
+            ->where('Estado', 'Confirmado')
+            ->update(['Estado' => 'Completado']);
+
         $kpis = [
             [
                 'label'    => 'Ingresos Hoy',
@@ -106,10 +111,23 @@ class DashboardController extends Controller
             ['position' => 5, 'name' => 'Cena Terraza Mar',      'type' => 'Cena',       'revenue' => 22400, 'margin' => 70],
         ];
 
+        $hoy = Carbon::today()->format('Y-m-d');
+        $manana = Carbon::tomorrow()->format('Y-m-d');
+        $inicioSemana = Carbon::today()->startOfWeek();
+        $finSemana = Carbon::today()->endOfWeek();
+        $inicioMes = Carbon::today()->startOfMonth();
+        $inicioConsulta = Carbon::today()->subDays(90);
+        $finConsulta = Carbon::today()->addDays(90);
+        $finMes = Carbon::today()->endOfMonth();
+
+        $hoyCount   = Reserva::whereDate('Dia', $hoy)->count();
+        $semCount   = Reserva::whereBetween('Dia', [$inicioSemana, $finSemana])->count();
+        $mesCount   = Reserva::whereBetween('Dia', [$inicioMes, $finMes])->count();
+
         $reservationVolume = [
-            ['period' => 'Hoy',          'count' => 18,  'key' => 'today'],
-            ['period' => 'Esta Semana',  'count' => 124, 'key' => 'week'],
-            ['period' => 'Este Mes',     'count' => 512, 'key' => 'month'],
+            ['period' => 'Hoy',          'count' => $hoyCount, 'key' => 'today'],
+            ['period' => 'Esta Semana',  'count' => $semCount, 'key' => 'week'],
+            ['period' => 'Este Mes',     'count' => $mesCount, 'key' => 'month'],
         ];
 
         $occupancyByZone = [
@@ -171,13 +189,8 @@ class DashboardController extends Controller
             ['shift' => 'Nocturno (22:00-6:00)',   'reservations' => 14, 'revenue' => 9800,  'color' => '#3B82F6'],
         ];
 
-        $hoy = Carbon::today()->format('Y-m-d');
-        $manana = Carbon::tomorrow()->format('Y-m-d');
-        $inicioSemana = Carbon::today();
-        $finSemana = Carbon::today()->addDays(7);
-
         $agendaReservations = Reserva::with(['espacio', 'serviciable', 'usuario'])
-            ->whereBetween('Dia', [$inicioSemana, $finSemana])
+            ->whereBetween('Dia', [$inicioConsulta, $finConsulta])
             ->orderBy('Dia')
             ->orderBy('created_at', 'desc')
             ->get();
@@ -186,6 +199,7 @@ class DashboardController extends Controller
             ['key' => 'today', 'label' => 'Hoy', 'count' => Reserva::whereDate('Dia', $hoy)->count()],
             ['key' => 'tomorrow', 'label' => 'Mañana', 'count' => Reserva::whereDate('Dia', $manana)->count()],
             ['key' => 'week', 'label' => 'Esta Semana', 'count' => Reserva::whereBetween('Dia', [$inicioSemana, $finSemana])->count()],
+            ['key' => 'month', 'label' => 'Este Mes', 'count' => Reserva::whereBetween('Dia', [$inicioMes, $finMes])->count()],
         ];
 
         $agendaStats = [
@@ -235,6 +249,8 @@ class DashboardController extends Controller
             'usuarios',
             'espacios',
             'fondos',
+            'inicioConsulta',
+            'finConsulta',
         ));
     }
 }
