@@ -55,6 +55,15 @@
     <!-- Líneas decorativas ultrafinas para dar aspecto de app de diseño arquitectónico -->
     <div class="absolute inset-x-12 top-0 bottom-0 border-l border-r border-white/[0.02] pointer-events-none z-0"></div>
 
+    <!-- Logout -->
+    <form action="{{ route('logout') }}" method="POST" class="absolute top-6 right-6 z-20">
+        @csrf
+        <button type="submit"
+            class="text-white/20 hover:text-[#D4AF37]/60 transition-all duration-500 text-[11px] tracking-[0.3em] uppercase font-light cursor-pointer">
+            Salir
+        </button>
+    </form>
+
     <!-- Barra Superior Minimalista -->
     <div translate="no" class="relative z-10 w-full text-center pt-8 text-[12px] tracking-[0.6em] font-light uppercase text-[#D4AF37]/60">
         Secrets Tulum Resort & Beach Club

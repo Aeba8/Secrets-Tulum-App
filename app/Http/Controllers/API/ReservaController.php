@@ -16,6 +16,9 @@ class ReservaController extends Controller
     /**
      * Consulta el estado de ocupación de los espacios físicos usando el esquema real.
      */
+    /**
+     * Consulta el estado de ocupación de los espacios físicos usando el esquema real.
+     */
     public function checkDisponibilidad(Request $request)
     {
         // 1. Validar los datos de entrada
@@ -30,9 +33,11 @@ class ReservaController extends Controller
         $fecha = $request->fecha;
 
         try {
-            // 2. Filtrar los espacios físicos de la tabla 'Espacios'
+            // 2. Filtrar los espacios físicos de la tabla 'Espacios' (SOLO LOS ACTIVOS)
             if ($type === Balinesa::class) {
-                $espaciosTotales = Espacio::where('Tipo', 'Balinesa')->get();
+                $espaciosTotales = Espacio::where('Tipo', 'Balinesa')
+                    ->where('Is_Active', 1) // 🌟 Filtro para ocultar los 'False'
+                    ->get();
             } elseif ($type === CenaEspecial::class) {
                 $cena = CenaEspecial::find($id);
                 if (! $cena) {
@@ -40,6 +45,7 @@ class ReservaController extends Controller
                 }
                 $espaciosTotales = Espacio::where('Tipo', 'Mesa')
                     ->where('Zona', $cena->restaurant)
+                    ->where('Is_Active', 1) // 🌟 Filtro para ocultar los 'False'
                     ->get();
             } else {
                 return response()->json([
@@ -63,27 +69,28 @@ class ReservaController extends Controller
                 $estaOcupado = $reservasHoy->has($espacio->Id);
 
                 return [
-                    'id_espacio'   => $espacio->Id,
-                    'nombre'       => $espacio->Nombre, 
-                    'zona'         => $espacio->Zona, // "Pool Club", "Beach Club", etc.
-                    'disponible'   => !$estaOcupado,
-                    'habitacion'   => $estaOcupado ? $reservasHoy->get($espacio->Id)->Habitacion : null,
+                    'id_espacio' => $espacio->Id,
+                    'nombre' => $espacio->Nombre,
+                    'zona' => $espacio->Zona, // "Pool Club", "Beach Club", etc.
+                    'disponible' => ! $estaOcupado,
+                    'habitacion' => $estaOcupado ? $reservasHoy->get($espacio->Id)->Habitacion : null,
                 ];
             })->groupBy('zona'); // Agrupa los espacios por su columna 'Zona'
 
             // 5. Retornar la respuesta JSON organizada
             return response()->json([
-                'success'        => true,
+                'success' => true,
                 'fecha_consulta' => $fecha,
-                'requiere_mapa'  => true,
-                'secciones'      => $mapaDeOcupacion // Ahora vendrá segmentado por zonas
+                'requiere_mapa' => true,
+                'secciones' => $mapaDeOcupacion, // Ahora vendrá segmentado por zonas
             ], 200);
 
         } catch (\Exception $e) {
-            Log::error("Error en checkDisponibilidad: " . $e->getMessage());
+            Log::error('Error en checkDisponibilidad: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Error interno al consultar la disponibilidad.'
+                'message' => 'Error interno al consultar la disponibilidad.',
             ], 500);
         }
     }
@@ -147,10 +154,11 @@ class ReservaController extends Controller
 
         } catch (\Exception $e) {
             // Si la base de datos o cualquier proceso falla, se registra en el log y se avisa de forma limpia
-            Log::error("Error al guardar reserva: " . $e->getMessage());
+            Log::error('Error al guardar reserva: '.$e->getMessage());
+
             return response()->json([
                 'success' => false,
-                'message' => 'Hubo un problema de comunicación con la base de datos. Intente de nuevo.'
+                'message' => 'Hubo un problema de comunicación con la base de datos. Intente de nuevo.',
             ], 500);
         }
     }

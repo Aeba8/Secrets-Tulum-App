@@ -13,12 +13,14 @@ class Usuario extends Authenticatable
     protected $table = 'Usuarios';
     protected $primaryKey = 'Id';
 
-    // 2. Columnas de tu tabla
+    public $timestamps = false;
+
     protected $fillable = [
         'Nombre',
         'Email',
         'Numero_de_colaborador',
         'Rol',
+        'Estado',
     ];
 
     /**

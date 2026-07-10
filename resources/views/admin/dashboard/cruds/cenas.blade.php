@@ -2,14 +2,34 @@
             <div class="bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-2xl overflow-hidden">
                 <div class="flex items-center justify-between px-5 py-4 border-b border-sand-200 dark:border-charcoal-500">
                     <h3 class="text-gray-900 dark:text-gray-100 font-semibold text-sm">Cenas Especiales</h3>
-                    <button onclick="openCenaModal()"
-                        class="text-xs px-3 py-1.5 rounded-lg bg-gold-500 text-white font-medium hover:bg-gold-600 transition-colors">
-                        <i class="fa-solid fa-plus mr-1"></i> Nueva
-                    </button>
+                    <div class="flex items-center gap-2">
+                        <div class="relative">
+                            <i class="fa-solid fa-search absolute left-2.5 top-1/2 -translate-y-1/2 text-gray-400 text-xs"></i>
+                            <input type="text" class="search-servicios pl-7 pr-2.5 py-1.5 rounded-lg border border-sand-200 dark:border-charcoal-500 bg-sand-50 dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-xs focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition w-40" placeholder="Buscar...">
+                        </div>
+                        <div class="relative estado-filter-dropdown">
+                            <button class="estado-filter-toggle text-xs px-3 py-1.5 rounded-lg bg-sand-100 dark:bg-charcoal-500 text-gray-600 dark:text-gray-400 hover:bg-sand-200 dark:hover:bg-charcoal-500 transition-colors whitespace-nowrap" title="Filtrar por estado">
+                                <i class="fa-solid fa-filter mr-1"></i>
+                                <span class="estado-filter-label">Todos</span>
+                                <i class="fa-solid fa-chevron-down ml-1 text-[10px]"></i>
+                            </button>
+                            <div class="estado-filter-menu fixed w-44 bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-xl shadow-lg z-50 hidden overflow-hidden">
+                                <div class="p-1 space-y-0.5">
+                                    <button class="estado-filter-option w-full text-left px-3 py-2 text-xs rounded-lg bg-gold-500 text-white" data-filtro="todos">Todos</button>
+                                    <button class="estado-filter-option w-full text-left px-3 py-2 text-xs rounded-lg text-gray-600 dark:text-gray-400 hover:bg-sand-100 dark:hover:bg-charcoal-500" data-filtro="Activo">Activo</button>
+                                    <button class="estado-filter-option w-full text-left px-3 py-2 text-xs rounded-lg text-gray-600 dark:text-gray-400 hover:bg-sand-100 dark:hover:bg-charcoal-500" data-filtro="Inactivo">Inactivo</button>
+                                </div>
+                            </div>
+                        </div>
+                        <button onclick="openCenaModal()"
+                            class="text-xs px-3 py-1.5 rounded-lg bg-gold-500 text-white font-medium hover:bg-gold-600 transition-colors">
+                            <i class="fa-solid fa-plus mr-1"></i> Nueva
+                        </button>
+                    </div>
                 </div>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-sm whitespace-nowrap">
-                        <thead>
+                <div class="overflow-auto max-h-[500px]">
+                        <table class="w-full text-sm whitespace-nowrap">
+                            <thead class="sticky top-0 z-10">
                             <tr class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-sand-200 dark:border-charcoal-500 bg-sand-50 dark:bg-charcoal-500">
                                 <th class="text-left px-5 py-3 font-medium">Nombre</th>
                                 <th class="text-left px-5 py-3 font-medium">Restaurante</th>

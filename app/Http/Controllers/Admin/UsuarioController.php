@@ -1,0 +1,112 @@
+<?php
+
+namespace App\Http\Controllers\Admin;
+
+use App\Http\Controllers\Controller;
+use App\Models\Usuario;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
+
+class UsuarioController extends Controller
+{
+    protected function reglasValidacion($id = null)
+    {
+        $numeroUnique = $id
+            ? 'unique:Usuarios,Numero_de_colaborador,' . $id . ',Id'
+            : 'unique:Usuarios,Numero_de_colaborador';
+        $emailUnique  = $id
+            ? 'unique:Usuarios,Email,' . $id . ',Id'
+            : 'unique:Usuarios,Email';
+
+        return [
+            'nombre'             => 'required|string|max:100|regex:/^[a-zA-ZÀ-ÿ\s\.]+$/',
+            'email'              => 'required|email|max:150|' . $emailUnique,
+            'numero_colaborador' => 'required|digits:6|' . $numeroUnique,
+            'activo'             => 'nullable|in:0,1,on,off',
+        ];
+    }
+
+    protected function mensajesValidacion(): array
+    {
+        return [
+            'nombre.required'             => 'El nombre es obligatorio.',
+            'nombre.max'                  => 'El nombre no debe exceder 100 caracteres.',
+            'nombre.regex'                => 'El nombre solo acepta letras, espacios y puntos.',
+            'email.required'              => 'El correo electrónico es obligatorio.',
+            'email.email'                 => 'Ingresa un correo electrónico válido.',
+            'email.max'                   => 'El correo no debe exceder 150 caracteres.',
+            'email.unique'                => 'Este correo electrónico ya está registrado.',
+            'numero_colaborador.required' => 'El número de colaborador es obligatorio.',
+            'numero_colaborador.digits'   => 'Debe tener exactamente 6 dígitos.',
+            'numero_colaborador.unique'   => 'Este número de colaborador ya existe.',
+        ];
+    }
+
+    protected function validarYFallar(Request $request, $id = null): array
+    {
+        $validator = Validator::make(
+            $request->all(),
+            $this->reglasValidacion($id),
+            $this->mensajesValidacion()
+        );
+
+        if ($validator->fails()) {
+            throw new \Illuminate\Validation\ValidationException(
+                $validator,
+                redirect(route('admin.dashboard') . '#usuarios')
+                    ->withErrors($validator)
+                    ->withInput()
+            );
+        }
+
+        return $validator->validated();
+    }
+
+    public function store(Request $request)
+    {
+        $validated = $this->validarYFallar($request);
+
+        Usuario::create([
+            'Nombre'                => strip_tags($validated['nombre']),
+            'Email'                 => strip_tags($validated['email']),
+            'Numero_de_colaborador' => strip_tags($validated['numero_colaborador']),
+            'Rol'                   => 'Operativo',
+            'Estado'                => ($request->boolean('activo')) ? 'Activo' : 'Inactivo',
+        ]);
+
+        return redirect(route('admin.dashboard') . '#usuarios')
+            ->with('success', 'Usuario operativo creado correctamente.');
+    }
+
+    public function update(Request $request, $id)
+    {
+        $usuario = Usuario::findOrFail($id);
+        $validated = $this->validarYFallar($request, $id);
+
+        $usuario->update([
+            'Nombre'                => strip_tags($validated['nombre']),
+            'Email'                 => strip_tags($validated['email']),
+            'Numero_de_colaborador' => strip_tags($validated['numero_colaborador']),
+            'Estado'                => ($request->boolean('activo')) ? 'Activo' : 'Inactivo',
+        ]);
+
+        return redirect(route('admin.dashboard') . '#usuarios')
+            ->with('success', 'Usuario operativo actualizado correctamente.');
+    }
+
+    public function destroy($id)
+    {
+        $usuario = Usuario::findOrFail($id);
+        $usuario->update(['Estado' => 'Inactivo']);
+        return redirect(route('admin.dashboard') . '#usuarios')
+            ->with('success', 'Usuario desactivado correctamente.');
+    }
+
+    public function activate($id)
+    {
+        $usuario = Usuario::findOrFail($id);
+        $usuario->update(['Estado' => 'Activo']);
+        return redirect(route('admin.dashboard') . '#usuarios')
+            ->with('success', 'Usuario activado correctamente.');
+    }
+}

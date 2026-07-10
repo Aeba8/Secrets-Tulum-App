@@ -4,6 +4,9 @@ use App\Http\Controllers\Admin\BalinesaController;
 use App\Http\Controllers\Admin\CenaEspecialController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\ExperienciaController;
+use App\Http\Controllers\Admin\UsuarioController;
+use App\Http\Controllers\Admin\EspacioController;
+use App\Http\Controllers\Admin\AgendaController;
 use App\Http\Controllers\API\ExperienciaReservaController;
 use App\Http\Controllers\API\ReservaController;
 use App\Http\Controllers\AuthController;
@@ -98,4 +101,20 @@ Route::middleware(['auth', 'role:Admin,SuperAdmin'])->prefix('admin')->name('adm
     Route::put('/experiencias/{id}', [ExperienciaController::class, 'update'])->name('experiencias.update');
     Route::delete('/experiencias/{id}', [ExperienciaController::class, 'destroy'])->name('experiencias.destroy');
     Route::patch('/experiencias/{id}/activate', [ExperienciaController::class, 'activate'])->name('experiencias.activate');
+
+    Route::post('/usuarios', [UsuarioController::class, 'store'])->name('usuarios.store');
+    Route::put('/usuarios/{id}', [UsuarioController::class, 'update'])->name('usuarios.update');
+    Route::delete('/usuarios/{id}', [UsuarioController::class, 'destroy'])->name('usuarios.destroy');
+    Route::patch('/usuarios/{id}/activate', [UsuarioController::class, 'activate'])->name('usuarios.activate');
+
+    Route::post('/espacios', [EspacioController::class, 'store'])->name('espacios.store');
+    Route::put('/espacios/{id}', [EspacioController::class, 'update'])->name('espacios.update');
+    Route::delete('/espacios/{id}', [EspacioController::class, 'destroy'])->name('espacios.destroy');
+    Route::patch('/espacios/{id}/activate', [EspacioController::class, 'activate'])->name('espacios.activate');
+
+    // Agenda (Reservas CRUD)
+    Route::post('/agenda', [AgendaController::class, 'store'])->name('agenda.store');
+    Route::put('/agenda/{id}', [AgendaController::class, 'update'])->name('agenda.update');
+    Route::delete('/agenda/{id}', [AgendaController::class, 'destroy'])->name('agenda.destroy');
+    Route::patch('/agenda/{id}/activate', [AgendaController::class, 'activate'])->name('agenda.activate');
 });

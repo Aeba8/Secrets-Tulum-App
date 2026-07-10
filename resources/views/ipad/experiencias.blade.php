@@ -54,14 +54,16 @@
     <div class="absolute inset-0 bg-black/60 z-0"></div>
 
     <!-- Top Navbar -->
-    <div class="relative z-10 w-full bg-[#C5A059] text-white flex items-center justify-between px-6 py-2 text-sm shadow-md">
+    <div
+        class="relative z-10 w-full bg-[#C5A059] text-white flex items-center justify-between px-6 py-2 text-sm shadow-md">
         <button onclick="navigateWithAnimation('{{ route('catalogo') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none">
             <i class="fa-solid fa-chevron-left text-xs"></i>
             <span data-key="back">Ir atrás</span>
         </button>
 
-        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de Experiencias VIP</span>
+        <span data-key="top_title" class="tracking-widest font-medium uppercase text-xs md:text-sm">Reservación de
+            Experiencias VIP</span>
 
         <button onclick="navigateWithAnimation('{{ route('welcome') }}')"
             class="flex items-center gap-2 opacity-90 hover:opacity-100 transition-all cursor-pointer focus:outline-none">
@@ -74,13 +76,16 @@
     <div class="relative z-10 flex flex-row flex-1 h-[calc(100vh-40px)] w-full">
 
         <!-- Sidebar Lateral de Filtros Operativos -->
-        <div class="w-1/4 min-w-[280px] max-w-[340px] bg-black/50 backdrop-blur-xl border-r border-white/10 p-5 flex flex-col gap-5 text-white overflow-y-auto no-scrollbar shadow-2xl">
-            
-            <!-- Buscador Dinámico (imagen_06d62a.png) -->
+        <div
+            class="w-1/4 min-w-[280px] max-w-[340px] bg-black/50 backdrop-blur-xl border-r border-white/10 p-5 flex flex-col gap-5 text-white overflow-y-auto no-scrollbar shadow-2xl">
+
+            <!-- Buscador Dinámico -->
             <div class="flex flex-col gap-2">
-                <h2 data-key="search_lbl" class="text-xs font-bold tracking-wider text-white/60 uppercase">Buscar Experiencia</h2>
+                <h2 data-key="search_lbl" class="text-xs font-bold tracking-wider text-white/60 uppercase">Buscar
+                    Experiencia</h2>
                 <div class="relative">
-                    <input type="text" id="search-input" oninput="applyFiltersAndSorting()" placeholder="Escribe un servicio o lugar..." 
+                    <input type="text" id="search-input" oninput="applyFiltersAndSorting()"
+                        placeholder="Escribe un servicio o lugar..."
                         class="w-full bg-white/5 border border-white/10 rounded-lg px-3 py-2 text-xs text-white placeholder-white/30 focus:outline-none focus:border-[#C5A059] transition-all">
                 </div>
             </div>
@@ -89,38 +94,68 @@
 
             <!-- Tipo de Actividad (Tipo) -->
             <div>
-                <h2 data-key="filter_title" class="text-xs font-bold tracking-wider text-white/60 uppercase mb-3">Tipo de Actividad</h2>
+                <h2 data-key="filter_title" class="text-xs font-bold tracking-wider text-white/60 uppercase mb-3">Tipo
+                    de Actividad</h2>
                 <div class="flex flex-col gap-2">
                     <label class="flex items-center gap-3 cursor-pointer group text-xs">
-                        <input type="radio" name="type-filter" value="all" checked onchange="applyFiltersAndSorting()" class="hidden peer">
-                        <div class="w-4 h-4 rounded-full border border-[#C5A059] flex items-center justify-center peer-checked:bg-[#C5A059]">
-                            <div class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all"></div>
+                        <input type="radio" name="type-filter" value="all" checked
+                            onchange="applyFiltersAndSorting()" class="hidden peer">
+                        <div
+                            class="w-4 h-4 rounded-full border border-[#C5A059] flex items-center justify-center peer-checked:bg-[#C5A059]">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all">
+                            </div>
                         </div>
-                        <span data-key="type_all" class="font-medium text-white group-hover:text-[#C5A059] transition-colors">Todas las categorías</span>
+                        <span data-key="type_all"
+                            class="font-medium text-white group-hover:text-[#C5A059] transition-colors">Todas las
+                            categorías</span>
                     </label>
-                    <label class="flex items-center gap-3 cursor-pointer group text-xs text-white/60 hover:text-white transition-all">
-                        <input type="radio" name="type-filter" value="Spa & Bienestar" onchange="applyFiltersAndSorting()" class="hidden peer">
-                        <div class="w-4 h-4 rounded-full border border-[#C5A059] group-hover:border-[#C5A059] flex items-center justify-center peer-checked:border-[#C5A059] peer-checked:bg-[#C5A059]">
-                            <div class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all"></div>
+                    <label
+                        class="flex items-center gap-3 cursor-pointer group text-xs text-white/60 hover:text-white transition-all">
+                        <input type="radio" name="type-filter" value="Spa & Bienestar"
+                            onchange="applyFiltersAndSorting()" class="hidden peer">
+                        <div
+                            class="w-4 h-4 rounded-full border border-[#C5A059] group-hover:border-[#C5A059] flex items-center justify-center peer-checked:border-[#C5A059] peer-checked:bg-[#C5A059]">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all">
+                            </div>
                         </div>
                         <span data-key="type_wellness">Spa & Bienestar</span>
                     </label>
-                    <label class="flex items-center gap-3 cursor-pointer group text-xs text-white/60 hover:text-white transition-all">
-                        <input type="radio" name="type-filter" value="Talleres & Mixología" onchange="applyFiltersAndSorting()" class="hidden peer">
-                        <div class="w-4 h-4 rounded-full border border-[#C5A059] group-hover:border-[#C5A059] flex items-center justify-center peer-checked:border-[#C5A059] peer-checked:bg-[#C5A059]">
-                            <div class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all"></div>
+                    <label
+                        class="flex items-center gap-3 cursor-pointer group text-xs text-white/60 hover:text-white transition-all">
+                        <input type="radio" name="type-filter" value="Talleres & Mixología"
+                            onchange="applyFiltersAndSorting()" class="hidden peer">
+                        <div
+                            class="w-4 h-4 rounded-full border border-[#C5A059] group-hover:border-[#C5A059] flex items-center justify-center peer-checked:border-[#C5A059] peer-checked:bg-[#C5A059]">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all">
+                            </div>
                         </div>
                         <span data-key="type_mixology">Talleres & Mixología</span>
+                    </label>
+                    <label
+                        class="flex items-center gap-3 cursor-pointer group text-xs text-white/60 hover:text-white transition-all">
+                        <input type="radio" name="type-filter" value="Gastronomico"
+                            onchange="applyFiltersAndSorting()" class="hidden peer">
+                        <div
+                            class="w-4 h-4 rounded-full border border-[#C5A059] group-hover:border-[#C5A059] flex items-center justify-center peer-checked:border-[#C5A059] peer-checked:bg-[#C5A059]">
+                            <div
+                                class="w-1.5 h-1.5 rounded-full bg-black scale-0 peer-checked:scale-100 transition-all">
+                            </div>
+                        </div>
+                        <span data-key="type_gastronomic">Gastronómico</span>
                     </label>
                 </div>
             </div>
 
             <hr class="border-white/10">
 
-            <!-- Capacidad de Personas (imagen_06d604.png) -->
+            <!-- Capacidad de Personas -->
             <div class="flex flex-col gap-2">
-                <h2 data-key="capacity_title" class="text-xs font-bold tracking-wider text-white/60 uppercase">Capacidad (Pax)</h2>
-                <select id="pax-filter" onchange="applyFiltersAndSorting()" 
+                <h2 data-key="capacity_title" class="text-xs font-bold tracking-wider text-white/60 uppercase">Capacidad
+                    (Pax)</h2>
+                <select id="pax-filter" onchange="applyFiltersAndSorting()"
                     class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
                     <option value="all" data-key="pax_all" class="bg-stone-900">Cualquier capacidad</option>
                     <option value="1" data-key="pax_individual" class="bg-stone-900">Individual (1 Pax)</option>
@@ -131,30 +166,38 @@
 
             <hr class="border-white/10">
 
-            <!-- Rangos y Órdenes de Precio (imagen_06d5e6.png) -->
+            <!-- Rangos y Órdenes de Precio -->
             <div class="flex flex-col gap-4">
-                <h2 data-key="search_title" class="text-xs font-bold tracking-wider text-white/60 uppercase">Rango & Preferencias</h2>
-                
+                <h2 data-key="search_title" class="text-xs font-bold tracking-wider text-white/60 uppercase">Rango &
+                    Preferencias</h2>
+
                 <!-- Rangos Estrictos de Precios -->
                 <div class="space-y-1.5">
-                    <label data-key="range_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Filtrar por Rango</label>
-                    <select id="price-range-filter" onchange="applyFiltersAndSorting()" 
+                    <label data-key="range_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Filtrar
+                        por Rango</label>
+                    <select id="price-range-filter" onchange="applyFiltersAndSorting()"
                         class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
                         <option value="all" data-key="price_all" class="bg-stone-900">Cualquier precio</option>
-                        <option value="0-1500" data-key="price_up_to_15k" class="bg-stone-900">Hasta $1,500 MXN</option>
-                        <option value="1500-4000" data-key="price_15k_to_4k" class="bg-stone-900">$1,500 MXN - $4,000 MXN</option>
-                        <option value="4000-plus" data-key="price_over_4k" class="bg-stone-900">Más de $4,000 MXN</option>
+                        <option value="0-1500" data-key="price_up_to_15k" class="bg-stone-900">Hasta $1,500 MXN
+                        </option>
+                        <option value="1500-4000" data-key="price_15k_to_4k" class="bg-stone-900">$1,500 MXN - $4,000
+                            MXN</option>
+                        <option value="4000-plus" data-key="price_over_4k" class="bg-stone-900">Más de $4,000 MXN
+                        </option>
                     </select>
                 </div>
 
                 <!-- Sentidos de Ordenamiento Ascendente y Descendente -->
                 <div class="space-y-1.5">
-                    <label data-key="sort_lbl" class="text-[10px] uppercase tracking-wider text-white/40 block">Ordenar por Precio</label>
-                    <select id="price-sort" onchange="applyFiltersAndSorting()" 
+                    <label data-key="sort_lbl"
+                        class="text-[10px] uppercase tracking-wider text-white/40 block">Ordenar por Precio</label>
+                    <select id="price-sort" onchange="applyFiltersAndSorting()"
                         class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
                         <option value="default" data-key="sort_default" class="bg-stone-900">Predeterminado</option>
-                        <option value="low-high" data-key="sort_asc" class="bg-stone-900">📈 Menor a Mayor precio</option>
-                        <option value="high-low" data-key="sort_desc" class="bg-stone-900">📉 Mayor a Menor precio</option>
+                        <option value="low-high" data-key="sort_asc" class="bg-stone-900">📈 Menor a Mayor precio
+                        </option>
+                        <option value="high-low" data-key="sort_desc" class="bg-stone-900">📉 Mayor a Menor precio
+                        </option>
                     </select>
                 </div>
             </div>
@@ -241,7 +284,7 @@
         const currentLang = urlParams.get('lang') === 'en' ? 'en' : 'es';
         let allExperiencias = [];
 
-        // Traducir textos estáticos y elementos select options con data-key
+        // Traducir textos estáticos
         document.querySelectorAll('[data-key]').forEach(element => {
             const key = element.getAttribute('data-key');
             if (translations[currentLang] && translations[currentLang][key]) {
@@ -254,16 +297,17 @@
             }
         });
 
-        // TRADUCCIÓN DINÁMICA DEL PLACEHOLDER (imagen_06d62a.png)
         const searchInput = document.getElementById('search-input');
         if (searchInput) {
-            searchInput.placeholder = currentLang === 'en' ? "Type a service or location..." : "Escribe un servicio o lugar...";
+            searchInput.placeholder = currentLang === 'en' ? "Type a service or location..." :
+                "Escribe un servicio o lugar...";
         }
 
         async function traducirTextoAIngles(textoOriginal) {
             if (!textoOriginal) return '';
             try {
-                const response = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
+                const response = await fetch(
+                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
                 const data = await response.json();
                 return data.responseData?.translatedText || textoOriginal;
             } catch (error) {
@@ -279,12 +323,30 @@
                 .then(response => response.json())
                 .then(async res => {
                     if (res.success && res.data && res.data.experiencias) {
-                        
+
                         allExperiencias = await Promise.all(res.data.experiencias.map(async (exp) => {
                             let nombre = exp.nombre;
                             let descripcion = exp.descripcion || exp.Descripcion || '';
                             let duracion = exp.duracion || exp.Duracion || '';
                             let lugar = exp.lugar || exp.Lugar || 'Instalaciones del Hotel';
+
+                            // 🌟 EXTRAER LA PRIMERA IMAGEN DE FORMA SEGURA (Copiado de Balinesas)
+                            let primeraImagen =
+                                'https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=300';
+                            if (exp.imagenes) {
+                                try {
+                                    const arrayImg = typeof exp.imagenes === 'string' ? JSON
+                                        .parse(exp.imagenes) : exp.imagenes;
+                                    if (Array.isArray(arrayImg) && arrayImg.length > 0) {
+                                        primeraImagen = arrayImg[0];
+                                    }
+                                } catch (e) {
+                                    if (Array.isArray(exp.imagenes) && exp.imagenes.length >
+                                        0) {
+                                        primeraImagen = exp.imagenes[0];
+                                    }
+                                }
+                            }
 
                             if (currentLang === 'en') {
                                 nombre = exp.name || exp.nombre;
@@ -305,18 +367,21 @@
                                 renderedNombre: nombre,
                                 renderedDescripcion: descripcion,
                                 renderedDuracion: duracion,
-                                renderedLugar: lugar
+                                renderedLugar: lugar,
+                                imagen: primeraImagen // 🌟 Agregamos la propiedad de imagen limpia
                             };
                         }));
 
                         applyFiltersAndSorting();
                     } else {
-                        container.innerHTML = `<div class="text-white/40 text-center py-10 text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                        container.innerHTML =
+                            `<div class="text-white/40 text-center py-10 text-xs uppercase">${translations[currentLang].no_results}</div>`;
                     }
                 })
                 .catch(err => {
                     console.error("Error crítico:", err);
-                    container.innerHTML = `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading catalog data.' : 'Error al cargar los datos.'}</div>`;
+                    container.innerHTML =
+                        `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading catalog data.' : 'Error al cargar los datos.'}</div>`;
                 });
         });
 
@@ -332,7 +397,7 @@
             let resultados = allExperiencias.filter(exp => {
                 const matchType = (selectedType === 'all' || exp.tipo === selectedType);
 
-                const matchText = !searchText || 
+                const matchText = !searchText ||
                     (exp.renderedNombre && exp.renderedNombre.toLowerCase().includes(searchText)) ||
                     (exp.renderedDescripcion && exp.renderedDescripcion.toLowerCase().includes(searchText)) ||
                     (exp.renderedLugar && exp.renderedLugar.toLowerCase().includes(searchText));
@@ -349,7 +414,8 @@
                 let matchPriceRange = true;
                 if (selectedPriceRange !== 'all') {
                     if (selectedPriceRange === '0-1500') matchPriceRange = (exp.precio <= 1500);
-                    else if (selectedPriceRange === '1500-4000') matchPriceRange = (exp.precio > 1500 && exp.precio <= 4000);
+                    else if (selectedPriceRange === '1500-4000') matchPriceRange = (exp.precio > 1500 && exp
+                        .precio <= 4000);
                     else if (selectedPriceRange === '4000-plus') matchPriceRange = (exp.precio > 4000);
                 }
 
@@ -372,31 +438,42 @@
             container.innerHTML = '';
 
             if (items.length === 0) {
-                container.innerHTML = `<div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                container.innerHTML =
+                    `<div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div>`;
                 return;
             }
 
             const t = translations[currentLang];
 
             items.forEach(exp => {
-                const icono = exp.tipo === 'Spa & Bienestar' ? 'fa-spa' : 'fa-martini-glass-citrus';
-
                 const tarjeta = `
-                    <div onclick="selectExperiencia('${exp.slug}')" class="bg-black/60 hover:bg-black/70 backdrop-blur-sm border border-white/10 hover:border-[#A21B54]/50 rounded-xl p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.99] group">
-                        <div class="flex-1 pr-6 text-white">
+                    <div onclick="selectExperiencia('${exp.slug}')" class="bg-black/60 hover:bg-black/70 backdrop-blur-sm border border-white/10 hover:border-[#A21B54]/50 rounded-xl p-4 sm:p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.99] group gap-4 sm:gap-6">
+                        
+                        <div class="flex-1 text-white">
                             <h3 translate="no" class="text-lg font-semibold tracking-wide mb-2 group-hover:text-[#D4AF37] transition-colors">${exp.renderedNombre}</h3>
-                            <p class="text-xs text-white/70 font-light leading-relaxed mb-3">${exp.renderedDescripcion}</p>
+                            <p class="text-xs text-white/70 font-light leading-relaxed mb-3 line-clamp-2">${exp.renderedDescripcion}</p>
+                            
                             <div class="flex flex-col gap-1 text-[11px] text-white/60">
                                 <div>• <span>${t.duration_lbl}</span>: <span class="font-medium text-white/80">${exp.renderedDuracion}</span></div>
                                 <div>• <span>${t.place_lbl}</span>: <span class="font-medium text-white/80">${exp.renderedLugar}</span></div>
                                 <div>• <span>${t.capacity_lbl}</span>: <span class="font-medium text-white/80">${exp.numero_personas} Pax</span></div>
                             </div>
+                            
                             <div class="text-xl font-semibold text-[#D4AF37] mt-3 tracking-wide">$${exp.precio.toLocaleString()} <span class="text-xs text-white/50 font-light">MXN</span></div>
                         </div>
-                        <div class="w-24 h-24 bg-white/5 border border-white/10 rounded-lg flex flex-col justify-center items-center gap-2 p-2 shrink-0">
-                            <i class="fa-solid ${icono} text-2xl text-[#D4AF37]"></i>
-                            <span class="text-[9px] uppercase tracking-wider text-white/40 text-center font-medium group-hover:text-white transition-colors">${t.tap_view}</span>
+
+                        <!-- 🌟 CONTENEDOR DE IMAGEN ASÍNCRONO (Mismo layout de Balinesas con colores dorados de Experiencias) -->
+                        <div class="w-32 h-32 sm:w-44 sm:h-36 md:w-52 md:h-40 bg-stone-900 border border-white/10 rounded-lg shrink-0 overflow-hidden relative group-hover:border-[#D4AF37]/40 transition-colors shadow-inner">
+                            <img src="${exp.imagen}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" alt="${exp.renderedNombre}">
+                            
+                            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex items-end justify-center pb-2.5">
+                                <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-white/90 text-center font-medium group-hover:text-[#D4AF37] transition-colors drop-shadow-lg flex items-center gap-1.5">
+                                    ${t.tap_view} 
+                                    <i class="fa-solid fa-arrow-right text-[9px] opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300"></i>
+                                </span>
+                            </div>
                         </div>
+
                     </div>
                 `;
                 container.innerHTML += tarjeta;

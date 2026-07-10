@@ -8,7 +8,7 @@
     // Ficha técnica para detalles adicionales (Ej: Botella de cortesía, etc.)
     $parts = explode('|', $cena->ficha_tecnica ?? ($cena->Ficha_Tecnica ?? ''));
     $detalle_adicional =
-        isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : '1 botella de Moët & Chandon Brut 750ml';
+        isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : '1 botella de Moet & Chandon Brut 750ml';
 @endphp
 
 <!DOCTYPE html>
@@ -45,6 +45,10 @@
 
         .carousel-track {
             display: flex;
+            width: 100%;
+            /* 🌟 Fuerza el ancho base riguroso */
+            will-change: transform;
+            /* 🌟 Prepara la aceleración por hardware en la tarjeta gráfica */
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
@@ -107,14 +111,15 @@
 
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     @forelse($cena->imagenes ?? [] as $foto)
-                    <div class="min-w-full h-full shrink-0">
-                        <img src="{{ $foto }}" class="w-full h-full object-cover" alt="Slide {{ $loop->iteration }}">
-                    </div>
+                        <div class="w-full min-w-full h-full shrink-0">
+                            <img src="{{ $foto }}" class="w-full h-full object-cover"
+                                alt="Slide {{ $loop->iteration }}">
+                        </div>
                     @empty
-                    <div class="min-w-full h-full shrink-0">
-                        <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800"
-                            class="w-full h-full object-cover" alt="Slide 1">
-                    </div>
+                        <div class="w-full min-w-full h-full shrink-0">
+                            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800"
+                                class="w-full h-full object-cover" alt="Slide 1">
+                        </div>
                     @endforelse
                 </div>
 
@@ -129,11 +134,12 @@
 
                 <div id="carouselDots" class="absolute bottom-5 left-0 right-0 flex justify-center space-x-2.5 z-10">
                     @forelse($cena->imagenes ?? [] as $foto)
-                    <span class="w-2 h-2 rounded-full {{ $loop->first ? 'bg-white' : 'bg-white/40' }} transition-all duration-300 cursor-pointer"
-                        onclick="setSlide({{ $loop->index }})"></span>
+                        <span
+                            class="w-2 h-2 rounded-full {{ $loop->first ? 'bg-white' : 'bg-white/40' }} transition-all duration-300 cursor-pointer"
+                            onclick="setSlide({{ $loop->index }})"></span>
                     @empty
-                    <span class="w-2 h-2 rounded-full bg-white transition-all duration-300 cursor-pointer"
-                        onclick="setSlide(0)"></span>
+                        <span class="w-2 h-2 rounded-full bg-white transition-all duration-300 cursor-pointer"
+                            onclick="setSlide(0)"></span>
                     @endforelse
                 </div>
             </div>
@@ -338,7 +344,9 @@
         const totalSlides = track.children.length;
 
         function updateCarousel() {
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            // 🌟 CAMBIA ESTA LÍNEA (Usamos translate3d en lugar de translateX)
+            track.style.transform = `translate3d(-${currentSlide * 100}%, 0, 0)`;
+
             for (let i = 0; i < dots.length; i++) {
                 if (i === currentSlide) {
                     dots[i].classList.remove('bg-white/40');

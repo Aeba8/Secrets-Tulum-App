@@ -86,6 +86,10 @@
 
         .carousel-track {
             display: flex;
+            width: 100%;
+            /* 🌟 Asegura un ancho base estricto */
+            will-change: transform;
+            /* 🌟 Prepara al navegador para renderizados ultra precisos */
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
@@ -134,19 +138,21 @@
 
     <div class="flex-1 w-full max-w-7xl mx-auto grid grid-cols-1 md:grid-cols-12 gap-12 px-8 items-center py-6 z-10">
 
-        <div class="md:col-span-5 flex flex-col justify-center items-center w-full relative">
+        <div class="md:col-span-6 flex flex-col justify-center items-center w-full relative">
             <div
-                class="w-full aspect-[16/11] overflow-hidden rounded-xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] border border-white/5 bg-black relative">
+                class="w-full aspect-[16/10] overflow-hidden rounded-xl shadow-[0_25px_60px_-10px_rgba(0,0,0,0.95)] border border-white/5 bg-black relative">
+
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     @forelse($experiencia->imagenes ?? [] as $foto)
-                    <div class="min-w-full h-full shrink-0">
-                        <img src="{{ $foto }}" class="w-full h-full object-cover" alt="Slide {{ $loop->iteration }}">
-                    </div>
+                        <div class="w-full min-w-full h-full shrink-0">
+                            <img src="{{ $foto }}" class="w-full h-full object-cover"
+                                alt="Slide {{ $loop->iteration }}">
+                        </div>
                     @empty
-                    <div class="min-w-full h-full shrink-0">
-                        <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800"
-                            class="w-full h-full object-cover" alt="Slide 1">
-                    </div>
+                        <div class="w-full min-w-full h-full shrink-0">
+                            <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800"
+                                class="w-full h-full object-cover" alt="Slide 1">
+                        </div>
                     @endforelse
                 </div>
 
@@ -157,7 +163,8 @@
             </div>
         </div>
 
-        <div class="md:col-span-7 flex flex-col justify-center h-full space-y-6 lg:pl-4">
+        <div class="md:col-span-6 flex flex-col justify-center h-full space-y-6 lg:pl-4">
+
             <div>
                 <span class="text-xs tracking-[0.35em] text-secrets-gold font-semibold uppercase block mb-1 font-mono">
                     {{ request('lang') == 'en' ? 'EXCLUSIVE PROGRAM' : 'PROGRAMA EXCLUSIVO' }}
@@ -291,19 +298,21 @@
 
                 <div>
                     <label class="block text-xs text-stone-400 uppercase tracking-widest mb-1.5 font-mono">
-                        * {{ request('lang') == 'en' ? 'Room Number (4 digits):' : 'Número de Habitación (4 dígitos):' }}
+                        *
+                        {{ request('lang') == 'en' ? 'Room Number (4 digits):' : 'Número de Habitación (4 dígitos):' }}
                     </label>
-                    <input type="text" id="input-habitacion" maxlength="4" inputmode="numeric" placeholder="e.g. 4123" 
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    <input type="text" id="input-habitacion" maxlength="4" inputmode="numeric"
+                        placeholder="e.g. 4123" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                         class="w-full bg-white/[0.02] border border-white/10 rounded px-3 py-2.5 text-white placeholder-stone-700 focus:outline-none focus:border-[#C5A059] transition">
                 </div>
 
                 <div>
                     <label class="block text-xs text-stone-400 uppercase tracking-widest mb-1.5 font-mono">
-                        * {{ request('lang') == 'en' ? 'Seller ID (6 digits):' : 'Número de Colaborador (6 dígitos):' }}
+                        *
+                        {{ request('lang') == 'en' ? 'Seller ID (6 digits):' : 'Número de Colaborador (6 dígitos):' }}
                     </label>
-                    <input type="text" id="input-vendedor" maxlength="6" inputmode="numeric" placeholder="e.g. 102405" 
-                        oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                    <input type="text" id="input-vendedor" maxlength="6" inputmode="numeric"
+                        placeholder="e.g. 102405" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                         class="w-full bg-white/[0.02] border border-white/10 rounded px-3 py-2.5 text-white placeholder-stone-700 focus:outline-none focus:border-[#C5A059] transition">
                 </div>
 
@@ -395,7 +404,7 @@
         const totalSlides = track?.children?.length || 0;
 
         function moveCarousel(direction) {
-            if(totalSlides === 0) return;
+            if (totalSlides === 0) return;
             currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
             track.style.transform = `translateX(-${currentSlide * 100}%)`;
         }
@@ -439,7 +448,7 @@
 
             const inputFecha = document.getElementById('input-fecha');
             inputFecha.value = hoyLocal;
-            inputFecha.min = hoyLocal; 
+            inputFecha.min = hoyLocal;
         }
 
         function cerrarModalReserva() {
@@ -453,7 +462,8 @@
         function cancelarOperacion() {
             swalCustomButtons.fire({
                 title: currentLang === 'en' ? 'ABANDON RESERVATION?' : '¿CANCELAR RESERVA?',
-                text: currentLang === 'en' ? 'Any progress entered will be lost.' : 'Se perderán los datos capturados en este formulario.',
+                text: currentLang === 'en' ? 'Any progress entered will be lost.' :
+                    'Se perderán los datos capturados en este formulario.',
                 icon: 'warning',
                 showCancelButton: true,
                 confirmButtonText: currentLang === 'en' ? 'YES, QUIT' : 'SÍ, CANCELAR',
@@ -480,7 +490,8 @@
                 swalCustomButtons.fire({
                     icon: 'error',
                     title: currentLang === 'en' ? 'MISSING FIELDS' : 'CAMPOS INCOMPLETOS',
-                    text: currentLang === 'en' ? 'Please fill out all required fields (*).' : 'Por favor, completa todos los campos marcados como obligatorios (*).'
+                    text: currentLang === 'en' ? 'Please fill out all required fields (*).' :
+                        'Por favor, completa todos los campos marcados como obligatorios (*).'
                 });
                 return;
             }
@@ -490,7 +501,8 @@
                 swalCustomButtons.fire({
                     icon: 'warning',
                     title: currentLang === 'en' ? 'INVALID ROOM' : 'HABITACIÓN INVÁLIDA',
-                    text: currentLang === 'en' ? 'The room number must contain exactly 4 digits (e.g., 4123).' : 'El número de habitación debe ser exactamente de 4 dígitos (ejemplo: 4123).'
+                    text: currentLang === 'en' ? 'The room number must contain exactly 4 digits (e.g., 4123).' :
+                        'El número de habitación debe ser exactamente de 4 dígitos (ejemplo: 4123).'
                 });
                 return;
             }
@@ -500,7 +512,9 @@
                 swalCustomButtons.fire({
                     icon: 'warning',
                     title: currentLang === 'en' ? 'INVALID COLLABORATOR' : 'COLABORADOR INVÁLIDO',
-                    text: currentLang === 'en' ? 'The collaborator ID must contain exactly 6 digits (e.g., 102405).' : 'El número de colaborador debe ser exactamente de 6 dígitos (ejemplo: 102405).'
+                    text: currentLang === 'en' ?
+                        'The collaborator ID must contain exactly 6 digits (e.g., 102405).' :
+                        'El número de colaborador debe ser exactamente de 6 dígitos (ejemplo: 102405).'
                 });
                 return;
             }
@@ -534,7 +548,8 @@
             // Animación de carga para congelar la iPad y evitar doble submit accidental
             Swal.fire({
                 title: currentLang === 'en' ? 'Processing...' : 'Procesando...',
-                text: currentLang === 'en' ? 'Registering your reservation' : 'Guardando la reservación en el sistema...',
+                text: currentLang === 'en' ? 'Registering your reservation' :
+                    'Guardando la reservación en el sistema...',
                 allowOutsideClick: false,
                 allowEscapeKey: false,
                 background: 'linear-gradient(to bottom, #141414, #0d0f0e)',
@@ -562,7 +577,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'X-Requested-With': 'XMLHttpRequest'
                     },
-                    credentials: 'include', 
+                    credentials: 'include',
                     body: JSON.stringify(datosReserva)
                 });
 
@@ -578,7 +593,8 @@
                     Swal.fire({
                         icon: 'success',
                         title: currentLang === 'en' ? 'SUCCESSFULLY BOOKED!' : '¡RESERVA EXITOSA!',
-                        text: currentLang === 'en' ? 'The experience has been secured.' : 'La experiencia ha sido reservada de forma correcta.',
+                        text: currentLang === 'en' ? 'The experience has been secured.' :
+                            'La experiencia ha sido reservada de forma correcta.',
                         timer: 2000,
                         showConfirmButton: false,
                         background: 'linear-gradient(to bottom, #141414, #0d0f0e)',

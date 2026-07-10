@@ -41,6 +41,14 @@
         @include('admin.dashboard.cruds.index')
     </div>
 
+    <div id="section-usuarios" class="dashboard-section hidden">
+        @include('admin.dashboard.cruds.usuarios')
+    </div>
+
+    <div id="section-espacios" class="dashboard-section hidden">
+        @include('admin.dashboard.cruds.espacios')
+    </div>
+
 </div>
 @endsection
 
@@ -315,6 +323,21 @@ document.addEventListener('click', (e) => {
         document.querySelectorAll('.crud-panel').forEach(p => p.classList.add('hidden'));
         const panel = document.getElementById('crud-' + crudTab.dataset.crud);
         if (panel) panel.classList.remove('hidden');
+        // Reset filters on tab switch
+        const searchInput = panel?.querySelector('.search-servicios');
+        if (searchInput) searchInput.value = '';
+        const estadoDropdown = panel?.querySelector('.estado-filter-dropdown');
+        if (estadoDropdown) {
+            estadoDropdown.dataset.filtroEstado = 'todos';
+            const label = estadoDropdown.querySelector('.estado-filter-label');
+            if (label) label.textContent = 'Todos';
+            estadoDropdown.querySelectorAll('.estado-filter-option').forEach(function(o) {
+                o.className = 'estado-filter-option w-full text-left px-3 py-2 text-xs rounded-lg text-gray-600 dark:text-gray-400 hover:bg-sand-100 dark:hover:bg-charcoal-500';
+            });
+            const firstOpt = estadoDropdown.querySelector('.estado-filter-option[data-filtro="todos"]');
+            if (firstOpt) firstOpt.className = 'estado-filter-option w-full text-left px-3 py-2 text-xs rounded-lg bg-gold-500 text-white';
+        }
+        panel?.querySelectorAll('tbody tr').forEach(r => r.style.display = '');
     }
 });
 
@@ -323,6 +346,71 @@ document.addEventListener('DOMContentLoaded', () => {
     setTimeout(() => {
         window.renderChartsForSection('general');
     }, 100);
+});
+
+function filtrarServicios() {
+    const panel = document.querySelector('.crud-panel:not(.hidden)');
+    if (!panel) return;
+    const q = panel.querySelector('.search-servicios')?.value.toLowerCase().trim() || '';
+    const dropdown = panel.querySelector('.estado-filter-dropdown');
+    const estado = dropdown?.dataset.filtroEstado || 'todos';
+
+    panel.querySelectorAll('tbody tr').forEach(row => {
+        if (row.querySelector('td[colspan]')) return;
+        const matchTexto = !q || row.textContent.toLowerCase().includes(q);
+        const estadoCelda = row.querySelector('td:nth-last-child(2)')?.textContent.trim() || '';
+        const matchEstado = estado === 'todos' || estadoCelda === estado;
+        row.style.display = (matchTexto && matchEstado) ? '' : 'none';
+    });
+}
+
+// Toggle estado filter dropdowns
+document.addEventListener('click', function(e) {
+    const toggle = e.target.closest('.estado-filter-toggle');
+    if (toggle) {
+        e.stopPropagation();
+        const menu = toggle.parentElement.querySelector('.estado-filter-menu');
+        if (menu) {
+            const rect = toggle.getBoundingClientRect();
+            menu.style.top = (rect.bottom + 4) + 'px';
+            menu.style.left = rect.left + 'px';
+            menu.style.minWidth = rect.width + 'px';
+            menu.classList.toggle('hidden');
+        }
+        return;
+    }
+
+    const option = e.target.closest('.estado-filter-option');
+    if (option) {
+        const menu = option.closest('.estado-filter-menu');
+        const container = menu.closest('.estado-filter-dropdown');
+        const label = container.querySelector('.estado-filter-label');
+        const value = option.dataset.filtro;
+
+        label.textContent = option.textContent;
+        container.dataset.filtroEstado = value;
+        menu.classList.add('hidden');
+
+        menu.querySelectorAll('.estado-filter-option').forEach(function(o) {
+            o.className = 'estado-filter-option w-full text-left px-3 py-2 text-xs rounded-lg text-gray-600 dark:text-gray-400 hover:bg-sand-100 dark:hover:bg-charcoal-500';
+        });
+        option.className = 'estado-filter-option w-full text-left px-3 py-2 text-xs rounded-lg bg-gold-500 text-white';
+
+        filtrarServicios();
+        return;
+    }
+
+    // Close open menus when clicking outside
+    document.querySelectorAll('.estado-filter-menu:not(.hidden)').forEach(function(m) {
+        m.classList.add('hidden');
+    });
+});
+
+// Search input filtering
+document.addEventListener('input', function(e) {
+    if (e.target.closest('.search-servicios')) {
+        filtrarServicios();
+    }
 });
 </script>
 @endpush

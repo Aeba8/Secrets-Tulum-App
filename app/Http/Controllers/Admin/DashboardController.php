@@ -5,7 +5,11 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Balinesa;
 use App\Models\CenaEspecial;
+use App\Models\Espacio;
 use App\Models\Experiencia;
+use App\Models\Reserva;
+use App\Models\Usuario;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 
 class DashboardController extends Controller
@@ -167,33 +171,36 @@ class DashboardController extends Controller
             ['shift' => 'Nocturno (22:00-6:00)',   'reservations' => 14, 'revenue' => 9800,  'color' => '#3B82F6'],
         ];
 
-        $agendaReservations = [
-            ['id' => 1, 'mesa' => 'Balinesa #3 - Playa', 'guest' => 'Carlos Rivera', 'room' => 'Suite 204', 'time' => '10:00 - 13:00', 'pax' => 4, 'status' => 'confirmado', 'status_color' => 'sapphire', 'phone' => '+52 998 123 4567'],
-            ['id' => 2, 'mesa' => 'The Grotto - Mesa VIP', 'guest' => 'Ana Sofía García', 'room' => 'Master 101', 'time' => '14:00 - 16:30', 'pax' => 2, 'status' => 'confirmado', 'status_color' => 'sapphire', 'phone' => '+52 998 234 5678'],
-            ['id' => 3, 'mesa' => 'Balinesa #7 - Alberca', 'guest' => 'Roberto Méndez', 'room' => 'Junior 305', 'time' => '11:00 - 14:00', 'pax' => 3, 'status' => 'pendiente', 'status_color' => 'amber', 'phone' => '+52 998 345 6789'],
-            ['id' => 4, 'mesa' => 'Terraza Mar - Mesa 5', 'guest' => 'María Fernanda López', 'room' => 'Suite 110', 'time' => '19:00 - 21:30', 'pax' => 6, 'status' => 'confirmado', 'status_color' => 'sapphire', 'phone' => '+52 998 456 7890'],
-            ['id' => 5, 'mesa' => 'Balinesa #1 - Playa', 'guest' => 'José Luis Martínez', 'room' => 'Penthouse 501', 'time' => '09:00 - 12:00', 'pax' => 2, 'status' => 'no-show', 'status_color' => 'red', 'phone' => '+52 998 567 8901'],
-            ['id' => 6, 'mesa' => 'The Grotto - Mesa 8', 'guest' => 'Patricia Vega', 'room' => 'Deluxe 208', 'time' => '13:00 - 15:30', 'pax' => 4, 'status' => 'completado', 'status_color' => 'gray', 'phone' => '+52 998 678 9012'],
-            ['id' => 7, 'mesa' => 'Pool Club - Camastro 2', 'guest' => 'Fernando Castillo', 'room' => 'Suite 402', 'time' => '10:30 - 17:00', 'pax' => 2, 'status' => 'pendiente', 'status_color' => 'amber', 'phone' => '+52 998 789 0123'],
-            ['id' => 8, 'mesa' => 'Balinesa #5 - Sunset', 'guest' => 'Laura Jiménez', 'room' => 'Master 103', 'time' => '15:00 - 18:30', 'pax' => 4, 'status' => 'confirmado', 'status_color' => 'sapphire', 'phone' => '+52 998 890 1234'],
-        ];
+        $hoy = Carbon::today()->format('Y-m-d');
+        $manana = Carbon::tomorrow()->format('Y-m-d');
+        $inicioSemana = Carbon::today();
+        $finSemana = Carbon::today()->addDays(7);
+
+        $agendaReservations = Reserva::with(['espacio', 'serviciable', 'usuario'])
+            ->whereBetween('Dia', [$inicioSemana, $finSemana])
+            ->orderBy('Dia')
+            ->orderBy('created_at', 'desc')
+            ->get();
 
         $agendaPeriods = [
-            ['key' => 'today', 'label' => 'Hoy', 'count' => 8],
-            ['key' => 'tomorrow', 'label' => 'Mañana', 'count' => 12],
-            ['key' => 'week', 'label' => 'Esta Semana', 'count' => 47],
+            ['key' => 'today', 'label' => 'Hoy', 'count' => Reserva::whereDate('Dia', $hoy)->count()],
+            ['key' => 'tomorrow', 'label' => 'Mañana', 'count' => Reserva::whereDate('Dia', $manana)->count()],
+            ['key' => 'week', 'label' => 'Esta Semana', 'count' => Reserva::whereBetween('Dia', [$inicioSemana, $finSemana])->count()],
         ];
 
         $agendaStats = [
-            ['label' => 'Confirmadas', 'count' => 4, 'color' => '#065F46'],
-            ['label' => 'Pendientes', 'count' => 2, 'color' => '#D4A853'],
-            ['label' => 'No-Show', 'count' => 1, 'color' => '#DC2626'],
-            ['label' => 'Completadas', 'count' => 1, 'color' => '#9CA3AF'],
+            ['label' => 'Confirmadas', 'count' => Reserva::where('Estado', 'Confirmado')->whereBetween('Dia', [$inicioSemana, $finSemana])->count(), 'color' => '#065F46'],
+            ['label' => 'Pendientes', 'count' => Reserva::where('Estado', 'Pendiente')->whereBetween('Dia', [$inicioSemana, $finSemana])->count(), 'color' => '#D4A853'],
+            ['label' => 'No-Show', 'count' => Reserva::where('Estado', 'No-Show')->whereBetween('Dia', [$inicioSemana, $finSemana])->count(), 'color' => '#DC2626'],
+            ['label' => 'Completadas', 'count' => Reserva::where('Estado', 'Completado')->whereBetween('Dia', [$inicioSemana, $finSemana])->count(), 'color' => '#9CA3AF'],
+            ['label' => 'Canceladas', 'count' => Reserva::where('Estado', 'Cancelado')->whereBetween('Dia', [$inicioSemana, $finSemana])->count(), 'color' => '#6B7280'],
         ];
 
         $balinesas = Balinesa::all();
         $cenasEspeciales = CenaEspecial::all();
         $paquetesEventos = Experiencia::all();
+        $usuarios = Usuario::where('Rol', 'Operativo')->get();
+        $espacios = Espacio::all();
 
         $fondos = [];
 
@@ -225,6 +232,8 @@ class DashboardController extends Controller
             'cenasEspeciales',
             'paquetesEventos',
             'balinesas',
+            'usuarios',
+            'espacios',
             'fondos',
         ));
     }

@@ -27,6 +27,13 @@ class AuthController extends Controller
                           ->orWhere('Email', $request->login_input)
                           ->first();
 
+        // Validar que la cuenta esté activa
+        if ($usuario && $usuario->Estado !== 'Activo') {
+            return back()->withErrors([
+                'login_input' => 'Esta cuenta se encuentra desactivada. Contacta al administrador.',
+            ])->withInput($request->only('login_input'));
+        }
+
         // Si el usuario existe y su número de colaborador coincide con lo tecleado
         if ($usuario && $usuario->Numero_de_colaborador === $request->numero_colaborador) {
             

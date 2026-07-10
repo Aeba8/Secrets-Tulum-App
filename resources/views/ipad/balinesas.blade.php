@@ -111,7 +111,7 @@
 
                     <button onclick="filterByInclusion('champagne')" id="inc-champagne"
                         class="inclusion-filter-btn flex items-center justify-between w-full p-2.5 rounded-lg border border-white/5 bg-transparent text-white/60 text-xs hover:text-white hover:bg-white/[0.02] transition-all duration-300 cursor-pointer">
-                        <span data-key="inc_champagne">Con Champagne / Moët</span>
+                        <span data-key="inc_champagne">Con Champagne / Moet</span>
                         <div
                             class="w-3.5 h-3.5 rounded-full border border-white/30 flex items-center justify-center p-0.5">
                             <div id="radio-champagne" class="w-full h-full rounded-full bg-transparent"></div>
@@ -203,7 +203,7 @@
                 top_title: "Reservación de Camas Balinesas",
                 filter_title: "Inclusiones (Bebida)",
                 inc_all: "Cualquier paquete",
-                inc_champagne: "Con Champagne / Moët",
+                inc_champagne: "Con Champagne / Moet",
                 inc_premium: "Licores y Premium Botellas",
                 search_lbl: "Buscar Paquete",
                 capacity_title: "Capacidad de Personas",
@@ -231,7 +231,7 @@
                 top_title: "Bali Beds Reservation",
                 filter_title: "Inclusions (Beverage)",
                 inc_all: "Any Package",
-                inc_champagne: "With Champagne / Moët",
+                inc_champagne: "With Champagne / Moet",
                 inc_premium: "Liquors & Premium Bottles",
                 search_lbl: "Search Package",
                 capacity_title: "People Capacity",
@@ -401,10 +401,10 @@
 
                 let matchInclusion = true;
                 if (currentFilterInclusion === 'champagne') {
-                    matchInclusion = b.botellaRaw.includes('moët') || b.botellaRaw.includes('chandon') || b
+                    matchInclusion = b.botellaRaw.includes('moet') || b.botellaRaw.includes('chandon') || b
                         .botellaRaw.includes('champagne') || b.botellaRaw.includes('brut');
                 } else if (currentFilterInclusion === 'premium') {
-                    matchInclusion = !b.botellaRaw.includes('moët') && !b.botellaRaw.includes('chandon') && !b
+                    matchInclusion = !b.botellaRaw.includes('moet') && !b.botellaRaw.includes('chandon') && !b
                         .botellaRaw.includes('champagne');
                 }
 

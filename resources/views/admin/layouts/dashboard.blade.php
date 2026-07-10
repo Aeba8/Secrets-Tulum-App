@@ -393,10 +393,43 @@
                         <i class="fa-solid fa-gem w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Experiencias VIP</span>
                     </a>
+
+                </div>
+
+                <div class="sidebar-border border-t dark:border-white/5 my-2"></div>
+
+                {{-- Usuarios Operativos (standalone) --}}
+                <a href="#usuarios" data-section="usuarios"
+                    class="nav-item nav-section-link flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200">
+                    <i class="fa-solid fa-users-gear w-5 text-center flex-shrink-0"></i>
+                    <span class="whitespace-nowrap nav-label">Usuarios Operativos</span>
+                </a>
+
+                <div class="sidebar-border border-t dark:border-white/5 my-2"></div>
+
+                {{-- Espacios (parent toggle) --}}
+                <button id="espacios-parent-toggle"
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
+                    <i class="fa-solid fa-table-cells w-5 text-center flex-shrink-0"></i>
+                    <span class="whitespace-nowrap nav-label flex-1">Espacios</span>
+                    <i id="espacios-chevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-300 nav-label" style="transform: rotate(-90deg)"></i>
+                </button>
+
+                {{-- Sub-apartados de Espacios --}}
+                <div id="espacios-submenu"
+                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 dark:space-y-1 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
+                    <a href="#espacios-balinesas" data-section="espacios-balinesas"
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
+                        <i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i>
+                        <span class="whitespace-nowrap nav-label">Balinesas</span>
+                    </a>
+                    <a href="#espacios-mesas" data-section="espacios-mesas"
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
+                        <i class="fa-solid fa-chair w-4 text-center flex-shrink-0"></i>
+                        <span class="whitespace-nowrap nav-label">Mesas</span>
+                    </a>
                 </div>
             </nav>
-
-            <div class="sidebar-border border-t dark:border-white/5 my-2"></div>
 
             {{-- Footer --}}
             <div class="sidebar-border px-4 py-3 border-t dark:border-white/5 flex-shrink-0">
@@ -516,6 +549,18 @@
                 title: 'Experiencias VIP',
                 icon: 'fa-gem'
             },
+            'usuarios': {
+                title: 'Usuarios Operativos',
+                icon: 'fa-users-gear'
+            },
+            'espacios-balinesas': {
+                title: 'Espacios — Balinesas',
+                icon: 'fa-umbrella-beach'
+            },
+            'espacios-mesas': {
+                title: 'Espacios — Mesas',
+                icon: 'fa-chair'
+            },
         };
 
         // Sidebar toggle
@@ -563,6 +608,7 @@
                     submenuContainer.classList.add('max-h-0');
                     dashboardChevron.style.transform = 'rotate(-90deg)';
                 }
+                localStorage.setItem('sidebar-collapsed-dashboard', isCollapsed ? 'false' : 'true');
                 showSection('general');
             });
         }
@@ -587,9 +633,34 @@
                     servicesSubmenu.classList.add('max-h-0');
                     servicesChevron.style.transform = 'rotate(-90deg)';
                 }
+                localStorage.setItem('sidebar-collapsed-services', isCollapsed ? 'false' : 'true');
 
-                // NUEVO: Mostrar automáticamente el blade de los CRUDs
                 showSection('cenas');
+            });
+        }
+
+        // Espacios parent toggle (submenu Balinesas/Mesas)
+        const espaciosToggle = document.getElementById('espacios-parent-toggle');
+        const espaciosSubmenu = document.getElementById('espacios-submenu');
+        const espaciosChevron = document.getElementById('espacios-chevron');
+
+        if (espaciosToggle && espaciosSubmenu && espaciosChevron) {
+            espaciosToggle.addEventListener('click', () => {
+                const isCollapsed = espaciosSubmenu.style.maxHeight === '0px' || espaciosSubmenu.classList.contains('max-h-0');
+                if (isCollapsed) {
+                    espaciosSubmenu.style.maxHeight = espaciosSubmenu.scrollHeight + 'px';
+                    espaciosSubmenu.style.opacity = '1';
+                    espaciosSubmenu.classList.remove('max-h-0');
+                    espaciosChevron.style.transform = 'rotate(0deg)';
+                } else {
+                    espaciosSubmenu.style.maxHeight = '0px';
+                    espaciosSubmenu.style.opacity = '0';
+                    espaciosSubmenu.classList.add('max-h-0');
+                    espaciosChevron.style.transform = 'rotate(-90deg)';
+                }
+                localStorage.setItem('sidebar-collapsed-espacios', isCollapsed ? 'false' : 'true');
+
+                showSection('espacios-balinesas');
             });
         }
 
@@ -642,10 +713,14 @@
 
         // ── Navigation by hash sections ──
         function showSection(sectionId) {
-            // Map CRUD sub-sections to parent section-cenas
+            // Map CRUD sub-sections to parent blade
             let actualSection = sectionId;
             if (sectionId === 'paquetes' || sectionId === 'balinesas' || sectionId === 'experiencias') {
                 actualSection = 'cenas';
+            } else if (sectionId === 'usuarios') {
+                actualSection = 'usuarios';
+            } else if (sectionId === 'espacios-balinesas' || sectionId === 'espacios-mesas') {
+                actualSection = 'espacios';
             }
 
             // Hide all sections
@@ -655,8 +730,8 @@
             const target = document.getElementById('section-' + actualSection);
             if (target) target.classList.remove('hidden');
 
-            // Auto-activate CRUD tab if applicable
-            if (actualSection === 'cenas' && sectionId !== 'cenas') {
+            // Auto-activate CRUD tab if applicable (services)
+            if (actualSection === 'cenas') {
                 const crudTab = document.querySelector('.crud-tab[data-crud="' + sectionId + '"]');
                 if (crudTab) {
                     document.querySelectorAll('.crud-tab').forEach(t => {
@@ -670,6 +745,13 @@
                 }
             }
 
+            // Auto-activate sub-tab for espacios
+            if (actualSection === 'espacios' && sectionId !== 'espacios') {
+                if (typeof window.activarSubTabEspacios === 'function') {
+                    window.activarSubTabEspacios(sectionId === 'espacios-balinesas' ? 'Balinesa' : 'Mesa');
+                }
+            }
+
             // Update title
             const titleEl = document.getElementById('page-title');
             if (sectionNames[sectionId]) {
@@ -678,7 +760,7 @@
 
             // Update nav active states
             // 1. Quitamos el color dorado de TODOS los enlaces y botones principales
-            document.querySelectorAll('.nav-section-link, #dashboard-parent-toggle, #services-parent-toggle').forEach(
+            document.querySelectorAll('.nav-section-link, #dashboard-parent-toggle, #services-parent-toggle, #espacios-parent-toggle').forEach(
                 el => {
                     el.classList.remove('nav-item-active');
                     el.classList.add('nav-item');
@@ -697,6 +779,7 @@
 
             const dashboardSections = ['general', 'bcg', 'inventory', 'financial', 'occupancy', 'operations', 'team'];
             const servicesSections = ['cenas', 'balinesas', 'experiencias'];
+            const espaciosSections = ['espacios-balinesas', 'espacios-mesas'];
 
             if (dashboardSections.includes(sectionId) && dashboardParent) {
                 dashboardParent.classList.remove('nav-item');
@@ -706,6 +789,12 @@
             if (servicesSections.includes(sectionId) && servicesParent) {
                 servicesParent.classList.remove('nav-item');
                 servicesParent.classList.add('nav-item-active');
+            }
+
+            const espaciosParent = document.getElementById('espacios-parent-toggle');
+            if (espaciosSections.includes(sectionId) && espaciosParent) {
+                espaciosParent.classList.remove('nav-item');
+                espaciosParent.classList.add('nav-item-active');
             }
 
             // Re-render charts that might be in the shown section
@@ -726,6 +815,23 @@
         });
 
         // On load: read hash or default to general
+        // Restore sidebar submenu collapse states from localStorage
+        function restoreSidebarState(key, containerId, chevronId) {
+            if (localStorage.getItem(key) === 'true') {
+                const container = document.getElementById(containerId);
+                const chevron = document.getElementById(chevronId);
+                if (container && chevron) {
+                    container.style.maxHeight = '0px';
+                    container.style.opacity = '0';
+                    container.classList.add('max-h-0');
+                    chevron.style.transform = 'rotate(-90deg)';
+                }
+            }
+        }
+        restoreSidebarState('sidebar-collapsed-dashboard', 'submenu-container', 'dashboard-chevron');
+        restoreSidebarState('sidebar-collapsed-services', 'services-submenu', 'services-chevron');
+        restoreSidebarState('sidebar-collapsed-espacios', 'espacios-submenu', 'espacios-chevron');
+
         window.addEventListener('DOMContentLoaded', () => {
             const hash = window.location.hash.replace('#', '') || 'general';
             if (sectionNames[hash]) {

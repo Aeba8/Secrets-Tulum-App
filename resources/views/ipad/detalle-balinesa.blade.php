@@ -4,7 +4,7 @@
     $horario_disponible = !empty(trim($balinesa->Dias)) ? trim($balinesa->Dias) : 'Todos los días';
     $botella_incluida = !empty(trim($balinesa->ficha_tecnica))
         ? trim($balinesa->ficha_tecnica)
-        : '1 botella de Moët & Chandon Brut 750ml';
+        : '1 botella de Moet & Chandon Brut 750ml';
 @endphp
 
 <!DOCTYPE html>
@@ -35,6 +35,10 @@
 
         .carousel-track {
             display: flex;
+            width: 100%;
+            /* 🌟 Fuerza el ancho base riguroso */
+            will-change: transform;
+            /* 🌟 Activa la optimización previa del navegador */
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
@@ -100,12 +104,12 @@
 
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     @forelse($balinesa->imagenes ?? [] as $foto)
-                        <div class="min-w-full h-full shrink-0">
+                        <div class="w-full min-w-full h-full shrink-0">
                             <img src="{{ $foto }}" class="w-full h-full object-cover"
                                 alt="Slide {{ $loop->iteration }}">
                         </div>
                     @empty
-                        <div class="min-w-full h-full shrink-0">
+                        <div class="w-full min-w-full h-full shrink-0">
                             <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=800"
                                 class="w-full h-full object-cover" alt="Slide 1">
                         </div>
@@ -139,7 +143,7 @@
 
             <div>
                 <span class="text-xs tracking-[0.35em] text-secrets-gold font-semibold uppercase block mb-2 font-mono">
-                    {{ request('lang') == 'en' ? 'EXPERIENCE PACKAGE' : 'PAQUETE DE EXPERIENCIA' }}
+                    {{ request('lang') == 'en' ? 'BALI BED PACKAGE' : 'PAQUETE DE BALINESA' }}
                 </span>
                 <h1 class="text-4xl lg:text-5xl font-extralight text-white tracking-wide leading-tight font-sans">
                     {{ $balinesa->Nombre }}
@@ -303,7 +307,9 @@
         const totalSlides = track.children.length;
 
         function updateCarousel() {
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
+            // 🌟 Usamos translate3d aquí para solucionar el bug de sub-píxeles por completo
+            track.style.transform = `translate3d(-${currentSlide * 100}%, 0, 0)`;
+
             for (let i = 0; i < dots.length; i++) {
                 if (i === currentSlide) {
                     dots[i].classList.remove('bg-white/40');
@@ -316,7 +322,11 @@
         }
 
         function moveCarousel(direction) {
+            if (totalSlides === 0) return;
             currentSlide = (currentSlide + direction + totalSlides) % totalSlides;
+
+            // 🌟 Llamamos a updateCarousel para unificar la lógica y que los círculos (dots) 
+            // se muevan sincronizados cuando presionas las flechas ‹ ó ›
             updateCarousel();
         }
 

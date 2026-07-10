@@ -19,12 +19,37 @@
         font-family: 'Montserrat', sans-serif;
         }
 
+
+
         /* ---- AQUÍ SE QUITA EL OJO NATIVO ---- */
-        /* Para Safari en iPad / iOS y Chrome */
+        * Elimina la llave/ojo de Chrome y Safari cuando la cuenta está guardada */
         input::-webkit-credentials-filter-button,
-        input::-webkit-password-toggle-button {
+        input::-webkit-password-toggle-button,
+        input::-webkit-strong-password-auto-fill-button,
+        input::-webkit-contacts-auto-fill-button {
         display: none !important;
-        -webkit-appearance: none;
+        visibility: hidden !important;
+        opacity: 0 !important;
+        -webkit-appearance: none !important;
+        pointer-events: none !important;
+        width: 0 !important;
+        height: 0 !important;
+        }
+
+        /* ---- 🌟 REGLA MAESTRA PARA CUENTAS GUARDADAS (AUTOFILL) ---- */
+        input:-webkit-autofill,
+        input:-webkit-autofill:hover,
+        input:-webkit-autofill:focus,
+        input:-webkit-autofill:active {
+        /* Mantiene el texto blanco de tu diseño */
+        -webkit-text-fill-color: #ffffff !important;
+
+        /* Forza un fondo oscuro elegante en lugar del blanco/azul feo del navegador */
+        -webkit-box-shadow: 0 0 0px 1000px #161616 inset !important;
+        box-shadow: 0 0 0px 1000px #161616 inset !important;
+
+        /* Evita parpadeos visuales */
+        transition: background-color 5000s ease-in-out 0s;
         }
 
         /* Para Edge y navegadores de Microsoft */
@@ -32,6 +57,7 @@
         input::-ms-clear {
         display: none !important;
         }
+
         </style>
 </head>
 
@@ -65,12 +91,13 @@
             <div>
                 <label class="block text-white/90 text-xs font-light tracking-wide mb-1">Número de colaborador</label>
                 <div class="relative flex items-center">
-                    <input type="password" id="numero_colaborador" name="numero_colaborador" required minlength="6" required maxlength="6"
-                        placeholder="******" oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
+                    <input type="password" id="numero_colaborador" name="numero_colaborador" required minlength="6"
+                        required maxlength="6" placeholder="******"
+                        oninput="this.value = this.value.replace(/[^0-9]/g, '').slice(0, 6)"
                         class="w-full pl-4 pr-12 py-3 rounded-xl bg-black/40 border border-white/20 text-white placeholder-white/30 text-sm focus:outline-none focus:border-[#D4AF37] transition-all tracking-widest">
 
                     <button type="button" onclick="togglePassword()"
-                        class="absolute right-4 text-white/70 hover:text-white focus:outline-none cursor-pointer">
+                        class="absolute right-4 z-30 text-white/70 hover:text-white focus:outline-none cursor-pointer">
                         <i id="eye_icon" class="fa-solid fa-eye"></i>
                     </button>
                 </div>
@@ -89,10 +116,10 @@
 
 <script>
     // 1. Limpia los inputs cada vez que se carga la página o se regresa a ella
-    window.addEventListener('pageshow', function (event) {
+    window.addEventListener('pageshow', function(event) {
         // Borra los campos de texto
         document.querySelectorAll('input').forEach(input => {
-            if(input.name !== '_token') {
+            if (input.name !== '_token') {
                 input.value = '';
             }
         });
