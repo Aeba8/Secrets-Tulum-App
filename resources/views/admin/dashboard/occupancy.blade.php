@@ -27,7 +27,7 @@
                 </div>
                 <div class="mt-3 flex items-center justify-between text-xs text-gray-400">
                     <span>Promedio diario: <span class="text-gray-900 dark:text-gray-100 font-medium">{{ round($reservationVolume[2]['count'] / 30) }}</span></span>
-                    <span>vs. mes pasado: <span class="text-sapphire-600">+8%</span></span>
+                    <span>vs. mes pasado: <span class="text-sapphire-600">{{ $crecimientoMensual >= 0 ? '+' : '' }}{{ $crecimientoMensual }}%</span></span>
                 </div>
             </div>
 
@@ -69,12 +69,41 @@
             </div>
         </div>
 
-        <div class="bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-2xl p-5 mb-4">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-gray-900 dark:text-gray-100 font-semibold text-sm">Horas Pico — Flujo de Solicitudes</h3>
-                <span class="text-xs text-gray-400 dark:text-gray-500">Distribución del día</span>
+
+        {{-- Demand Calendar --}}
+        <div class="mb-4">
+            <div class="bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-2xl p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-900 dark:text-gray-100 font-semibold text-sm">Calendario de Demanda — Próximos 30 Días</h3>
+                    <span class="text-xs text-gray-400 dark:text-gray-400">Reservas activas por día</span>
+                </div>
+                @php
+                    $demandColors = [1 => 'bg-gold-100 text-gold-700', 2 => 'bg-gold-200 text-gold-700', 3 => 'bg-gold-400 text-white', 4 => 'bg-gold-500 text-white'];
+                    $weeks = array_chunk($demandCalendar, 7);
+                @endphp
+                <div class="space-y-2">
+                    @foreach ($weeks as $week)
+                    <div class="grid grid-cols-7 gap-1.5">
+                        @foreach ($week as $day)
+                        <div class="flex flex-col items-center gap-0.5 p-1.5 rounded-lg {{ $demandColors[$day['intensity']] ?? 'bg-sand-50 text-gray-400' }}">
+                            <span class="text-[10px] font-medium">{{ $day['dayName'] }}</span>
+                            <span class="text-sm font-bold">{{ $day['day'] }}</span>
+                            <span class="text-[10px] opacity-75">{{ $day['count'] }}</span>
+                        </div>
+                        @endforeach
+                    </div>
+                    @endforeach
+                </div>
+                <div class="flex items-center justify-center gap-3 mt-3 text-xs text-gray-400">
+                    <span>Baja</span>
+                    <div class="flex gap-1">
+                        @foreach ([1,2,3,4] as $i)
+                        <div class="w-4 h-4 rounded {{ $demandColors[$i] }}"></div>
+                        @endforeach
+                    </div>
+                    <span>Alta</span>
+                </div>
             </div>
-            <div class="relative h-40 w-full"><canvas id="peakHoursChart"></canvas></div>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-2 gap-4">
@@ -83,26 +112,26 @@
                     <h3 class="text-gray-900 dark:text-gray-100 font-semibold text-sm">Tasa de Cancelaciones</h3>
                     <span class="text-2xl font-bold text-red-500 font-mono">{{ $cancellationRate }}%</span>
                 </div>
-                <div class="space-y-3">
-                    @foreach ($cancellationReasons as $cr)
-                    <div>
-                        <div class="flex items-center justify-between text-sm mb-1">
-                            <span class="text-gray-700 dark:text-gray-300">{{ $cr['reason'] }}</span>
-                            <span class="text-gray-400 font-mono text-xs">{{ $cr['percentage'] }}%</span>
+            </div>
+            <div class="bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-2xl p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-900 dark:text-gray-100 font-semibold text-sm">Reincidencia de Huéspedes</h3>
+                    <span class="text-2xl font-bold text-gold-500 font-mono">{{ $repeatGuestRate }}%</span>
+                </div>
+                <p class="text-xs text-gray-500 dark:text-gray-400 mb-3">Habitaciones que repiten este mes</p>
+                <div class="space-y-2">
+                    @foreach ($topSpenders as $ts)
+                    <div class="flex items-center justify-between p-2.5 rounded-xl bg-sand-50 dark:bg-charcoal-500">
+                        <div class="flex items-center gap-2">
+                            <i class="fa-solid fa-door-open text-gray-400 text-xs"></i>
+                            <span class="text-sm font-medium text-gray-900 dark:text-gray-100">#{{ $ts['habitacion'] }}</span>
                         </div>
-                        <div class="w-full h-1.5 rounded-full bg-sand-100 dark:bg-charcoal-500 overflow-hidden">
-                            <div class="h-full rounded-full bg-gradient-to-r from-gold-500 to-gold-400 transition-all duration-500"
-                                 style="width: {{ $cr['percentage'] }}%"></div>
+                        <div class="flex items-center gap-3">
+                            <span class="text-xs text-gray-400">{{ $ts['reservations'] }} res.</span>
+                            <span class="text-xs font-mono text-gold-600 dark:text-gold-400">${{ number_format($ts['revenue']) }}</span>
                         </div>
                     </div>
                     @endforeach
-                </div>
-            </div>
-            <div class="bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-2xl p-5 flex items-center justify-center">
-                <div class="text-center">
-                    <div class="text-5xl font-bold text-gray-900 dark:text-gray-100 font-mono mb-2">{{ $cancellationRate }}<span class="text-2xl text-gray-400">%</span></div>
-                    <p class="text-gray-500 dark:text-gray-400 text-sm">Tasa de cancelaciones y No-Shows</p>
-                    <p class="text-gray-400 text-xs mt-2">Equivale a <span class="text-gray-900 dark:text-gray-100 font-medium">{{ round($reservationVolume[2]['count'] * $cancellationRate / 100) }} reservas</span> este mes</p>
                 </div>
             </div>
         </div>

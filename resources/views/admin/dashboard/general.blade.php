@@ -28,7 +28,6 @@
                 @php
                     $quickLinks = [
                         ['section' => 'bcg',       'icon' => 'fa-star',           'label' => 'Matriz BCG',              'color' => 'text-gold-500'],
-                        ['section' => 'inventory', 'icon' => 'fa-boxes-stacked',  'label' => 'Previsiones Inventario',  'color' => 'text-blue-500'],
                         ['section' => 'financial', 'icon' => 'fa-chart-line',     'label' => 'Métricas Financieras',    'color' => 'text-sapphire-500'],
                         ['section' => 'occupancy', 'icon' => 'fa-calendar-day',   'label' => 'Ocupación y Demanda',     'color' => 'text-violet-500'],
                         ['section' => 'operations','icon' => 'fa-gears',          'label' => 'Operación y Logística',   'color' => 'text-amber-500'],
@@ -45,6 +44,17 @@
                     <i class="fa-solid fa-arrow-right text-gray-300 ml-auto text-xs"></i>
                 </a>
                 @endforeach
+            </div>
+        </div>
+
+        {{-- Booking Pace --}}
+        <div class="mb-6">
+            <div class="bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-2xl p-5">
+                <div class="flex items-center justify-between mb-4">
+                    <h3 class="text-gray-900 dark:text-gray-100 font-semibold text-sm">Booking Pace — Ritmo de Reservas</h3>
+                    <span class="text-xs text-gray-400 dark:text-gray-500">Mes actual vs. promedio últimos 3 meses</span>
+                </div>
+                <div class="relative h-64 w-full"><canvas id="bookingPaceChart"></canvas></div>
             </div>
         </div>
 
@@ -76,7 +86,7 @@
                     </div>
                     <div class="flex items-center justify-between p-3 rounded-xl bg-sand-50 dark:bg-charcoal-500">
                         <span class="text-gray-600 dark:text-gray-400 text-sm">Ocupación General</span>
-                        <span class="text-sapphire-600 font-bold text-lg font-mono">74%</span>
+                        <span class="text-sapphire-600 font-bold text-lg font-mono">{{ $kpis[2]['value'] }}</span>
                     </div>
                 </div>
             </div>

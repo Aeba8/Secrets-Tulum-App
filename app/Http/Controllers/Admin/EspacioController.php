@@ -46,12 +46,13 @@ class EspacioController extends Controller
 
         if ($validator->fails()) {
             $hash = $request->input('tipo', 'Balinesa') === 'Balinesa' ? '#espacios-balinesas' : '#espacios-mesas';
-            throw new \Illuminate\Validation\ValidationException(
-                $validator,
-                redirect(route('admin.dashboard') . $hash)
-                    ->withErrors($validator)
-                    ->withInput()
-            );
+            $redirect = redirect(route('admin.dashboard') . $hash)
+                ->withErrors($validator)
+                ->withInput();
+            if ($id) {
+                $redirect->with('edit_id', $id);
+            }
+            throw new \Illuminate\Validation\ValidationException($validator, $redirect);
         }
 
         return $validator->validated();

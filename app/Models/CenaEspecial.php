@@ -29,4 +29,9 @@ class CenaEspecial extends Model
     {
         return $this->morphMany(Reserva::class, 'serviciable', 'serviciable_type', 'serviciable_id');
     }
+
+    public function categoria()
+    {
+        return $this->belongsTo(Categoria::class, 'id_categoria', 'Id');
+    }
 }

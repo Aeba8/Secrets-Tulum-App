@@ -336,6 +336,16 @@
 @if ($errors->has('nombre') || $errors->has('zona') || $errors->has('capacidad'))
     <script>
         document.addEventListener('DOMContentLoaded', function() {
+            @if(session('edit_id'))
+            openEspacioModal('{{ old('tipo', 'Balinesa') }}', {
+                id: {{ session('edit_id') }},
+                nombre: '{{ old('nombre', '') }}',
+                tipo: '{{ old('tipo', 'Balinesa') }}',
+                zona: '{{ old('zona', '') }}',
+                capacidad: '{{ old('capacidad', '') }}',
+                activo: {{ old('activo', '1') === '1' ? 'true' : 'false' }},
+            });
+            @else
             openEspacioModal('{{ old('tipo', 'Balinesa') }}', {
                 nombre: '{{ old('nombre', '') }}',
                 tipo: '{{ old('tipo', 'Balinesa') }}',
@@ -343,6 +353,7 @@
                 capacidad: '{{ old('capacidad', '') }}',
                 activo: {{ old('activo', '1') === '1' ? 'true' : 'false' }},
             });
+            @endif
         });
     </script>
 @endif

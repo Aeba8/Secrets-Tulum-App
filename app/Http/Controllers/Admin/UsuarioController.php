@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\Usuario;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 
 class UsuarioController extends Controller
@@ -18,10 +19,14 @@ class UsuarioController extends Controller
             ? 'unique:Usuarios,Email,' . $id . ',Id'
             : 'unique:Usuarios,Email';
 
+        $numeroRules = $id
+            ? 'nullable|digits:6|' . $numeroUnique
+            : 'required|digits:6|' . $numeroUnique;
+
         return [
             'nombre'             => 'required|string|max:100|regex:/^[a-zA-ZÀ-ÿ\s\.]+$/',
             'email'              => 'required|email|max:150|' . $emailUnique,
-            'numero_colaborador' => 'required|digits:6|' . $numeroUnique,
+            'numero_colaborador' => $numeroRules,
             'activo'             => 'nullable|in:0,1,on,off',
         ];
     }
@@ -51,12 +56,13 @@ class UsuarioController extends Controller
         );
 
         if ($validator->fails()) {
-            throw new \Illuminate\Validation\ValidationException(
-                $validator,
-                redirect(route('admin.dashboard') . '#usuarios')
-                    ->withErrors($validator)
-                    ->withInput()
-            );
+            $redirect = redirect(route('admin.dashboard') . '#usuarios')
+                ->withErrors($validator)
+                ->withInput();
+            if ($id) {
+                $redirect->with('edit_id', $id);
+            }
+            throw new \Illuminate\Validation\ValidationException($validator, $redirect);
         }
 
         return $validator->validated();
@@ -69,7 +75,7 @@ class UsuarioController extends Controller
         Usuario::create([
             'Nombre'                => strip_tags($validated['nombre']),
             'Email'                 => strip_tags($validated['email']),
-            'Numero_de_colaborador' => strip_tags($validated['numero_colaborador']),
+            'Numero_de_colaborador' => Hash::make(strip_tags($validated['numero_colaborador'])),
             'Rol'                   => 'Operativo',
             'Estado'                => ($request->boolean('activo')) ? 'Activo' : 'Inactivo',
         ]);
@@ -83,12 +89,15 @@ class UsuarioController extends Controller
         $usuario = Usuario::findOrFail($id);
         $validated = $this->validarYFallar($request, $id);
 
-        $usuario->update([
+        $data = [
             'Nombre'                => strip_tags($validated['nombre']),
             'Email'                 => strip_tags($validated['email']),
-            'Numero_de_colaborador' => strip_tags($validated['numero_colaborador']),
             'Estado'                => ($request->boolean('activo')) ? 'Activo' : 'Inactivo',
-        ]);
+        ];
+        if (!empty($validated['numero_colaborador'])) {
+            $data['Numero_de_colaborador'] = Hash::make(strip_tags($validated['numero_colaborador']));
+        }
+        $usuario->update($data);
 
         return redirect(route('admin.dashboard') . '#usuarios')
             ->with('success', 'Usuario operativo actualizado correctamente.');

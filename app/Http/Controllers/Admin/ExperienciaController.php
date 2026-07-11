@@ -89,8 +89,11 @@ class ExperienciaController extends Controller
         $eliminar = $request->input('imagenes_eliminar', '');
         if (!empty($eliminar)) {
             $urlsEliminar = array_filter(explode(',', $eliminar));
-            $this->cloudinary->deleteImagesByUrls($urlsEliminar);
-            $imagenes = array_values(array_diff($imagenes, $urlsEliminar));
+            $urlsEliminar = array_intersect($urlsEliminar, $imagenes);
+            if (!empty($urlsEliminar)) {
+                $this->cloudinary->deleteImagesByUrls($urlsEliminar);
+                $imagenes = array_values(array_diff($imagenes, $urlsEliminar));
+            }
         }
 
         if ($request->hasFile('imagenes')) {

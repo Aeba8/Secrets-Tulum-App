@@ -12,7 +12,7 @@ class AgendaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'serviciable_type' => 'required|string',
+            'serviciable_type' => 'required|string|in:App\Models\Balinesa,App\Models\CenaEspecial,App\Models\Experiencia',
             'serviciable_id' => 'required|integer',
             'id_espacio' => 'nullable|integer',
             'fecha' => 'required|date_format:Y-m-d',
@@ -54,7 +54,7 @@ class AgendaController extends Controller
         $reserva = Reserva::findOrFail($id);
 
         $validated = $request->validate([
-            'serviciable_type' => 'required|string',
+            'serviciable_type' => 'required|string|in:App\Models\Balinesa,App\Models\CenaEspecial,App\Models\Experiencia',
             'serviciable_id' => 'required|integer',
             'id_espacio' => 'nullable|integer',
             'fecha' => 'required|date_format:Y-m-d',

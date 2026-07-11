@@ -13,10 +13,6 @@
         @include('admin.dashboard.bcg')
     </div>
 
-    <div id="section-inventory" class="dashboard-section hidden">
-        @include('admin.dashboard.inventory')
-    </div>
-
     <div id="section-financial" class="dashboard-section hidden">
         @include('admin.dashboard.financial')
     </div>
@@ -67,14 +63,21 @@ function destroyChart(id) {
 }
 
 // ── BCG data (shared) ──
-const bcgData = {!! json_encode($bcgMatrix) !!};
+const bcgData = {!! json_encode($bcgProducts) !!};
 const quadrants = {!! json_encode($bcgQuadrants) !!};
 const quadrantColors = { star: '#C5A059', cow: '#10B981', question: '#3B82F6', dog: '#EF4444' };
 const wcData = {!! json_encode($weeklyComparison) !!};
 const mrData = {!! json_encode($monthlyRevenue) !!};
 const ozData = {!! json_encode($occupancyByZone) !!};
-const phData = {!! json_encode($peakHours) !!};
-const seData = {!! json_encode($shiftEfficiency) !!};
+const tbcData = {!! json_encode($ticketByCategory ?? []) !!};
+const rbdData = {!! json_encode($revenueByDayOfWeek ?? []) !!};
+const top5CtData = {!! json_encode($top5ByCount ?? []) !!};
+const teData = {!! json_encode($monthlyTicketAvg ?? []) !!};
+const mdData = {!! json_encode($marginDistribution ?? []) !!};
+const pcData = {!! json_encode($popularityChart ?? []) !!};
+const bpData = {!! json_encode($bookingPace) !!};
+const ctData = {!! json_encode($colaboradorTrend) !!};
+
 
 // ── Render function ──
 window.renderChartsForSection = function(section) {
@@ -119,6 +122,40 @@ window.renderChartsForSection = function(section) {
             },
             options: { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } },
                 scales: { ...chartOptions.scales, y: { ...chartOptions.scales.y, ticks: { ...chartOptions.scales.y.ticks, callback: v => '$' + (v / 1000) + 'k' } } } }
+        });
+
+        destroyChart('bookingPaceChart');
+        chartInstances.bookingPaceChart = new Chart(document.getElementById('bookingPaceChart'), {
+            type: 'line',
+            data: {
+                labels: bpData.map(d => d.day),
+                datasets: [
+                    {
+                        label: 'Este Mes',
+                        data: bpData.map(d => d.actual),
+                        borderColor: '#C5A059',
+                        backgroundColor: 'rgba(197, 160, 89, 0.08)',
+                        fill: true, tension: 0.4,
+                        pointBackgroundColor: '#C5A059',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        pointRadius: 3,
+                        borderWidth: 2,
+                    },
+                    {
+                        label: 'Promedio (3 meses)',
+                        data: bpData.map(d => d.average),
+                        borderColor: '#9CA3AF',
+                        backgroundColor: 'transparent',
+                        borderDash: [6, 3],
+                        tension: 0.4,
+                        pointRadius: 0,
+                        borderWidth: 2,
+                    }
+                ]
+            },
+            options: { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { position: 'top', labels: { color: '#6B7280', usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 11 } } } },
+                scales: { ...chartOptions.scales, y: { ...chartOptions.scales.y, ticks: { ...chartOptions.scales.y.ticks, stepSize: 1 } } } }
         });
     }
 
@@ -171,24 +208,40 @@ window.renderChartsForSection = function(section) {
                 }]
             }
         });
-    }
 
-    if (section === 'inventory') {
-        const invItems = {!! json_encode(array_column($inventory, 'item')) !!};
-        const invStock = {!! json_encode(array_column($inventory, 'stock')) !!};
-        const invMin = {!! json_encode(array_column($inventory, 'minStock')) !!};
-        const invReserved = {!! json_encode(array_column($inventory, 'reserved')) !!};
-        destroyChart('inventoryChart');
-        chartInstances.inventoryChart = new Chart(document.getElementById('inventoryChart'), {
-            type: 'bar',
+        destroyChart('popularityChart');
+        chartInstances.popularityChart = new Chart(document.getElementById('popularityChart'), {
+            type: 'scatter',
             data: {
-                labels: invItems.map(i => i.length > 20 ? i.substring(0, 18) + '...' : i),
-                datasets: [
-                    { label: 'Stock Actual', data: invStock, backgroundColor: '#C5A059', borderRadius: 4, barThickness: 14 },
-                    { label: 'Requerido (7d)', data: invReserved.map((r, i) => r + invMin[i]), backgroundColor: 'rgba(239, 68, 68, 0.6)', borderRadius: 4, barThickness: 14 },
-                ]
+                datasets: Object.keys(quadrantColors).map(q => ({
+                    label: quadrants[q].label,
+                    data: bcgData.filter(d => d.quadrant === q).map(d => ({ x: d.count, y: d.margin, r: Math.sqrt(d.revenue) / 10, name: d.name, type: d.type })),
+                    backgroundColor: quadrantColors[q] + '99',
+                    borderColor: quadrantColors[q],
+                    borderWidth: 2,
+                    pointRadius: 10,
+                    pointHoverRadius: 14,
+                })),
             },
-            options: { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { position: 'top', labels: { color: '#6B7280', usePointStyle: true, pointStyle: 'rectRounded', padding: 16, font: { size: 11 } } } } }
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#fff', titleColor: '#111827', bodyColor: '#C5A059',
+                        borderColor: '#E5E7EB', borderWidth: 1, padding: 14,
+                        callbacks: {
+                            title: ctx => ctx[0].raw.name,
+                            label: ctx => ['Tipo: ' + ctx.raw.type, 'Reservas: ' + ctx.raw.x, 'Margen: ' + ctx.raw.y + '%'],
+                        }
+                    }
+                },
+                scales: {
+                    x: { grid: { color: '#F3F4F6', drawBorder: false }, ticks: { color: '#9CA3AF' }, title: { display: true, text: 'Número de Reservas (Popularidad)', color: '#9CA3AF', font: { size: 11 } } },
+                    y: { grid: { color: '#F3F4F6', drawBorder: false }, ticks: { color: '#9CA3AF', callback: v => v + '%' }, title: { display: true, text: 'Margen de Rentabilidad (%)', color: '#9CA3AF', font: { size: 11 } } },
+                },
+            }
         });
     }
 
@@ -235,6 +288,45 @@ window.renderChartsForSection = function(section) {
                 scales: { y: { beginAtZero: true, grid: { color: '#F3F4F6', drawBorder: false }, ticks: { color: '#9CA3AF', callback: v => '$' + (v / 1000) + 'k' } }, x: { grid: { display: false }, ticks: { color: '#9CA3AF' } } }
             }
         });
+
+        destroyChart('revenueByDayChart');
+        chartInstances.revenueByDayChart = new Chart(document.getElementById('revenueByDayChart'), {
+            type: 'bar',
+            data: {
+                labels: rbdData.map(d => d.day),
+                datasets: [{ label: 'Ingresos', data: rbdData.map(d => d.amount), backgroundColor: '#C5A059', borderRadius: 6, borderSkipped: false, barThickness: 32 }]
+            },
+            options: { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } },
+                scales: { ...chartOptions.scales, y: { ...chartOptions.scales.y, ticks: { ...chartOptions.scales.y.ticks, callback: v => '$' + (v / 1000) + 'k' } } } }
+        });
+
+        destroyChart('ticketEvolutionChart');
+        chartInstances.ticketEvolutionChart = new Chart(document.getElementById('ticketEvolutionChart'), {
+            type: 'line',
+            data: {
+                labels: teData.map(d => d.month),
+                datasets: [{
+                    label: 'Ticket Promedio', data: teData.map(d => d.avg),
+                    borderColor: '#10B981', backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                    fill: true, tension: 0.4, pointBackgroundColor: '#10B981', pointBorderColor: '#fff', pointBorderWidth: 2, pointRadius: 4, borderWidth: 2,
+                }]
+            },
+            options: { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } },
+                scales: { ...chartOptions.scales, y: { ...chartOptions.scales.y, ticks: { ...chartOptions.scales.y.ticks, callback: v => '$' + v } } } }
+        });
+
+        destroyChart('marginDistributionChart');
+        chartInstances.marginDistributionChart = new Chart(document.getElementById('marginDistributionChart'), {
+            type: 'doughnut',
+            data: {
+                labels: mdData.map(d => d.range),
+                datasets: [{ data: mdData.map(d => d.count), backgroundColor: ['#10B981', '#C5A059', '#3B82F6', '#EF4444', '#8B5CF6'], borderColor: '#fff', borderWidth: 3, hoverOffset: 8 }]
+            },
+            options: { responsive: true, maintainAspectRatio: false, cutout: '60%',
+                plugins: { legend: { position: 'bottom', labels: { color: '#6B7280', padding: 14, usePointStyle: true, pointStyle: 'circle', font: { size: 11 } } },
+                    tooltip: { backgroundColor: '#fff', titleColor: '#111827', bodyColor: '#C5A059', borderColor: '#E5E7EB', borderWidth: 1, padding: 12 } }
+            }
+        });
     }
 
     if (section === 'occupancy') {
@@ -251,29 +343,30 @@ window.renderChartsForSection = function(section) {
             }
         });
 
-        destroyChart('peakHoursChart');
-        chartInstances.peakHoursChart = new Chart(document.getElementById('peakHoursChart'), {
-            type: 'bar',
-            data: {
-                labels: phData.map(d => d.hour),
-                datasets: [{ label: 'Solicitudes', data: phData.map(d => d.count), backgroundColor: ['rgba(197, 160, 89, 0.3)', 'rgba(197, 160, 89, 0.4)', 'rgba(197, 160, 89, 0.7)', 'rgba(197, 160, 89, 0.6)', '#C5A059', 'rgba(197, 160, 89, 0.5)'], borderRadius: 4, borderSkipped: false, barThickness: 28 }]
-            },
-            options: { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { display: false } } }
-        });
     }
 
     if (section === 'team') {
-        destroyChart('shiftEfficiencyChart');
-        chartInstances.shiftEfficiencyChart = new Chart(document.getElementById('shiftEfficiencyChart'), {
-            type: 'bar',
+        destroyChart('colaboradorTrendChart');
+        const ctColors = ['#C5A059', '#10B981', '#3B82F6', '#EF4444', '#8B5CF6'];
+        chartInstances.colaboradorTrendChart = new Chart(document.getElementById('colaboradorTrendChart'), {
+            type: 'line',
             data: {
-                labels: seData.map(d => d.shift),
-                datasets: [{ label: 'Reservas', data: seData.map(d => d.reservations), backgroundColor: ['rgba(197, 160, 89, 0.7)', 'rgba(16, 185, 129, 0.7)', 'rgba(59, 130, 246, 0.7)'], borderColor: ['#C5A059', '#10B981', '#3B82F6'], borderWidth: 1, borderRadius: 4, borderSkipped: false, barThickness: 28 }]
+                labels: ctData[0]?.monthly.map(d => d.month) || [],
+                datasets: ctData.map((col, i) => ({
+                    label: col.colaborador,
+                    data: col.monthly.map(d => d.amount),
+                    borderColor: ctColors[i % ctColors.length],
+                    backgroundColor: ctColors[i % ctColors.length] + '15',
+                    fill: false, tension: 0.4,
+                    pointBackgroundColor: ctColors[i % ctColors.length],
+                    pointBorderColor: '#fff',
+                    pointBorderWidth: 2,
+                    pointRadius: 3,
+                    borderWidth: 2,
+                })),
             },
-            options: { responsive: true, maintainAspectRatio: false, indexAxis: 'y',
-                plugins: { legend: { display: false }, tooltip: { backgroundColor: '#fff', titleColor: '#111827', bodyColor: '#C5A059', borderColor: '#E5E7EB', borderWidth: 1, padding: 12 } },
-                scales: { y: { grid: { display: false }, ticks: { color: '#9CA3AF', font: { size: 11 } } }, x: { beginAtZero: true, grid: { color: '#F3F4F6', drawBorder: false }, ticks: { color: '#9CA3AF', stepSize: 10 } } }
-            }
+            options: { ...chartOptions, plugins: { ...chartOptions.plugins, legend: { position: 'top', labels: { color: '#6B7280', usePointStyle: true, pointStyle: 'circle', padding: 14, font: { size: 11 } } } },
+                scales: { ...chartOptions.scales, y: { ...chartOptions.scales.y, ticks: { ...chartOptions.scales.y.ticks, callback: v => '$' + (v / 1000) + 'k' } } } }
         });
     }
 };
@@ -289,19 +382,6 @@ document.addEventListener('click', (e) => {
         document.querySelectorAll('.period-content').forEach(c => c.classList.add('hidden'));
         const el = document.querySelector('.period-content[data-period="' + tab.dataset.period + '"]');
         if (el) el.classList.remove('hidden');
-    }
-
-    // Department tabs
-    const deptTab = e.target.closest('.dept-tab');
-    if (deptTab) {
-        document.querySelectorAll('.dept-tab').forEach(t => {
-            t.className = 'dept-tab px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 bg-gray-100 dark:bg-charcoal-500 text-gray-600 dark:text-gray-400 hover:bg-gray-200 dark:hover:bg-charcoal-500';
-        });
-        deptTab.className = 'dept-tab px-4 py-2 rounded-xl text-xs font-medium transition-all duration-200 bg-gold-500 text-white';
-        const dept = deptTab.dataset.dept;
-        document.querySelectorAll('.collab-row').forEach(row => {
-            row.style.display = (dept === 'all' || row.dataset.dept === dept) ? '' : 'none';
-        });
     }
 
     // Agenda period tabs

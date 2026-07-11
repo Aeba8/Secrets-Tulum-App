@@ -15,7 +15,7 @@ class ExperienciaReservaController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'serviciable_type' => 'required|string',
+            'serviciable_type' => 'required|string|in:App\Models\Balinesa,App\Models\CenaEspecial,App\Models\Experiencia',
             'serviciable_id' => 'required|integer',
             'fecha' => 'required|date_format:Y-m-d',
             'habitacion' => 'required|string',
@@ -53,7 +53,7 @@ class ExperienciaReservaController extends Controller
             
             return response()->json([
                 'success' => false,
-                'message' => 'Error en la base de datos: ' . $e->getMessage()
+                'message' => 'Error interno al procesar la reserva. Intente de nuevo.'
             ], 500);
         }
     }

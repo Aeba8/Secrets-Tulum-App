@@ -102,7 +102,7 @@ class ReservaController extends Controller
     {
         // 1. Validar los datos de entrada con tus columnas reales (usuario_id ya no se requiere en el request)
         $request->validate([
-            'serviciable_type' => 'required|string', // 'App\Models\Balinesa' o 'App\Models\CenaEspecial'
+            'serviciable_type' => 'required|string|in:App\Models\Balinesa,App\Models\CenaEspecial,App\Models\Experiencia',
             'serviciable_id' => 'required|integer',
             'id_espacio' => 'required|integer', // La cama o mesa física elegida
             'fecha' => 'required|date_format:Y-m-d', // Mapeará a 'Dia'
@@ -118,33 +118,38 @@ class ReservaController extends Controller
         $idEspacio = $request->id_espacio;
 
         try {
-            // 2. CANDADO ANTI-OVERBOOKING: Verificar si ese id_espacio ya se vendió ese mismo DÍA
-            $existeReserva = DB::table('Reservas')
-                ->where('id_espacio', $idEspacio)
-                ->whereDate('Dia', $fecha)
-                ->exists();
+            $reservaId = DB::transaction(function () use ($request, $idEspacio, $fecha, $usuarioLogueadoId) {
+                // 2. CANDADO ANTI-OVERBOOKING: Verificar si ese id_espacio ya se vendió ese mismo DÍA
+                $existeReserva = DB::table('Reservas')
+                    ->where('id_espacio', $idEspacio)
+                    ->whereDate('Dia', $fecha)
+                    ->lockForUpdate()
+                    ->exists();
 
-            if ($existeReserva) {
-                return response()->json([
-                    'success' => false,
-                    'message' => '¡Lo sentimos! Este espacio ya fue reservado por otra habitación para el día de hoy.',
-                ], 422);
-            }
+                if ($existeReserva) {
+                    throw new \Illuminate\Http\Exceptions\HttpResponseException(
+                        response()->json([
+                            'success' => false,
+                            'message' => '¡Lo sentimos! Este espacio ya fue reservado por otra habitación para el día de hoy.',
+                        ], 422)
+                    );
+                }
 
-            // 3. Insertar la reserva con la anatomía exacta de tu SQL Server
-            $reservaId = DB::table('Reservas')->insertGetId([
-                'serviciable_type' => $request->serviciable_type,
-                'serviciable_id' => $request->serviciable_id,
-                'id_espacio' => $idEspacio,
-                'Dia' => $fecha,
-                'Habitacion' => $request->habitacion,
-                'Numero_de_colaborador_vendedor' => $request->numero_colaborador_vendedor,
-                'Usuario_id' => $usuarioLogueadoId, // Guardado de manera dinámica y segura
-                'Estado' => 'Confirmado',
-                'Observaciones' => $request->observaciones, // Columna de texto libre integrada
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+                // 3. Insertar la reserva con la anatomía exacta de tu SQL Server
+                return DB::table('Reservas')->insertGetId([
+                    'serviciable_type' => $request->serviciable_type,
+                    'serviciable_id' => $request->serviciable_id,
+                    'id_espacio' => $idEspacio,
+                    'Dia' => $fecha,
+                    'Habitacion' => $request->habitacion,
+                    'Numero_de_colaborador_vendedor' => $request->numero_colaborador_vendedor,
+                    'Usuario_id' => $usuarioLogueadoId,
+                    'Estado' => 'Confirmado',
+                    'Observaciones' => $request->observaciones,
+                    'created_at' => now(),
+                    'updated_at' => now(),
+                ]);
+            });
 
             return response()->json([
                 'success' => true,
@@ -152,8 +157,9 @@ class ReservaController extends Controller
                 'reserva_id' => $reservaId,
             ], 201);
 
+        } catch (\Illuminate\Http\Exceptions\HttpResponseException $e) {
+            return $e->getResponse();
         } catch (\Exception $e) {
-            // Si la base de datos o cualquier proceso falla, se registra en el log y se avisa de forma limpia
             Log::error('Error al guardar reserva: '.$e->getMessage());
 
             return response()->json([

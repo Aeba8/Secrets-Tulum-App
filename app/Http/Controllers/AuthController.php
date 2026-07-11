@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Usuario;
 
 class AuthController extends Controller
@@ -34,19 +35,34 @@ class AuthController extends Controller
             ])->withInput($request->only('login_input'));
         }
 
-        // Si el usuario existe y su número de colaborador coincide con lo tecleado
-        if ($usuario && $usuario->Numero_de_colaborador === $request->numero_colaborador) {
-            
-            // Logueamos al usuario en la sesión web
-            Auth::login($usuario);
-            $request->session()->regenerate();
+        // Validar credenciales (soporta hash bcrypt y texto plano legacy)
+        if ($usuario) {
+            $valido = false;
 
-            // Redirección inteligente usando tu columna 'Rol'
-            if ($usuario->Rol === 'Operativo') {
-                return redirect()->intended('/welcome');
+            if (!Hash::needsRehash($usuario->Numero_de_colaborador)) {
+                // Ya está hasheado con bcrypt
+                $valido = Hash::check($request->numero_colaborador, $usuario->Numero_de_colaborador);
+            } else {
+                // Texto plano legacy — comparación directa
+                $valido = $usuario->Numero_de_colaborador === $request->numero_colaborador;
+                if ($valido) {
+                    // Migrar a hash automáticamente en el primer login
+                    $usuario->update([
+                        'Numero_de_colaborador' => Hash::make($request->numero_colaborador),
+                    ]);
+                }
             }
-            
-            return redirect()->intended('/admin/dashboard');
+
+            if ($valido) {
+                Auth::login($usuario);
+                $request->session()->regenerate();
+
+                if ($usuario->Rol === 'Operativo') {
+                    return redirect()->intended('/welcome');
+                }
+
+                return redirect()->intended('/admin/dashboard');
+            }
         }
 
         // Si falla, regresa con error elegante

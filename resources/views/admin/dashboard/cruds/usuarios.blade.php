@@ -13,7 +13,7 @@
                             <tr class="text-gray-500 dark:text-gray-400 text-xs uppercase tracking-wider border-b border-sand-200 dark:border-charcoal-500 bg-sand-50 dark:bg-charcoal-500">
                                 <th class="text-left px-5 py-3 font-medium">Nombre</th>
                                 <th class="text-left px-5 py-3 font-medium">Email</th>
-                                <th class="text-center px-5 py-3 font-medium">Núm. Colaborador</th>
+                                <th class="text-center px-5 py-3 font-medium">Contraseña</th>
                                 <th class="text-center px-5 py-3 font-medium">Estado</th>
                                 <th class="text-center px-5 py-3 font-medium">Acciones</th>
                             </tr>
@@ -23,7 +23,7 @@
                             <tr class="border-b border-sand-200 dark:border-charcoal-500 last:border-0 hover:bg-sand-50 dark:hover:bg-charcoal-500 transition-colors">
                                 <td class="px-5 py-3.5 text-gray-900 dark:text-gray-100 font-medium">{{ $u->Nombre }}</td>
                                 <td class="px-5 py-3.5 text-gray-500 dark:text-gray-400">{{ $u->Email ?? '—' }}</td>
-                                <td class="px-5 py-3.5 text-gray-900 dark:text-gray-100 text-center font-mono">{{ $u->Numero_de_colaborador }}</td>
+                                <td class="px-5 py-3.5 text-gray-400 dark:text-gray-500 text-center font-mono text-xs">••••••••</td>
                                 <td class="px-5 py-3.5 text-center">
                                     <span class="text-xs px-2 py-0.5 rounded-md border {{ ($u->Estado ?? 'Activo') === 'Activo' ? 'bg-sapphire-50 dark:bg-sapphire-900/20 text-sapphire-600 dark:text-sapphire-400 border-sapphire-200 dark:border-sapphire-800' : 'bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700' }}">
                                         {{ $u->Estado ?? 'Activo' }}
@@ -35,7 +35,6 @@
                                             "id" => $u->Id,
                                             "nombre" => $u->Nombre,
                                             "email" => $u->Email,
-                                            "numero_colaborador" => $u->Numero_de_colaborador,
                                             "activo" => ($u->Estado ?? 'Activo') === 'Activo',
                                         ]) }})'
                                             class="hover:text-gold-500 transition-colors"><i class="fa-solid fa-pen text-xs"></i></button>
@@ -98,12 +97,12 @@
 
                         <div>
                             <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Núm. Colaborador *</label>
-                            <input type="text" id="usuario_numero_colaborador" name="numero_colaborador" required inputmode="numeric" pattern="[0-9]{6}" maxlength="6" minlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
+                            <input type="text" id="usuario_numero_colaborador" name="numero_colaborador" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" minlength="6" oninput="this.value = this.value.replace(/[^0-9]/g, '')"
                                 class="w-full px-3 py-2.5 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition">
                             @error('numero_colaborador')
                                 <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                             @enderror
-                            <p class="text-xs text-gray-400 mt-1">Este número será usado como contraseña para el inicio de sesión.</p>
+                            <p id="colaborador_hint" class="text-xs text-gray-400 mt-1">Este número será usado como contraseña para el inicio de sesión.</p>
                         </div>
 
                         <div class="flex items-center gap-3">
@@ -144,12 +143,20 @@
         @if($errors->has('nombre') || $errors->has('email') || $errors->has('numero_colaborador'))
         <script>
             document.addEventListener('DOMContentLoaded', function() {
+                @if(session('edit_id'))
+                openUsuarioModal({
+                    id: {{ session('edit_id') }},
+                    nombre: '{{ old('nombre', '') }}',
+                    email: '{{ old('email', '') }}',
+                    activo: {{ old('activo', '1') === '1' ? 'true' : 'false' }},
+                });
+                @else
                 openUsuarioModal({
                     nombre: '{{ old('nombre', '') }}',
                     email: '{{ old('email', '') }}',
-                    numero_colaborador: '{{ old('numero_colaborador', '') }}',
                     activo: {{ old('activo', '1') === '1' ? 'true' : 'false' }},
                 });
+                @endif
             });
         </script>
         @endif
@@ -246,7 +253,9 @@
                     document.getElementById('usuario_id').value = data.id;
                     document.getElementById('usuario_nombre').value = data.nombre || '';
                     document.getElementById('usuario_email').value = data.email || '';
-                    document.getElementById('usuario_numero_colaborador').value = data.numero_colaborador || '';
+                    document.getElementById('usuario_numero_colaborador').value = '';
+                    document.getElementById('usuario_numero_colaborador').required = false;
+                    document.getElementById('colaborador_hint').textContent = 'Dejar vacío para mantener el actual.';
                     document.getElementById('usuario_activo').checked = data.activo === true;
                 } else {
                     title.textContent = 'Nuevo Usuario Operativo';
@@ -256,6 +265,8 @@
                     document.getElementById('usuario_nombre').value = '';
                     document.getElementById('usuario_email').value = '';
                     document.getElementById('usuario_numero_colaborador').value = '';
+                    document.getElementById('usuario_numero_colaborador').required = true;
+                    document.getElementById('colaborador_hint').textContent = 'Este número será usado como contraseña para el inicio de sesión.';
                     document.getElementById('usuario_activo').checked = true;
                 }
 

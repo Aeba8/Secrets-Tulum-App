@@ -317,12 +317,6 @@
                         <span class="whitespace-nowrap nav-label">Matriz BCG</span>
                     </a>
 
-                    <a href="#inventory" data-section="inventory"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
-                        <i class="fa-solid fa-boxes-stacked w-4 text-center flex-shrink-0"></i>
-                        <span class="whitespace-nowrap nav-label">Previsiones Inventario</span>
-                    </a>
-
                     <a href="#financial" data-section="financial"
                         class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-chart-line w-4 text-center flex-shrink-0"></i>
@@ -512,10 +506,6 @@
             'bcg': {
                 title: 'Matriz BCG',
                 icon: 'fa-star'
-            },
-            'inventory': {
-                title: 'Previsiones Inventario',
-                icon: 'fa-boxes-stacked'
             },
             'financial': {
                 title: 'Métricas Financieras',
@@ -783,7 +773,7 @@
             const dashboardParent = document.getElementById('dashboard-parent-toggle');
             const servicesParent = document.getElementById('services-parent-toggle');
 
-            const dashboardSections = ['general', 'bcg', 'inventory', 'financial', 'occupancy', 'operations', 'team'];
+            const dashboardSections = ['general', 'bcg', 'financial', 'occupancy', 'operations', 'team'];
             const servicesSections = ['cenas', 'balinesas', 'experiencias'];
             const espaciosSections = ['espacios-balinesas', 'espacios-mesas'];
 
