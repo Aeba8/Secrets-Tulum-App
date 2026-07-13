@@ -71,10 +71,10 @@ const mrData = {!! json_encode($monthlyRevenue) !!};
 const ozData = {!! json_encode($occupancyByZone) !!};
 const tbcData = {!! json_encode($ticketByCategory ?? []) !!};
 const rbdData = {!! json_encode($revenueByDayOfWeek ?? []) !!};
-const top5CtData = {!! json_encode($top5ByCount ?? []) !!};
+const top5CtData = {!! json_encode($topByCount ?? []) !!};
 const teData = {!! json_encode($monthlyTicketAvg ?? []) !!};
 const mdData = {!! json_encode($marginDistribution ?? []) !!};
-const pcData = {!! json_encode($popularityChart ?? []) !!};
+const pcData = {!! json_encode($bcgProducts ?? []) !!};
 const bpData = {!! json_encode($bookingPace) !!};
 const ctData = {!! json_encode($colaboradorTrend) !!};
 
@@ -195,7 +195,7 @@ window.renderChartsForSection = function(section) {
                 plugins: [{
                     beforeDraw: function(ch) {
                         const ctx = ch.ctx, ca = ch.chartArea, xs = ch.scales.x, ys = ch.scales.y;
-                        const midX = xs.getPixelForValue(50), midY = ys.getPixelForValue(0);
+                        const midX = xs.getPixelForValue(10), midY = ys.getPixelForValue(0);
                         ctx.fillStyle = 'rgba(197, 160, 89, 0.04)'; ctx.fillRect(midX, ca.top, ca.right - midX, midY - ca.top);
                         ctx.fillStyle = 'rgba(16, 185, 129, 0.04)'; ctx.fillRect(midX, midY, ca.right - midX, ca.bottom - midY);
                         ctx.fillStyle = 'rgba(59, 130, 246, 0.04)'; ctx.fillRect(ca.left, ca.top, midX - ca.left, midY - ca.top);
@@ -353,7 +353,7 @@ window.renderChartsForSection = function(section) {
             data: {
                 labels: ctData[0]?.monthly.map(d => d.month) || [],
                 datasets: ctData.map((col, i) => ({
-                    label: col.colaborador,
+                    label: '#' + col.id + ' ' + col.colaborador,
                     data: col.monthly.map(d => d.amount),
                     borderColor: ctColors[i % ctColors.length],
                     backgroundColor: ctColors[i % ctColors.length] + '15',

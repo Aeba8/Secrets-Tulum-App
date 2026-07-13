@@ -12,9 +12,17 @@ use App\Models\Reserva;
 use App\Models\Usuario;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Maatwebsite\Excel\Facades\Excel;
 
 class DashboardController extends Controller
 {
+    private ?\Illuminate\Support\Collection $usuariosMap = null;
+
+    private function usuarioLookup(string $numColab): ?Usuario
+    {
+        return $this->usuariosMap?->get($numColab);
+    }
+
     public function index()
     {
         $hoy = Carbon::today();
@@ -41,6 +49,8 @@ class DashboardController extends Controller
         $semanaPasadaReservas = Reserva::whereBetween('Dia', [$inicioSemanaPasada, $finSemanaPasada])->with('serviciable')->get();
         $mesReservas = Reserva::whereBetween('Dia', [$inicioMes, $finMes])->with('serviciable')->get();
         $mesPasadoReservas = Reserva::whereBetween('Dia', [$inicioMesPasado, $finMesPasado])->with('serviciable')->get();
+
+        $this->usuariosMap = Usuario::all()->keyBy('Numero_de_colaborador');
 
         $hoyCount = $hoyReservas->count();
         $semCount = $semanaActualReservas->count();
@@ -505,7 +515,7 @@ class DashboardController extends Controller
             ->groupBy('Numero_de_colaborador_vendedor')
             ->map(function ($group) {
                 $numColab = $group->first()->Numero_de_colaborador_vendedor;
-                $usuario = Usuario::where('Numero_de_colaborador', $numColab)->first();
+                $usuario = $this->usuarioLookup($numColab);
                 $totalRes = $group->count();
                 $completadas = $group->where('Estado', 'Completado')->count();
                 $revenue = $group->sum(fn($r) => $r->serviciable?->Precio ?? 0);
@@ -686,7 +696,7 @@ class DashboardController extends Controller
             ->map(fn($group) => [
                 'id'   => $group->first()->Numero_de_colaborador_vendedor,
                 'rev'  => $group->sum(fn($r) => $r->serviciable?->Precio ?? 0),
-                'name' => Usuario::where('Numero_de_colaborador', $group->first()->Numero_de_colaborador_vendedor)->first()?->Nombre ?? 'Sin nombre',
+                'name' => $this->usuarioLookup($group->first()->Numero_de_colaborador_vendedor)?->Nombre ?? 'Sin nombre',
             ])
             ->sortByDesc('rev')
             ->take(5)
@@ -763,5 +773,482 @@ class DashboardController extends Controller
             'spaceUtilization',
             'colaboradorTrend',
         ));
+    }
+
+    public function export($section)
+    {
+        $hoy = Carbon::today();
+        $inicioMes = $hoy->copy()->startOfMonth();
+        $finMes = $hoy->copy()->endOfMonth();
+        $treintaAtras = $hoy->copy()->subDays(30);
+        $limiteBCG = $hoy->copy()->subDays(60);
+        $seisMesesAtras = $hoy->copy()->subMonths(6)->startOfMonth();
+
+        $mesReservas = Reserva::whereBetween('Dia', [$treintaAtras, $hoy])
+            ->with('serviciable')
+            ->get();
+
+        switch ($section) {
+            case 'general':
+                $totalRev = $mesReservas->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+                $totalRes = $mesReservas->count();
+                $kpis = [
+                    ['label' => 'Ingresos Hoy', 'value' => '$' . number_format($totalRev), 'icon' => 'fa-dollar-sign', 'change' => '', 'positive' => true],
+                    ['label' => 'Reservas Hoy', 'value' => (string)$totalRes, 'icon' => 'fa-calendar-check', 'change' => '', 'positive' => true],
+                    ['label' => 'Ocupación Promedio', 'value' => $totalRes > 0 ? round(($mesReservas->where('Estado', 'Completado')->count() / $totalRes) * 100) . '%' : '0%', 'icon' => 'fa-bed', 'change' => '', 'positive' => true],
+                    ['label' => 'Ticket Promedio', 'value' => '$' . number_format($totalRes > 0 ? round($totalRev / $totalRes) : 0), 'icon' => 'fa-ticket', 'change' => '', 'positive' => true],
+                ];
+
+                $revenueByType = $this->getRevenueByType($mesReservas);
+                $bookingPace = $this->getBookingPace($hoy, $inicioMes);
+                $monthlyRevenue = $this->getMonthlyRevenue($seisMesesAtras, $hoy);
+
+                return Excel::download(
+                    new \App\Exports\Sections\GeneralExport(compact('kpis', 'revenueByType', 'bookingPace', 'monthlyRevenue')),
+                    'general.xlsx'
+                );
+
+            case 'bcg':
+                $bcgData = $this->computeBcgData($limiteBCG);
+                return Excel::download(
+                    new \App\Exports\Sections\BcgExport($bcgData['products'], $bcgData['summary']),
+                    'bcg.xlsx'
+                );
+
+            case 'financial':
+                $revenueByType = $this->getRevenueByType($mesReservas);
+                $topPackages = $this->getTopPackages($mesReservas);
+                $topByCount = $this->getTopByCount($mesReservas);
+                $revenueByDayOfWeek = $this->getRevenueByDayOfWeek($mesReservas);
+                $monthlyRevenue = $this->getMonthlyRevenue($seisMesesAtras, $hoy);
+                $weeklyComparison = $this->getWeeklyComparison($hoy);
+                $ticketByCategory = $this->getTicketByCategory($mesReservas);
+                $marginDistribution = $this->getMarginDistribution($mesReservas);
+
+                return Excel::download(
+                    new \App\Exports\Sections\FinancialExport(compact(
+                        'revenueByType', 'topPackages', 'topByCount', 'revenueByDayOfWeek',
+                        'monthlyRevenue', 'weeklyComparison', 'ticketByCategory', 'marginDistribution'
+                    )),
+                    'financiero.xlsx'
+                );
+
+            case 'occupancy':
+                $occupancyByZone = $this->getOccupancyByZone($mesReservas);
+                $peakDays = $this->getPeakDays($mesReservas);
+                $topSpenders = $this->getTopSpenders($mesReservas);
+                $demandCalendar = $this->getDemandCalendar($hoy);
+
+                return Excel::download(
+                    new \App\Exports\Sections\OccupancyExport(compact(
+                        'occupancyByZone', 'peakDays', 'topSpenders', 'demandCalendar'
+                    )),
+                    'ocupacion.xlsx'
+                );
+
+            case 'operations':
+                $spaceUtilization = $this->getSpaceUtilization($treintaAtras, $hoy);
+                $alerts = $this->getAlerts($mesReservas);
+                $avgLeadTime = $this->getAvgLeadTime();
+
+                return Excel::download(
+                    new \App\Exports\Sections\OperationsExport(compact(
+                        'spaceUtilization', 'alerts', 'avgLeadTime'
+                    )),
+                    'operaciones.xlsx'
+                );
+
+            case 'team':
+                $topCollaborators = $this->getTopCollaborators($mesReservas);
+                $colaboradorTrend = $this->getColaboradorTrend($seisMesesAtras, $hoy);
+
+                return Excel::download(
+                    new \App\Exports\Sections\TeamExport($topCollaborators, $colaboradorTrend),
+                    'equipo.xlsx'
+                );
+
+            case 'agenda':
+                $inicioConsulta = $hoy->copy()->subDays(90);
+                $finConsulta = $hoy->copy()->addDays(90);
+                $agendaReservations = Reserva::whereBetween('Dia', [$inicioConsulta, $finConsulta])
+                    ->with(['espacio', 'serviciable'])
+                    ->orderBy('Dia')
+                    ->get();
+
+                return Excel::download(
+                    new \App\Exports\Sections\AgendaExport($agendaReservations),
+                    'agenda.xlsx'
+                );
+
+            case 'cenas':
+                $cenas = \App\Models\CenaEspecial::with('categoria')->get();
+                $balinesas = \App\Models\Balinesa::with('categoria')->get();
+                $experiencias = \App\Models\Experiencia::with('categoria')->get();
+
+                return Excel::download(
+                    new \App\Exports\Sections\CatalogExport(compact('cenas', 'balinesas', 'experiencias')),
+                    'catalogo.xlsx'
+                );
+
+            case 'usuarios':
+                $usuarios = \App\Models\Usuario::where('Rol', 'Operativo')->get();
+
+                return Excel::download(
+                    new \App\Exports\Sections\UsuariosExport($usuarios),
+                    'usuarios.xlsx'
+                );
+
+            case 'espacios':
+                $espacios = \App\Models\Espacio::all();
+
+                return Excel::download(
+                    new \App\Exports\Sections\EspaciosExport($espacios),
+                    'espacios.xlsx'
+                );
+
+            default:
+                abort(404);
+        }
+    }
+
+    private function getRevenueByType($reservas)
+    {
+        $types = ['Experiencia' => 'Experiencias VIP', 'Balinesa' => 'Balinesas', 'CenaEspecial' => 'Cenas Especiales'];
+        $result = [];
+        $total = $reservas->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+        foreach ($types as $class => $label) {
+            $amount = $reservas->filter(fn($r) => str_contains($r->serviciable_type ?? '', $class))
+                ->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+            $result[] = ['type' => $label, 'amount' => (int)$amount, 'percentage' => $total > 0 ? round(($amount / $total) * 100) : 0, 'color' => match($class) {'Experiencia' => '#C5A059', 'Balinesa' => '#10B981', default => '#3B82F6'}];
+        }
+        return $result;
+    }
+
+    private function getMonthlyRevenue($from, $to)
+    {
+        $data = [];
+        for ($i = 5; $i >= 0; $i--) {
+            $m = $to->copy()->subMonths($i);
+            $start = $m->copy()->startOfMonth();
+            $end = $m->copy()->endOfMonth();
+            $amount = Reserva::where('Estado', 'Completado')
+                ->whereBetween('Dia', [$start, $end])
+                ->with('serviciable')
+                ->get()
+                ->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+            $data[] = ['month' => $m->locale('es')->monthName, 'amount' => (int)$amount];
+        }
+        return $data;
+    }
+
+    private function getBookingPace($hoy, $inicioMes)
+    {
+        $data = [];
+        $dia = 1;
+        while ($dia <= $hoy->day) {
+            $fecha = $hoy->copy()->day($dia);
+            $actual = Reserva::whereDate('Dia', $fecha)->count();
+            $prevMonths = [];
+            for ($m = 1; $m <= 3; $m++) {
+                $prevMonths[] = Reserva::whereDate('Dia', $fecha->copy()->subMonths($m))->count();
+            }
+            $data[] = ['day' => $dia, 'actual' => $actual, 'average' => $prevMonths ? round(array_sum($prevMonths) / count($prevMonths), 1) : 0];
+            $dia++;
+        }
+        return $data;
+    }
+
+    private function getWeeklyComparison($hoy)
+    {
+        $inicioSemana = $hoy->copy()->startOfWeek();
+        $finSemana = $hoy->copy()->endOfWeek();
+        $inicioSemanaPasada = $hoy->copy()->subWeek()->startOfWeek();
+        $finSemanaPasada = $hoy->copy()->subWeek()->endOfWeek();
+
+        $thisWeek = Reserva::whereBetween('Dia', [$inicioSemana, $finSemana])
+            ->with('serviciable')->get()
+            ->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+        $lastWeek = Reserva::whereBetween('Dia', [$inicioSemanaPasada, $finSemanaPasada])
+            ->with('serviciable')->get()
+            ->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+
+        return [
+            ['week' => 'Semana Pasada', 'revenue' => (int)$lastWeek],
+            ['week' => 'Esta Semana', 'revenue' => (int)$thisWeek],
+        ];
+    }
+
+    private function computeBcgData($limite)
+    {
+        $servicios = collect()
+            ->merge(\App\Models\Experiencia::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Experiencia']))
+            ->merge(\App\Models\Balinesa::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Balinesa']))
+            ->merge(\App\Models\CenaEspecial::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Cena']));
+
+        $hoy = Carbon::today();
+        $treintaAtras = $hoy->copy()->subDays(30);
+        $totalRevenue = 0;
+        $products = [];
+
+        foreach ($servicios as $s) {
+            $model = $s['model'];
+            $reservas = $model->reservas;
+            $reservas30 = $reservas->filter(fn($r) => Carbon::parse($r->Dia)->between($treintaAtras, $hoy));
+            $reservas60 = $reservas->filter(fn($r) => Carbon::parse($r->Dia)->lt($treintaAtras));
+
+            $count30 = $reservas30->count();
+            $count60 = $reservas60->count();
+            $price = $model->Precio ?? 0;
+            $cost = $model->Costo_Operativo ?? 0;
+            $revenue30 = $price * $count30;
+            $revenue60 = $price * $count60;
+            $totalRevenue += $revenue30;
+
+            $products[] = [
+                'name' => $model->Nombre ?? 'Sin nombre', 'type' => $s['type'],
+                'category' => $model->categoria?->Nombre ?? 'Sin categoría', 'price' => (int)$price,
+                'growth' => $revenue60 > 0 ? round((($revenue30 - $revenue60) / $revenue60) * 100, 1) : ($revenue30 > 0 ? 100 : 0),
+                'share' => 0, 'revenue' => (int)$revenue30, 'count' => $count30,
+                'margin' => $price > 0 ? round((($price - $cost) / $price) * 100) : 0,
+            ];
+        }
+
+        foreach ($products as &$p) {
+            $p['share'] = $totalRevenue > 0 ? round(($p['revenue'] / $totalRevenue) * 100, 1) : 0;
+        }
+        unset($p);
+
+        $quadrants = [
+            'star' => ['label' => 'Estrella', 'desc' => 'Potenciar e invertir', 'icon' => 'fa-star', 'color' => '#C5A059'],
+            'cow' => ['label' => 'Vaca', 'desc' => 'Mantener y optimizar', 'icon' => 'fa-cow', 'color' => '#10B981'],
+            'question' => ['label' => 'Incógnita', 'desc' => 'Evaluar viabilidad', 'icon' => 'fa-question', 'color' => '#3B82F6'],
+            'dog' => ['label' => 'Perro', 'desc' => 'Reestructurar o retirar', 'icon' => 'fa-dog', 'color' => '#EF4444'],
+        ];
+
+        $products = array_map(function ($p) use ($quadrants) {
+            $g = $p['growth']; $s = $p['share'];
+            $p['quadrant'] = $g >= 10 && $s >= 10 ? 'star' : ($g < 10 && $s >= 10 ? 'cow' : ($g >= 10 && $s < 10 ? 'question' : 'dog'));
+            $p['color'] = $quadrants[$p['quadrant']]['color'];
+            $p['recommendation'] = match ($p['quadrant']) {
+                'star' => 'Alto crecimiento y participación — mantener inversión',
+                'cow' => 'Alta participación, bajo crecimiento — optimizar márgenes',
+                'question' => 'Alto crecimiento, baja participación — evaluar viabilidad',
+                'dog' => 'Bajo crecimiento y participación — reestructurar o retirar',
+            };
+            return $p;
+        }, $products);
+
+        usort($products, fn($a, $b) => $b['revenue'] <=> $a['revenue']);
+        $productoMasRentable = !empty($products) ? $products[0]['name'] : 'N/A';
+        $totalProfit = array_sum(array_map(fn($p) => $p['revenue'] * $p['margin'] / 100, $products));
+
+        $summary = [
+            'total_products' => count($products), 'total_revenue' => (int)$totalRevenue,
+            'total_profit' => (int)$totalProfit, 'most_profitable' => $productoMasRentable,
+        ];
+
+        return ['products' => $products, 'summary' => $summary];
+    }
+
+    private function getTopPackages($reservas)
+    {
+        return $reservas->groupBy(fn($r) => ($r->serviciable ? get_class($r->serviciable) : $r->serviciable_type) . '::' . $r->serviciable_id)
+            ->map(fn($g) => [
+                'name' => $g->first()->serviciable?->Nombre ?? 'N/A',
+                'type' => class_basename($g->first()->serviciable_type ?? ''),
+                'revenue' => (int)$g->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                'margin' => 0,
+            ])
+            ->sortByDesc('revenue')->take(5)->values()
+            ->map(fn($p, $i) => ['position' => $i + 1] + $p)->toArray();
+    }
+
+    private function getTopByCount($reservas)
+    {
+        return $reservas->groupBy(fn($r) => ($r->serviciable ? get_class($r->serviciable) : $r->serviciable_type) . '::' . $r->serviciable_id)
+            ->map(fn($g) => [
+                'name' => $g->first()->serviciable?->Nombre ?? 'N/A',
+                'type' => class_basename($g->first()->serviciable_type ?? ''),
+                'count' => $g->count(),
+            ])
+            ->sortByDesc('count')->take(5)->values()
+            ->map(fn($p, $i) => ['position' => $i + 1] + $p)->toArray();
+    }
+
+    private function getRevenueByDayOfWeek($reservas)
+    {
+        $days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+        $data = [];
+        foreach ($days as $i => $label) {
+            $data[] = ['day' => $label, 'amount' => (int)$reservas->filter(fn($r) => Carbon::parse($r->Dia)->dayOfWeek === ($i + 1))->sum(fn($r) => $r->serviciable?->Precio ?? 0)];
+        }
+        return $data;
+    }
+
+    private function getTicketByCategory($reservas)
+    {
+        return $reservas->groupBy(fn($r) => $r->serviciable?->categoria?->Nombre ?? 'General')
+            ->map(fn($g, $label) => ['label' => $label, 'value' => (int)round($g->sum(fn($r) => $r->serviciable?->Precio ?? 0) / max($g->count(), 1))])
+            ->values()->toArray();
+    }
+
+    private function getMarginDistribution($reservas)
+    {
+        $dist = [['range' => '0-25%', 'count' => 0, 'color' => '#EF4444'], ['range' => '26-50%', 'count' => 0, 'color' => '#F59E0B'], ['range' => '51-75%', 'count' => 0, 'color' => '#3B82F6'], ['range' => '76-100%', 'count' => 0, 'color' => '#10B981']];
+        foreach ($reservas as $r) {
+            $price = $r->serviciable?->Precio ?? 0;
+            $cost = $r->serviciable?->Costo_Operativo ?? 0;
+            $margin = $price > 0 ? round((($price - $cost) / $price) * 100) : 0;
+            if ($margin <= 25) $dist[0]['count']++;
+            elseif ($margin <= 50) $dist[1]['count']++;
+            elseif ($margin <= 75) $dist[2]['count']++;
+            else $dist[3]['count']++;
+        }
+        return $dist;
+    }
+
+    private function getOccupancyByZone($reservas)
+    {
+        return \App\Models\Espacio::where('Is_Active', true)->get()->map(function ($e) use ($reservas) {
+            $count = $reservas->where('id_espacio', $e->Id)->count();
+            return ['zone' => $e->Nombre, 'percentage' => min(round(($count / max($reservas->count(), 1)) * 100), 100), 'color' => '#C5A059'];
+        })->toArray();
+    }
+
+    private function getPeakDays($reservas)
+    {
+        $days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
+        $data = [];
+        $max = 1;
+        foreach ($days as $i => $label) {
+            $count = $reservas->filter(fn($r) => Carbon::parse($r->Dia)->dayOfWeek === ($i + 1))->count();
+            if ($count > $max) $max = $count;
+            $data[] = ['day' => $label, 'intensity' => $count];
+        }
+        foreach ($data as &$d) {
+            $d['intensity'] = $max > 0 ? max(round(($d['intensity'] / $max) * 5), 1) : 1;
+        }
+        return $data;
+    }
+
+    private function getTopSpenders($reservas)
+    {
+        return $reservas->whereNotNull('Habitacion')->groupBy('Habitacion')
+            ->map(fn($g) => ['habitacion' => $g->first()->Habitacion, 'reservations' => $g->count(), 'revenue' => (int)$g->sum(fn($r) => $r->serviciable?->Precio ?? 0)])
+            ->sortByDesc('revenue')->take(5)->values()->toArray();
+    }
+
+    private function getDemandCalendar($hoy)
+    {
+        $data = [];
+        for ($i = 1; $i <= 30; $i++) {
+            $date = $hoy->copy()->addDays($i);
+            $count = Reserva::whereDate('Dia', $date)->count();
+            $data[] = ['date' => $date->format('Y-m-d'), 'day' => $date->day, 'dayName' => substr($date->locale('es')->dayName, 0, 3), 'month' => $date->locale('es')->monthName, 'count' => $count, 'intensity' => $count > 3 ? 4 : ($count > 1 ? 3 : ($count > 0 ? 2 : 1))];
+        }
+        return $data;
+    }
+
+    private function getSpaceUtilization($from, $to)
+    {
+        return \App\Models\Espacio::where('Is_Active', true)->get()->map(function ($e) use ($from, $to) {
+            $diasOcupados = Reserva::where('id_espacio', $e->Id)->whereBetween('Dia', [$from, $to])->distinct('Dia')->count('Dia');
+            $totalDias = $from->diffInDays($to) ?: 30;
+            return ['nombre' => $e->Nombre, 'tipo' => $e->Tipo ?? '', 'zona' => $e->Zona ?? '', 'capacidad' => $e->Capacidad ?? 0, 'dias_ocupados' => $diasOcupados, 'total_dias' => $totalDias, 'utilizacion' => round(($diasOcupados / $totalDias) * 100)];
+        })->sortByDesc('utilizacion')->values()->toArray();
+    }
+
+    private function getAlerts($reservas)
+    {
+        $alerts = [];
+        $altaOcupacion = \App\Models\Espacio::where('Is_Active', true)->get()->filter(function ($e) use ($reservas) {
+            return $reservas->where('id_espacio', $e->Id)->count() > 15;
+        });
+        foreach ($altaOcupacion as $e) {
+            $alerts[] = ['severity' => 'warning', 'zone' => $e->Nombre, 'message' => "Alta demanda en {$e->Nombre}", 'detail' => 'Considere abrir más espacios', 'indicator' => '⚠️'];
+        }
+        $bajaOcupacion = \App\Models\Espacio::where('Is_Active', true)->get()->filter(function ($e) use ($reservas) {
+            return $reservas->where('id_espacio', $e->Id)->count() < 2;
+        });
+        foreach ($bajaOcupacion as $e) {
+            $alerts[] = ['severity' => 'info', 'zone' => $e->Nombre, 'message' => "Baja demanda en {$e->Nombre}", 'detail' => 'Evaluar promociones', 'indicator' => 'ℹ️'];
+        }
+        if (empty($alerts)) {
+            $alerts[] = ['severity' => 'info', 'zone' => 'General', 'message' => 'Todo en orden', 'detail' => 'Sin alertas', 'indicator' => '✅'];
+        }
+        return $alerts;
+    }
+
+    private function getAvgLeadTime()
+    {
+        $avg = Reserva::where('created_at', '>=', Carbon::today()->subDays(90))
+            ->whereNotNull('Dia')
+            ->get()
+            ->avg(fn($r) => Carbon::parse($r->Dia)->diffInDays(Carbon::parse($r->created_at)));
+        return round($avg ?? 0, 1);
+    }
+
+    private function getTopCollaborators($reservas)
+    {
+        $colaboradores = $reservas->whereNotNull('Numero_de_colaborador_vendedor')
+            ->where('Numero_de_colaborador_vendedor', '!=', '')
+            ->groupBy('Numero_de_colaborador_vendedor')
+            ->map(function ($g) {
+                $numColab = $g->first()->Numero_de_colaborador_vendedor;
+                $usuario = $this->usuarioLookup($numColab);
+                return [
+                    'name' => $usuario?->Nombre ?? 'Sin nombre', 'id' => $numColab,
+                    'reservations' => $g->count(), 'amount' => (int)$g->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                    'efficiency' => $g->count() > 0 ? round(($g->where('Estado', 'Completado')->count() / $g->count()) * 100) : 0,
+                ];
+            })
+            ->sortByDesc('amount')->take(5)->values()->toArray();
+
+        return array_map(function ($col, $i) {
+            return ['position' => $i + 1] + $col;
+        }, $colaboradores, array_keys($colaboradores));
+    }
+
+    private function getColaboradorTrend($seisMesesAtras, $hoy)
+    {
+        $mesReservas = Reserva::whereBetween('Dia', [Carbon::today()->subDays(30), Carbon::today()])
+            ->whereNotNull('Numero_de_colaborador_vendedor')
+            ->where('Numero_de_colaborador_vendedor', '!=', '')
+            ->with('serviciable')
+            ->get();
+
+        $top5Ids = $mesReservas->groupBy('Numero_de_colaborador_vendedor')
+            ->map(fn($g) => [
+                'id' => $g->first()->Numero_de_colaborador_vendedor,
+                'rev' => $g->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                'name' => $this->usuarioLookup($g->first()->Numero_de_colaborador_vendedor)?->Nombre ?? 'Sin nombre',
+            ])
+            ->sortByDesc('rev')->take(5)->values();
+
+        $reservasTrend = Reserva::where('Dia', '>=', $seisMesesAtras)
+            ->whereNotNull('Numero_de_colaborador_vendedor')
+            ->where('Numero_de_colaborador_vendedor', '!=', '')
+            ->with('serviciable')
+            ->get();
+
+        $trend = [];
+        foreach ($top5Ids as $colab) {
+            $monthly = [];
+            for ($i = 5; $i >= 0; $i--) {
+                $month = Carbon::today()->subMonths($i);
+                $start = $month->copy()->startOfMonth();
+                $end = $month->copy()->endOfMonth();
+                $reservasMes = $reservasTrend->filter(fn($r) =>
+                    $r->Numero_de_colaborador_vendedor === $colab['id']
+                    && Carbon::parse($r->Dia)->between($start, $end)
+                );
+                $monthly[] = [
+                    'month' => $month->locale('es')->monthName,
+                    'amount' => (int)$reservasMes->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                ];
+            }
+            $trend[] = ['colaborador' => $colab['name'], 'id' => $colab['id'], 'monthly' => $monthly];
+        }
+        return $trend;
     }
 }

@@ -44,6 +44,23 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        #experiencias-container {
+            scrollbar-gutter: stable;
+        }
+        #experiencias-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        #experiencias-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #experiencias-container::-webkit-scrollbar-thumb {
+            background: rgba(197, 160, 89, 0.3);
+            border-radius: 10px;
+        }
+        #experiencias-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(197, 160, 89, 0.6);
+        }
     </style>
 </head>
 
@@ -205,9 +222,11 @@
 
         <!-- Contenedor Principal de Tarjetas -->
         <div id="experiencias-container"
-            class="flex-1 p-6 overflow-y-auto no-scrollbar flex flex-col gap-4 max-w-4xl mx-auto w-full">
-            <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase">
-                <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando experiencias...
+            class="flex-1 overflow-y-auto">
+            <div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">
+                <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase">
+                    <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando experiencias...
+                </div>
             </div>
         </div>
     </div>
@@ -375,13 +394,13 @@
                         applyFiltersAndSorting();
                     } else {
                         container.innerHTML =
-                            `<div class="text-white/40 text-center py-10 text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                            `<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full"><div class="text-white/40 text-center py-10 text-xs uppercase">${translations[currentLang].no_results}</div></div>`;
                     }
                 })
                 .catch(err => {
                     console.error("Error crítico:", err);
                     container.innerHTML =
-                        `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading catalog data.' : 'Error al cargar los datos.'}</div>`;
+                        `<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full"><div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading catalog data.' : 'Error al cargar los datos.'}</div></div>`;
                 });
         });
 
@@ -435,18 +454,18 @@
         function renderExperiencias(items) {
             const container = document.getElementById('experiencias-container');
             if (!container) return;
-            container.innerHTML = '';
 
             if (items.length === 0) {
                 container.innerHTML =
-                    `<div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                    `<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full"><div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div></div>`;
                 return;
             }
 
             const t = translations[currentLang];
 
+            let html = '<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">';
             items.forEach(exp => {
-                const tarjeta = `
+                html += `
                     <div onclick="selectExperiencia('${exp.slug}')" class="bg-black/60 hover:bg-black/70 backdrop-blur-sm border border-white/10 hover:border-[#A21B54]/50 rounded-xl p-4 sm:p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.99] group gap-4 sm:gap-6">
                         
                         <div class="flex-1 text-white">
@@ -476,8 +495,9 @@
 
                     </div>
                 `;
-                container.innerHTML += tarjeta;
             });
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         function navigateWithAnimation(url) {

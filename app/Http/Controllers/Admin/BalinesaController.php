@@ -7,6 +7,7 @@ use App\Models\Balinesa;
 use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class BalinesaController extends Controller
 {
@@ -28,6 +29,7 @@ class BalinesaController extends Controller
             'botella_incluida' => 'nullable|string|max:255',
             'alimentos_bebidas' => 'nullable|string|max:1000',
             'costo_operativo' => 'nullable|numeric|min:0|max:999999.99',
+            'categoria_id' => 'nullable|integer|exists:Categorias,Id',
             'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'activo' => 'boolean',
         ];
@@ -46,7 +48,7 @@ class BalinesaController extends Controller
             );
         }
 
-        $slug = \Str::slug($validated['nombre']);
+        $slug = Str::slug($validated['nombre']);
 
         Balinesa::create([
             'Nombre' => $validated['nombre'],
@@ -60,7 +62,7 @@ class BalinesaController extends Controller
             'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
             'imagenes' => $imagenes,
             'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
-            'Id_Categoria' => 1,
+            'Id_Categoria' => $validated['categoria_id'] ?? 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#balinesas')

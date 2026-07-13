@@ -44,6 +44,23 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        #balinesas-container {
+            scrollbar-gutter: stable;
+        }
+        #balinesas-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        #balinesas-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #balinesas-container::-webkit-scrollbar-thumb {
+            background: rgba(197, 160, 89, 0.3);
+            border-radius: 10px;
+        }
+        #balinesas-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(197, 160, 89, 0.6);
+        }
     </style>
 </head>
 
@@ -188,9 +205,11 @@
 
         <!-- CONTENEDOR PRINCIPAL DE TARJETAS -->
         <div id="balinesas-container"
-            class="flex-1 p-6 overflow-y-auto no-scrollbar flex flex-col gap-4 max-w-4xl mx-auto w-full">
-            <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase">
-                <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando catálogo...
+            class="flex-1 overflow-y-auto">
+            <div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">
+                <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase">
+                    <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando catálogo...
+                </div>
             </div>
         </div>
     </div>
@@ -361,7 +380,7 @@
                 .catch(err => {
                     console.error("Error al obtener catálogo:", err);
                     document.getElementById('balinesas-container').innerHTML =
-                        `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div>`;
+                        `<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full"><div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading data.' : 'Error al cargar los datos.'}</div></div>`;
                 });
         });
 
@@ -450,16 +469,16 @@
 
         function renderCatalog(items) {
             const container = document.getElementById('balinesas-container');
-            container.innerHTML = '';
 
             if (items.length === 0) {
                 container.innerHTML =
-                    `<div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                    `<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full"><div class="text-white/40 text-center py-12 tracking-widest text-xs uppercase">${translations[currentLang].no_results}</div></div>`;
                 return;
             }
 
+            let html = '<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">';
             items.forEach(balinesa => {
-                const card = `
+                html += `
             <div onclick="selectBalinesa('${balinesa.slug}')" class="bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#C5A059]/40 rounded-xl p-4 sm:p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.995] group gap-4 sm:gap-6">
                 
                 <div class="flex-1 text-white">
@@ -486,8 +505,9 @@
                 </div>
             </div>
         `;
-                container.innerHTML += card;
             });
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         function navigateWithAnimation(targetUrl) {

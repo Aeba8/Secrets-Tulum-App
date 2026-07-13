@@ -7,7 +7,7 @@
     <title>Secrets Tulum - Login Colaboradores</title>
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <<style>
+    <style>
         @import
         url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600&family=Montserrat:wght@300;400;500&display=swap');
 
@@ -75,7 +75,7 @@
 
         <p class="text-white/80 text-xs tracking-wider uppercase font-medium mb-8">Login Colaboradores</p>
 
-        <form action="{{ url('/login') }}" method="POST" class="space-y-5 text-left">
+        <form action="{{ route('login') }}" method="POST" class="space-y-5 text-left">
             @csrf
 
             <div>

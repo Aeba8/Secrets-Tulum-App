@@ -7,6 +7,7 @@ use App\Models\CenaEspecial;
 use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class CenaEspecialController extends Controller
 {
@@ -30,6 +31,7 @@ class CenaEspecialController extends Controller
             'costo_operativo' => 'nullable|numeric|min:0|max:999999.99',
             'numero_personas' => 'nullable|integer|min:1|max:500',
             'ficha_tecnica' => 'nullable|string|max:1000',
+            'categoria_id' => 'nullable|integer|exists:Categorias,Id',
             'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'activo' => 'boolean',
         ];
@@ -48,7 +50,7 @@ class CenaEspecialController extends Controller
             );
         }
 
-        $slug = \Str::slug($validated['nombre']);
+        $slug = Str::slug($validated['nombre']);
 
         CenaEspecial::create([
             'Nombre' => $validated['nombre'],
@@ -64,7 +66,7 @@ class CenaEspecialController extends Controller
             'Slug' => $slug,
             'imagenes' => $imagenes,
             'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
-            'id_categoria' => 1,
+            'id_categoria' => $validated['categoria_id'] ?? 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#cenas')

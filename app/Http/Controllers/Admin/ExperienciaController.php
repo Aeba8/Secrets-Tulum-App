@@ -7,6 +7,7 @@ use App\Models\Experiencia;
 use App\Services\CloudinaryService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ExperienciaController extends Controller
 {
@@ -32,6 +33,7 @@ class ExperienciaController extends Controller
             'productos' => 'nullable|string|max:1000',
             'botella' => 'nullable|string|max:255',
             'servicio_extra' => 'nullable|string|max:255',
+            'categoria_id' => 'nullable|integer|exists:Categorias,Id',
             'imagenes.*' => 'nullable|image|mimes:jpeg,png,jpg,webp|max:5120',
             'activo' => 'boolean',
         ];
@@ -50,7 +52,7 @@ class ExperienciaController extends Controller
             );
         }
 
-        $slug = \Str::slug($validated['nombre']);
+        $slug = Str::slug($validated['nombre']);
 
         $botella = strip_tags($validated['botella'] ?? '');
         $servicio_extra = strip_tags($validated['servicio_extra'] ?? '');
@@ -71,7 +73,7 @@ class ExperienciaController extends Controller
             'Slug' => $slug,
             'imagenes' => $imagenes,
             'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
-            'id_categoria' => 1,
+            'id_categoria' => $validated['categoria_id'] ?? 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#experiencias')

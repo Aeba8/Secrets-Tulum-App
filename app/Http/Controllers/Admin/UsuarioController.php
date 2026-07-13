@@ -12,16 +12,23 @@ class UsuarioController extends Controller
 {
     protected function reglasValidacion($id = null)
     {
-        $numeroUnique = $id
-            ? 'unique:Usuarios,Numero_de_colaborador,' . $id . ',Id'
-            : 'unique:Usuarios,Numero_de_colaborador';
         $emailUnique  = $id
             ? 'unique:Usuarios,Email,' . $id . ',Id'
             : 'unique:Usuarios,Email';
 
-        $numeroRules = $id
-            ? 'nullable|digits:6|' . $numeroUnique
-            : 'required|digits:6|' . $numeroUnique;
+        $baseRules = $id
+            ? 'nullable|digits:6'
+            : 'required|digits:6';
+
+        $numeroRules = [$baseRules, function ($attr, $value, $fail) use ($id) {
+            $existing = Usuario::where('Id', '!=', $id ?? 0)->get();
+            foreach ($existing as $u) {
+                if (Hash::check($value, $u->Numero_de_colaborador)) {
+                    $fail('Este número de colaborador ya existe.');
+                    return;
+                }
+            }
+        }];
 
         return [
             'nombre'             => 'required|string|max:100|regex:/^[a-zA-ZÀ-ÿ\s\.]+$/',

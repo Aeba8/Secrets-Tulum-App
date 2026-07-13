@@ -70,6 +70,8 @@
         .fade-text {
             transition: opacity 0.4s ease-in-out;
         }
+        .fs-modal { backdrop-filter: blur(6px); }
+        .fs-modal img { touch-action: manipulation; }
     </style>
 </head>
 
@@ -105,13 +107,15 @@
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     @forelse($balinesa->imagenes ?? [] as $foto)
                         <div class="w-full min-w-full h-full shrink-0">
-                            <img src="{{ $foto }}" class="w-full h-full object-cover"
-                                alt="Slide {{ $loop->iteration }}">
+                            <img src="{{ $foto }}" class="w-full h-full object-cover cursor-pointer"
+                                alt="Slide {{ $loop->iteration }}"
+                                onclick="abrirFullscreen({{ $loop->index }})">
                         </div>
                     @empty
                         <div class="w-full min-w-full h-full shrink-0">
                             <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=800"
-                                class="w-full h-full object-cover" alt="Slide 1">
+                                class="w-full h-full object-cover cursor-pointer" alt="Slide 1"
+                                onclick="abrirFullscreen(0)">
                         </div>
                     @endforelse
                 </div>
@@ -235,6 +239,20 @@
         </div>
     </div>
 
+    <!-- Fullscreen Zoom Modal -->
+    <div id="fsModal" class="fixed inset-0 bg-black/95 fs-modal z-50 hidden items-center justify-center" onclick="cerrarFullscreen(event)">
+        <button onclick="event.stopPropagation(); cerrarFullscreen(event)"
+            class="absolute top-4 right-4 z-10 w-10 h-10 bg-white/10 hover:bg-white/25 rounded-full flex items-center justify-center text-white text-xl transition cursor-pointer backdrop-blur-sm border border-white/10">✕</button>
+        <button onclick="event.stopPropagation(); moveFsCarousel(-1)"
+            class="absolute left-4 top-0 bottom-0 my-auto w-12 h-12 bg-white/10 hover:bg-white/25 rounded-full flex items-center justify-center text-white text-2xl transition cursor-pointer backdrop-blur-sm border border-white/10 z-10">‹</button>
+        <button onclick="event.stopPropagation(); moveFsCarousel(1)"
+            class="absolute right-4 top-0 bottom-0 my-auto w-12 h-12 bg-white/10 hover:bg-white/25 rounded-full flex items-center justify-center text-white text-2xl transition cursor-pointer backdrop-blur-sm border border-white/10 z-10">›</button>
+        <div id="fsWrapper" class="w-full h-full flex items-center justify-center overflow-hidden cursor-grab active:cursor-grabbing">
+            <img id="fsImg" class="max-w-full max-h-full object-contain select-none" style="transition: transform 0.2s ease;">
+        </div>
+        <div id="fsCounter" class="absolute bottom-6 left-0 right-0 text-center text-white/50 text-sm font-mono tracking-wider"></div>
+    </div>
+
     <!-- Script de Control Operativo -->
     <script>
         const urlParams = new URLSearchParams(window.location.search);
@@ -337,6 +355,70 @@
 
         dots[0].classList.add('w-5');
 
+        // ── Drag / Swipe táctil ──
+        let startX = 0, isDragging = false, dragDistance = 0;
+        const container = track.parentElement;
+
+        container.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+            isDragging = true;
+            track.style.transition = 'none';
+        }, { passive: true });
+
+        container.addEventListener('touchmove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.touches[0].clientX;
+            dragDistance = ((startX - currentX) / container.offsetWidth) * 100;
+            track.style.transform = `translate3d(-${(currentSlide * 100) + dragDistance}%, 0, 0)`;
+        }, { passive: true });
+
+        container.addEventListener('touchend', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            track.style.transition = '';
+            if (Math.abs(dragDistance) > 20) {
+                moveCarousel(dragDistance > 0 ? 1 : -1);
+            } else {
+                updateCarousel();
+            }
+            dragDistance = 0;
+        });
+
+        container.addEventListener('mousedown', (e) => {
+            startX = e.clientX;
+            isDragging = true;
+            dragDistance = 0;
+            track.style.transition = 'none';
+            e.preventDefault();
+        });
+
+        container.addEventListener('mousemove', (e) => {
+            if (!isDragging) return;
+            const currentX = e.clientX;
+            dragDistance = ((startX - currentX) / container.offsetWidth) * 100;
+            track.style.transform = `translate3d(-${(currentSlide * 100) + dragDistance}%, 0, 0)`;
+        });
+
+        container.addEventListener('mouseup', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            track.style.transition = '';
+            if (Math.abs(dragDistance) > 20) {
+                moveCarousel(dragDistance > 0 ? 1 : -1);
+            } else {
+                updateCarousel();
+            }
+            dragDistance = 0;
+        });
+
+        container.addEventListener('mouseleave', () => {
+            if (!isDragging) return;
+            isDragging = false;
+            track.style.transition = '';
+            updateCarousel();
+            dragDistance = 0;
+        });
+
         // Lógica de Pestañas Interactivas
         function switchTab(tab) {
             const tabDesc = document.getElementById('tab-descripcion');
@@ -382,6 +464,100 @@
             window.location.href =
                 "{{ route('mapa.espacios') }}?package={{ $balinesa->slug }}&package_id={{ $balinesa->getKey() }}";
         }
+
+        // ── Fullscreen Zoom ──
+        let fsSlide = 0;
+        const fsImgs = [...document.querySelectorAll('#carouselTrack img')].map(i => i.src);
+        const fsModal = document.getElementById('fsModal');
+        const fsImg = document.getElementById('fsImg');
+        const fsCounter = document.getElementById('fsCounter');
+        let fsScale = 1, fsPanX = 0, fsPanY = 0, fsPanStartX, fsPanStartY, fsIsPanning = false, fsLastTap = 0;
+
+        function abrirFullscreen(index) {
+            fsSlide = index; fsScale = 1; fsPanX = 0; fsPanY = 0;
+            actualizarFsImg();
+            fsModal.classList.remove('hidden');
+            fsModal.classList.add('flex');
+            document.body.style.overflow = 'hidden';
+        }
+
+        function cerrarFullscreen(e) {
+            if (e && e.target !== e.currentTarget) return;
+            fsModal.classList.add('hidden');
+            document.body.style.overflow = '';
+        }
+
+        function moveFsCarousel(dir) {
+            if (!fsImgs.length) return;
+            fsSlide = (fsSlide + dir + fsImgs.length) % fsImgs.length;
+            fsScale = 1; fsPanX = 0; fsPanY = 0;
+            actualizarFsImg();
+        }
+
+        function actualizarFsImg() {
+            if (!fsImgs.length) return;
+            fsImg.src = fsImgs[fsSlide];
+            fsImg.style.transform = `translate(${fsPanX}px, ${fsPanY}px) scale(${fsScale})`;
+            fsCounter.textContent = `${fsSlide + 1} / ${fsImgs.length}`;
+        }
+
+        // Double-tap/double-click zoom toggle
+        document.addEventListener('dblclick', (e) => {
+            if (fsModal.classList.contains('hidden')) return;
+            if (!e.target.closest('#fsImg') && !e.target.closest('#fsModal button')) return;
+            if (fsScale > 1) {
+                fsScale = 1; fsPanX = 0; fsPanY = 0;
+            } else {
+                fsScale = 2.5;
+                const rect = fsImg.getBoundingClientRect();
+                const x = (e.clientX - rect.left) / rect.width;
+                const y = (e.clientY - rect.top) / rect.height;
+                const maxPanX = (fsImg.naturalWidth * fsScale - rect.width) / 2;
+                const maxPanY = (fsImg.naturalHeight * fsScale - rect.height) / 2;
+                fsPanX = Math.max(-maxPanX, Math.min(maxPanX, -(x - 0.5) * fsImg.naturalWidth * (fsScale - 1) * 0.3));
+                fsPanY = Math.max(-maxPanY, Math.min(maxPanY, -(y - 0.5) * fsImg.naturalHeight * (fsScale - 1) * 0.3));
+            }
+            actualizarFsImg();
+        });
+
+        // Pan when zoomed (mouse)
+        document.getElementById('fsWrapper').addEventListener('mousedown', (e) => {
+            if (fsScale <= 1) return;
+            fsIsPanning = true;
+            fsPanStartX = e.clientX - fsPanX;
+            fsPanStartY = e.clientY - fsPanY;
+            e.currentTarget.style.cursor = 'grabbing';
+        });
+        window.addEventListener('mousemove', (e) => {
+            if (!fsIsPanning) return;
+            fsPanX = e.clientX - fsPanStartX;
+            fsPanY = e.clientY - fsPanStartY;
+            actualizarFsImg();
+        });
+        window.addEventListener('mouseup', () => { fsIsPanning = false; document.getElementById('fsWrapper').style.cursor = 'grab'; });
+
+        // Pan when zoomed (touch)
+        document.getElementById('fsWrapper').addEventListener('touchstart', (e) => {
+            if (fsScale <= 1) return;
+            const t = e.touches[0];
+            fsPanStartX = t.clientX - fsPanX;
+            fsPanStartY = t.clientY - fsPanY;
+        }, { passive: true });
+        document.getElementById('fsWrapper').addEventListener('touchmove', (e) => {
+            if (fsScale <= 1) return;
+            const t = e.touches[0];
+            fsPanX = t.clientX - fsPanStartX;
+            fsPanY = t.clientY - fsPanStartY;
+            actualizarFsImg();
+        }, { passive: true });
+
+        // Keyboard
+        document.addEventListener('keydown', (e) => {
+            if (fsModal.classList.contains('hidden')) return;
+            if (e.key === 'Escape') cerrarFullscreen(e);
+            if (e.key === 'ArrowLeft') moveFsCarousel(-1);
+            if (e.key === 'ArrowRight') moveFsCarousel(1);
+        });
     </script>
 
 </body>

@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\Espacio;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -31,7 +32,7 @@ class ExperienciaReservaController extends Controller
             $reservaId = DB::table('Reservas')->insertGetId([
                 'serviciable_type' => $request->serviciable_type,
                 'serviciable_id' => (int)$request->serviciable_id,
-                'id_espacio' => 61, // <--- Vinculado al espacio genérico
+                'id_espacio' => Espacio::where('Nombre', 'Genérico')->value('Id') ?? 1,
                 'Dia' => $request->fecha,
                 'Habitacion' => $request->habitacion,
                 'Numero_de_colaborador_vendedor' => $request->numero_colaborador_vendedor,

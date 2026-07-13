@@ -49,6 +49,23 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+
+        #cenas-container {
+            scrollbar-gutter: stable;
+        }
+        #cenas-container::-webkit-scrollbar {
+            width: 4px;
+        }
+        #cenas-container::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        #cenas-container::-webkit-scrollbar-thumb {
+            background: rgba(197, 160, 89, 0.3);
+            border-radius: 10px;
+        }
+        #cenas-container::-webkit-scrollbar-thumb:hover {
+            background: rgba(197, 160, 89, 0.6);
+        }
     </style>
 </head>
 
@@ -168,9 +185,11 @@
         </div>
 
         <div id="cenas-container"
-            class="flex-1 p-6 overflow-y-auto no-scrollbar flex flex-col gap-4 max-w-4xl mx-auto w-full">
-            <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase">
-                <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando menú...
+            class="flex-1 overflow-y-auto">
+            <div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">
+                <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase">
+                    <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando menú...
+                </div>
             </div>
         </div>
 
@@ -326,24 +345,23 @@
 
                     } else {
                         container.innerHTML =
-                            `<div class="text-white/40 text-center py-10 text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                            `<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full"><div class="text-white/40 text-center py-10 text-xs uppercase">${translations[currentLang].no_results}</div></div>`;
                     }
                 })
                 .catch(err => {
                     console.error("Error crítico de catálogo:", err);
                     container.innerHTML =
-                        `<div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading catalog data.' : 'Error al cargar los datos del catálogo.'}</div>`;
+                        `<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full"><div class="text-red-400 text-center py-10 text-xs uppercase">${currentLang === 'en' ? 'Error loading catalog data.' : 'Error al cargar los datos del catálogo.'}</div></div>`;
                 });
         });
 
         function renderCenas(cenasFiltradas) {
             const container = document.getElementById('cenas-container');
             if (!container) return;
-            container.innerHTML = '';
 
             if (!cenasFiltradas || cenasFiltradas.length === 0) {
                 container.innerHTML =
-                    `<div class="text-white/40 text-center py-12 tracking-wide text-xs uppercase">${translations[currentLang].no_results}</div>`;
+                    `<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full"><div class="text-white/40 text-center py-12 tracking-wide text-xs uppercase">${translations[currentLang].no_results}</div></div>`;
                 return;
             }
 
@@ -357,12 +375,13 @@
             const location_lbl = currentLang === 'en' ? 'Location' : 'Ubicación';
             const table_lbl = currentLang === 'en' ? 'Capacity' : 'Capacidad';
 
+            let html = '<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">';
             cenasFiltradas.forEach(cena => {
                 const descripcionMenu =
                     `<strong>${menu_lbl}:</strong> ${starter_lbl}: ${cena.renderedEntrada || ''} • ${soup_lbl}: ${cena.renderedCrema || ''} • ${main_lbl}: ${cena.renderedPlatoFuerte || ''} • ${dessert_lbl}: ${cena.renderedPostre || ''}.`;
                 const restauranteStr = cena.restaurant || 'Hotel';
 
-                const tarjeta = `
+                html += `
             <div onclick="selectCena('${cena.slug}')" class="bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#C5A059]/40 rounded-xl p-4 sm:p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.995] group gap-4 sm:gap-6">
                 
                 <!-- Información Izquierda -->
@@ -392,8 +411,9 @@
 
             </div>
         `;
-                container.innerHTML += tarjeta;
             });
+            html += '</div>';
+            container.innerHTML = html;
         }
 
         function applyFilters() {

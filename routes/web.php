@@ -86,6 +86,7 @@ Route::middleware(['auth', 'role:Operativo'])->group(function () {
 // 🔐 Rutas del Panel de Administración (exclusivo Admin/SuperAdmin)
 Route::middleware(['auth', 'role:Admin,SuperAdmin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::get('/dashboard/export/{section}', [DashboardController::class, 'export'])->name('dashboard.export');
 
     Route::post('/balinesas', [BalinesaController::class, 'store'])->name('balinesas.store');
     Route::put('/balinesas/{id}', [BalinesaController::class, 'update'])->name('balinesas.update');

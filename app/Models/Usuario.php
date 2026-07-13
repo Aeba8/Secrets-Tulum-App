@@ -23,6 +23,10 @@ class Usuario extends Authenticatable
         'Estado',
     ];
 
+    protected $hidden = [
+        'Numero_de_colaborador',
+    ];
+
     /**
      * El truco maestro: Laravel por defecto busca una columna llamada 'password'.
      * Al retornar 'Numero_de_colaborador' aquí, Laravel usará ese campo como contraseña interna.

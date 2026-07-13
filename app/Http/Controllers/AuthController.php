@@ -23,9 +23,10 @@ class AuthController extends Controller
             'numero_colaborador' => 'required|string', // Actúa como contraseña
         ]);
 
-        // Buscamos al colaborador de forma flexible en tu tabla
-        $usuario = Usuario::where('Nombre', $request->login_input)
-                          ->orWhere('Email', $request->login_input)
+        // Buscamos al colaborador de forma flexible en tu tabla (case-insensitive)
+        $loginInput = strtolower($request->login_input);
+        $usuario = Usuario::whereRaw('LOWER(Nombre) = ?', [$loginInput])
+                          ->orWhereRaw('LOWER(Email) = ?', [$loginInput])
                           ->first();
 
         // Validar que la cuenta esté activa

@@ -121,17 +121,26 @@
             width: 6px;
         }
 
+        ::-webkit-scrollbar:horizontal {
+            height: 6px;
+        }
+
         ::-webkit-scrollbar-track {
             background: transparent;
         }
 
         ::-webkit-scrollbar-thumb {
-            background: rgba(197, 160, 89, 0.3);
+            background: rgba(197, 160, 89, 0.5);
             border-radius: 3px;
         }
 
         ::-webkit-scrollbar-thumb:hover {
-            background: rgba(197, 160, 89, 0.5);
+            background: rgba(197, 160, 89, 0.7);
+        }
+
+        * {
+            scrollbar-width: thin;
+            scrollbar-color: rgba(197, 160, 89, 0.5) transparent;
         }
 
         .sidebar-transition {
@@ -282,7 +291,7 @@
                         </svg>
                     </div>
                     <span class="font-serif text-gold-400 text-lg font-semibold whitespace-nowrap"
-                        id="sidebar-brand-text">SecretsPad</span>
+                        id="sidebar-brand-text">SecretsPad</span><-- Logo text -->
                 </div>
                 <button id="sidebar-toggle"
                     class="sidebar-toggle-hover w-7 h-7 rounded-lg flex items-center justify-center text-white/50 hover:text-white/80 transition-colors flex-shrink-0">
@@ -892,6 +901,22 @@
     </script>
 
     @stack('scripts')
+
+    {{-- Floating Export Button --}}
+    <button id="exportBtn"
+        class="fixed bottom-6 right-6 z-[60] w-12 h-12 rounded-full bg-gold-500 text-white shadow-lg flex items-center justify-center text-lg hover:bg-gold-600 transition-all cursor-pointer active:scale-90"
+        title="Exportar sección actual a Excel">
+        <i class="fa-solid fa-file-excel"></i>
+    </button>
+
+    <script>
+        document.getElementById('exportBtn')?.addEventListener('click', function(e) {
+            e.preventDefault();
+            const visible = document.querySelector('.dashboard-section:not(.hidden)');
+            const section = visible ? visible.id.replace('section-', '') : 'general';
+            window.location.href = '{{ route('admin.dashboard.export', '_SECTION_') }}'.replace('_SECTION_', section);
+        });
+    </script>
 </body>
 
 </html>

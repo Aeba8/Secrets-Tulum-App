@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
+use App\Models\Espacio;
 use App\Models\Reserva;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -28,7 +29,7 @@ class AgendaController extends Controller
 
         $id_espacio = $validated['id_espacio'] ?? null;
         if ($id_espacio === null && $validated['serviciable_type'] === 'App\Models\Experiencia') {
-            $id_espacio = 61;
+            $id_espacio = Espacio::where('Nombre', 'Genérico')->value('Id') ?? 1;
         }
 
         DB::table('Reservas')->insert([
@@ -70,7 +71,7 @@ class AgendaController extends Controller
 
         $id_espacio = $validated['id_espacio'] ?? $reserva->id_espacio;
         if ($id_espacio === null && $validated['serviciable_type'] === 'App\Models\Experiencia') {
-            $id_espacio = 61;
+            $id_espacio = Espacio::where('Nombre', 'Genérico')->value('Id') ?? 1;
         }
 
         DB::table('Reservas')
