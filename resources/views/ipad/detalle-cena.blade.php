@@ -8,7 +8,7 @@
     // Ficha técnica para detalles adicionales (Ej: Botella de cortesía, etc.)
     $parts = explode('|', $cena->ficha_tecnica ?? ($cena->Ficha_Tecnica ?? ''));
     $detalle_adicional =
-        isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : '1 botella de Moet & Chandon Brut 750ml';
+        isset($parts[0]) && !empty(trim($parts[0])) ? trim($parts[0]) : 'No incluye';
 @endphp
 
 <!DOCTYPE html>
@@ -218,25 +218,25 @@
 
                 <div id="content-entrada" class="block">
                     <p id="txt-entrada" class="font-light text-stone-300/90 text-justify tracking-wide fade-text">
-                        {{ $entrada ?: 'Mar y bosque - Sea and Forest. Lingote de atún ennegrecido, emulsión de aguacate con menta, jalea de frutos rojos del bosque y chile serrano.' }}
+                        {{ $entrada ?: 'No incluye' }}
                     </p>
                 </div>
 
                 <div id="content-crema" class="hidden">
                     <p id="txt-crema" class="font-light text-stone-300/90 text-justify tracking-wide fade-text">
-                        {{ $crema ?: 'Crema gourmet sugerida por el Chef a base de ingredientes locales y de estación.' }}
+                        {{ $crema ?: 'No incluye' }}
                     </p>
                 </div>
 
                 <div id="content-fuerte" class="hidden">
                     <p id="txt-fuerte" class="font-light text-stone-300/90 text-justify tracking-wide fade-text">
-                        {{ $plato_fuerte ?: 'Corte premium de elección o pesca del día sobre cama de vegetales orgánicos glaseados.' }}
+                        {{ $plato_fuerte ?: 'No incluye' }}
                     </p>
                 </div>
 
                 <div id="content-postre" class="hidden">
                     <p id="txt-postre" class="font-light text-stone-300/90 text-justify tracking-wide fade-text">
-                        {{ $postre ?: 'Postre artesanal de autor acompañado de sutiles notas dulces y texturas balanceadas.' }}
+                        {{ $postre ?: 'No incluye' }}
                     </p>
                 </div>
 

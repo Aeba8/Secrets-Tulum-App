@@ -57,9 +57,9 @@ class ReservaController extends Controller
 
             // 3. Obtener las reservas cruzando con tus columnas reales: 'Dia' y 'Habitacion'
             $reservasHoy = DB::table('Reservas')
-                ->where('serviciable_type', $type)
                 ->whereDate('Dia', $fecha) // <-- Usando tu columna nativa 'Dia'
                 ->whereNotNull('id_espacio')
+                ->whereNotIn('Estado', ['Cancelado', 'No-Show'])
                 ->select('id_espacio', 'Habitacion') // <-- Usando tu columna nativa 'Habitacion'
                 ->get()
                 ->keyBy('id_espacio');
@@ -117,22 +117,30 @@ class ReservaController extends Controller
         $fecha = $request->fecha;
         $idEspacio = $request->id_espacio;
 
+        // Forzar espacio Genérico para Experiencias (no tienen espacio físico)
+        if ($request->serviciable_type === 'App\Models\Experiencia') {
+            $idEspacio = Espacio::where('Nombre', 'Sin Espacio Físico')->value('Id') ?? 1;
+        }
+
         try {
             $reservaId = DB::transaction(function () use ($request, $idEspacio, $fecha, $usuarioLogueadoId) {
                 // 2. CANDADO ANTI-OVERBOOKING: Verificar si ese id_espacio ya se vendió ese mismo DÍA
-                $existeReserva = DB::table('Reservas')
-                    ->where('id_espacio', $idEspacio)
-                    ->whereDate('Dia', $fecha)
-                    ->lockForUpdate()
-                    ->exists();
+                if ($request->serviciable_type !== 'App\Models\Experiencia') {
+                    $existeReserva = DB::table('Reservas')
+                        ->where('id_espacio', $idEspacio)
+                        ->whereDate('Dia', $fecha)
+                        ->whereNotIn('Estado', ['Cancelado', 'No-Show'])
+                        ->lockForUpdate()
+                        ->exists();
 
-                if ($existeReserva) {
-                    throw new \Illuminate\Http\Exceptions\HttpResponseException(
-                        response()->json([
-                            'success' => false,
-                            'message' => '¡Lo sentimos! Este espacio ya fue reservado por otra habitación para el día de hoy.',
-                        ], 422)
-                    );
+                    if ($existeReserva) {
+                        throw new \Illuminate\Http\Exceptions\HttpResponseException(
+                            response()->json([
+                                'success' => false,
+                                'message' => '¡Lo sentimos! Este espacio ya fue reservado por otra habitación para el día de hoy.',
+                            ], 422)
+                        );
+                    }
                 }
 
                 // 3. Insertar la reserva con la anatomía exacta de tu SQL Server

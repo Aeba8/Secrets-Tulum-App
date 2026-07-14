@@ -43,7 +43,7 @@
                     </div>
                 </div>
             </div>
-            <button id="btn-nuevo-espacio" onclick="openEspacioModal('Balinesa')"
+            <button id="btn-nuevo-espacio" onclick="openEspacioModal('Balinesa', null, activeZonaFiltro)"
                 class="text-xs px-3 py-1.5 rounded-lg bg-gold-500 text-white font-medium hover:bg-gold-600 transition-colors">
                 <i class="fa-solid fa-plus mr-1"></i> <span id="btn-nuevo-texto">Nueva Balinesa</span>
             </button>
@@ -477,11 +477,11 @@
                 if (tipo === 'Balinesa') {
                     btnNuevo.className = 'text-xs px-3 py-1.5 rounded-lg bg-gold-500 text-white font-medium hover:bg-gold-600 transition-colors';
                     btnTexto.textContent = 'Nueva Balinesa';
-                    btnNuevo.setAttribute('onclick', "openEspacioModal('Balinesa')");
+                    btnNuevo.setAttribute('onclick', "openEspacioModal('Balinesa', null, activeZonaFiltro)");
                 } else {
                     btnNuevo.className = 'text-xs px-3 py-1.5 rounded-lg bg-sapphire-500 text-white font-medium hover:bg-sapphire-600 transition-colors';
                     btnTexto.textContent = 'Nueva Mesa';
-                    btnNuevo.setAttribute('onclick', "openEspacioModal('Mesa')");
+                    btnNuevo.setAttribute('onclick', "openEspacioModal('Mesa', null, activeZonaFiltro)");
                 }
 
                 // Sincronizar hash con la pestaña activa del panel
@@ -600,7 +600,7 @@
             });
         }
 
-        function openEspacioModal(tipo, data) {
+        function openEspacioModal(tipo, data, zonaPorDefecto) {
             const modal = document.getElementById('espacioModal');
             const form = document.getElementById('espacioForm');
             const title = document.getElementById('espacioModalTitle');
@@ -625,7 +625,8 @@
                 document.getElementById('espacio_nombre').value = '';
                 document.getElementById('espacio_capacidad').value = '';
                 document.getElementById('espacio_activo').checked = true;
-                llenarSelectZona(tipo, '');
+                const zonaInicial = zonaPorDefecto && zonaPorDefecto !== 'all' ? zonaPorDefecto : '';
+                llenarSelectZona(tipo, zonaInicial);
             }
 
             modal.classList.remove('hidden');

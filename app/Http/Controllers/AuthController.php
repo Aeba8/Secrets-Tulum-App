@@ -26,7 +26,7 @@ class AuthController extends Controller
         // Buscamos al colaborador de forma flexible en tu tabla (case-insensitive)
         $loginInput = strtolower($request->login_input);
         $usuario = Usuario::whereRaw('LOWER(Nombre) = ?', [$loginInput])
-                          ->orWhereRaw('LOWER(Email) = ?', [$loginInput])
+                          ->orWhereRaw('Email COLLATE Latin1_General_CS_AS = ?', [$request->login_input])
                           ->first();
 
         // Validar que la cuenta esté activa

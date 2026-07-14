@@ -119,9 +119,9 @@ class DashboardController extends Controller
         $limiteBCG = Carbon::today()->subDays(60);
 
         $serviciosBCG = collect()
-            ->merge(Experiencia::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Experiencia']))
-            ->merge(Balinesa::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Balinesa']))
-            ->merge(CenaEspecial::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Cena']));
+            ->merge(Experiencia::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn($m) => ['model' => $m, 'type' => 'Experiencia']))
+            ->merge(Balinesa::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn($m) => ['model' => $m, 'type' => 'Balinesa']))
+            ->merge(CenaEspecial::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn($m) => ['model' => $m, 'type' => 'Cena']));
 
         $hoyCarbon = Carbon::today();
         $treintaAtras = Carbon::today()->subDays(30);
@@ -194,6 +194,9 @@ class DashboardController extends Controller
         }, $bcgProducts);
 
         usort($bcgProducts, fn($a, $b) => $b['revenue'] <=> $a['revenue']);
+
+        $bcgMaxGrowth = !empty($bcgProducts) ? max(array_column($bcgProducts, 'growth')) : 30;
+        $bcgMaxShare  = !empty($bcgProducts) ? max(array_column($bcgProducts, 'share')) : 35;
 
         $productoMasRentable = !empty($bcgProducts) ? $bcgProducts[0]['name'] : 'N/A';
         $totalProfitBCG = array_sum(array_map(fn($p) => $p['revenue'] * $p['margin'] / 100, $bcgProducts));
@@ -736,6 +739,8 @@ class DashboardController extends Controller
             'bcgProducts',
             'bcgQuadrants',
             'bcgSummary',
+            'bcgMaxGrowth',
+            'bcgMaxShare',
             'revenueByType',
             'ticketAverages',
             'ticketByCategory',

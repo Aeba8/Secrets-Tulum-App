@@ -32,7 +32,7 @@ class ExperienciaReservaController extends Controller
             $reservaId = DB::table('Reservas')->insertGetId([
                 'serviciable_type' => $request->serviciable_type,
                 'serviciable_id' => (int)$request->serviciable_id,
-                'id_espacio' => Espacio::where('Nombre', 'Genérico')->value('Id') ?? 1,
+                'id_espacio' => Espacio::where('Nombre', 'Sin Espacio Físico')->value('Id') ?? 1,
                 'Dia' => $request->fecha,
                 'Habitacion' => $request->habitacion,
                 'Numero_de_colaborador_vendedor' => $request->numero_colaborador_vendedor,

@@ -124,7 +124,7 @@
 
     <!-- ⏳ Footer Fino -->
     <footer class="w-full text-center py-5 text-[8.5px] text-white/30 tracking-[0.25em] uppercase relative z-10 border-t border-white/[0.06] bg-zinc-950/40 backdrop-blur-md">
-        &copy; {{ date('Y') }} Secrets Resorts & Spas &bull; Luxury Oasis
+        &copy; {{ date('Y') }} SecretsPad &bull; WEB
     </footer>
 
     <script>

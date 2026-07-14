@@ -66,6 +66,7 @@ function destroyChart(id) {
 const bcgData = {!! json_encode($bcgProducts) !!};
 const quadrants = {!! json_encode($bcgQuadrants) !!};
 const quadrantColors = { star: '#C5A059', cow: '#10B981', question: '#3B82F6', dog: '#EF4444' };
+const bcgAxisMax = { growth: {{ $bcgMaxGrowth }}, share: {{ $bcgMaxShare }} };
 const wcData = {!! json_encode($weeklyComparison) !!};
 const mrData = {!! json_encode($monthlyRevenue) !!};
 const ozData = {!! json_encode($occupancyByZone) !!};
@@ -189,8 +190,8 @@ window.renderChartsForSection = function(section) {
                     }
                 },
                 scales: {
-                    x: { min: 0, max: 35, grid: { color: '#F3F4F6', drawBorder: false }, ticks: { color: '#9CA3AF', callback: v => v + '%', stepSize: 5 }, title: { display: true, text: 'Participación en Ventas (%)', color: '#9CA3AF', font: { size: 11 } } },
-                    y: { min: -10, max: 30, grid: { color: '#F3F4F6', drawBorder: false }, ticks: { color: '#9CA3AF', callback: v => v + '%', stepSize: 5 }, title: { display: true, text: 'Tasa de Crecimiento en Demanda (%)', color: '#9CA3AF', font: { size: 11 } } },
+                    x: { min: 0, max: Math.max(35, bcgAxisMax.share), grid: { color: '#F3F4F6', drawBorder: false }, ticks: { color: '#9CA3AF', callback: v => v + '%', stepSize: Math.max(5, Math.ceil(bcgAxisMax.share / 6)) }, title: { display: true, text: 'Participación en Ventas (%)', color: '#9CA3AF', font: { size: 11 } } },
+                    y: { min: -10, max: Math.max(30, bcgAxisMax.growth), grid: { color: '#F3F4F6', drawBorder: false }, ticks: { color: '#9CA3AF', callback: v => v + '%', stepSize: Math.max(5, Math.ceil(bcgAxisMax.growth / 6)) }, title: { display: true, text: 'Tasa de Crecimiento en Demanda (%)', color: '#9CA3AF', font: { size: 11 } } },
                 },
                 plugins: [{
                     beforeDraw: function(ch) {
@@ -335,7 +336,7 @@ window.renderChartsForSection = function(section) {
             type: 'doughnut',
             data: {
                 labels: ozData.map(d => d.zone),
-                datasets: [{ data: ozData.map(d => d.percentage), backgroundColor: ['#C5A059', '#10B981', '#3B82F6'], borderColor: '#fff', borderWidth: 3, hoverOffset: 8 }]
+                datasets: [{ data: ozData.map(d => d.percentage), backgroundColor: ozData.map(d => d.color), borderColor: '#fff', borderWidth: 3, hoverOffset: 8 }]
             },
             options: { responsive: true, maintainAspectRatio: false, cutout: '70%',
                 plugins: { legend: { position: 'bottom', labels: { color: '#6B7280', padding: 16, usePointStyle: true, pointStyle: 'circle', font: { size: 12 } } },

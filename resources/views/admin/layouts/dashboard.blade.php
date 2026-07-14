@@ -283,15 +283,27 @@
                 <div class="flex items-center gap-3 overflow-hidden">
                     <div
                         class="w-8 h-8 rounded-lg bg-gradient-to-br from-gold-500 to-gold-700 flex items-center justify-center flex-shrink-0">
-                        <svg id="sidebar-logo-svg" class="w-[18px] h-[18px] text-white" viewBox="0 0 24 24"
-                            fill="currentColor" xmlns="http://www.w3.org/2000/svg">
-                            <path
-                                d="M19.5 8.5c0-4.14-3.36-7.5-7.5-7.5S4.5 4.36 4.5 8.5c0 1.44.42 2.78 1.13 3.92L12 22l6.37-9.58A7.48 7.48 0 0019.5 8.5zM12 5.5c1.66 0 3 1.34 3 3s-1.34 3-3 3-3-1.34-3-3 1.34-3 3-3z" />
-                            <path d="M10 12.5c.6.3 1.3.5 2 .5s1.4-.2 2-.5L12 18l-2-5.5z" />
+                        <!-- SVG Detallado de Copa Martini Elegante -->
+                        <svg id="sidebar-logo-svg" class="w-6 h-6 text-white" viewBox="0 0 24 24" fill="none"
+                            xmlns="http://www.w3.org/2000/svg">
+                            <!-- Cuerpo y silueta de la copa -->
+                            <path d="M4 4h16l-8 9.5L4 4z" stroke="currentColor" stroke-width="1.5"
+                                stroke-linejoin="round" />
+                            <path d="M12 13.5V20" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                            <path d="M8 20h8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+
+                            <!-- Palillo de la aceituna -->
+                            <path d="M10 11l7-8" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" />
+                            <!-- La aceituna (Rellena) -->
+                            <circle cx="12.5" cy="8" r="1.8" fill="currentColor" />
+
+                            <!-- Twist / Espiral de limón en el borde izquierdo -->
+                            <path d="M3.5 5.5c-0.8-1 0.5-2 1.5-1.5s0.2 2.5-1 2" stroke="currentColor" stroke-width="1.2"
+                                fill="none" stroke-linecap="round" />
                         </svg>
                     </div>
                     <span class="font-serif text-gold-400 text-lg font-semibold whitespace-nowrap"
-                        id="sidebar-brand-text">SecretsPad</span><-- Logo text -->
+                        id="sidebar-brand-text">SecretsPad</span>
                 </div>
                 <button id="sidebar-toggle"
                     class="sidebar-toggle-hover w-7 h-7 rounded-lg flex items-center justify-center text-white/50 hover:text-white/80 transition-colors flex-shrink-0">
@@ -415,7 +427,9 @@
                     class="nav-item flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
                     <i class="fa-solid fa-table-cells w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label flex-1">Espacios</span>
-                    <i id="espacios-chevron" class="fa-solid fa-chevron-down text-xs transition-transform duration-300 nav-label" style="transform: rotate(-90deg)"></i>
+                    <i id="espacios-chevron"
+                        class="fa-solid fa-chevron-down text-xs transition-transform duration-300 nav-label"
+                        style="transform: rotate(-90deg)"></i>
                 </button>
 
                 {{-- Sub-apartados de Espacios --}}
@@ -493,11 +507,19 @@
 
             {{-- Page Content --}}
             <div class="flex-1 overflow-y-auto p-6 bg-sand-100 dark:bg-charcoal-700">
-                @if(session('success'))
-                    <script>document.addEventListener('DOMContentLoaded', function() { showToast('{{ session('success') }}', 'success'); });</script>
+                @if (session('success'))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            showToast('{{ session('success') }}', 'success');
+                        });
+                    </script>
                 @endif
-                @if(session('error'))
-                    <script>document.addEventListener('DOMContentLoaded', function() { showToast('{{ session('error') }}', 'error'); });</script>
+                @if (session('error'))
+                    <script>
+                        document.addEventListener('DOMContentLoaded', function() {
+                            showToast('{{ session('error') }}', 'error');
+                        });
+                    </script>
                 @endif
                 @yield('content')
             </div>
@@ -645,7 +667,8 @@
 
         if (espaciosToggle && espaciosSubmenu && espaciosChevron) {
             espaciosToggle.addEventListener('click', () => {
-                const isCollapsed = espaciosSubmenu.style.maxHeight === '0px' || espaciosSubmenu.classList.contains('max-h-0');
+                const isCollapsed = espaciosSubmenu.style.maxHeight === '0px' || espaciosSubmenu.classList.contains(
+                    'max-h-0');
                 if (isCollapsed) {
                     espaciosSubmenu.style.maxHeight = espaciosSubmenu.scrollHeight + 'px';
                     espaciosSubmenu.style.opacity = '1';
@@ -718,97 +741,99 @@
             _showSectionBusy = true;
             try {
 
-            // Map CRUD sub-sections to parent blade
-            let actualSection = sectionId;
-            if (sectionId === 'paquetes' || sectionId === 'balinesas' || sectionId === 'experiencias') {
-                actualSection = 'cenas';
-            } else if (sectionId === 'usuarios') {
-                actualSection = 'usuarios';
-            } else if (sectionId === 'espacios-balinesas' || sectionId === 'espacios-mesas') {
-                actualSection = 'espacios';
-            }
-
-            // Hide all sections
-            document.querySelectorAll('.dashboard-section').forEach(el => el.classList.add('hidden'));
-
-            // Show target
-            const target = document.getElementById('section-' + actualSection);
-            if (target) target.classList.remove('hidden');
-
-            // Auto-activate CRUD tab if applicable (services)
-            if (actualSection === 'cenas') {
-                const crudTab = document.querySelector('.crud-tab[data-crud="' + sectionId + '"]');
-                if (crudTab) {
-                    document.querySelectorAll('.crud-tab').forEach(t => {
-                        t.className =
-                            'crud-tab px-4 py-2 rounded-xl text-xs font-medium bg-sand-100 dark:bg-charcoal-500 text-gray-600 dark:text-gray-400 hover:bg-sand-200 dark:hover:bg-charcoal-500';
-                    });
-                    crudTab.className = 'crud-tab px-4 py-2 rounded-xl text-xs font-medium bg-gold-500 text-white';
-                    document.querySelectorAll('.crud-panel').forEach(p => p.classList.add('hidden'));
-                    const panel = document.getElementById('crud-' + sectionId);
-                    if (panel) panel.classList.remove('hidden');
+                // Map CRUD sub-sections to parent blade
+                let actualSection = sectionId;
+                if (sectionId === 'paquetes' || sectionId === 'balinesas' || sectionId === 'experiencias') {
+                    actualSection = 'cenas';
+                } else if (sectionId === 'usuarios') {
+                    actualSection = 'usuarios';
+                } else if (sectionId === 'espacios-balinesas' || sectionId === 'espacios-mesas') {
+                    actualSection = 'espacios';
                 }
-            }
 
-            // Auto-activate sub-tab for espacios
-            if (actualSection === 'espacios' && sectionId !== 'espacios') {
-                if (typeof window.activarSubTabEspacios === 'function') {
-                    window.activarSubTabEspacios(sectionId === 'espacios-balinesas' ? 'Balinesa' : 'Mesa');
+                // Hide all sections
+                document.querySelectorAll('.dashboard-section').forEach(el => el.classList.add('hidden'));
+
+                // Show target
+                const target = document.getElementById('section-' + actualSection);
+                if (target) target.classList.remove('hidden');
+
+                // Auto-activate CRUD tab if applicable (services)
+                if (actualSection === 'cenas') {
+                    const crudTab = document.querySelector('.crud-tab[data-crud="' + sectionId + '"]');
+                    if (crudTab) {
+                        document.querySelectorAll('.crud-tab').forEach(t => {
+                            t.className =
+                                'crud-tab px-4 py-2 rounded-xl text-xs font-medium bg-sand-100 dark:bg-charcoal-500 text-gray-600 dark:text-gray-400 hover:bg-sand-200 dark:hover:bg-charcoal-500';
+                        });
+                        crudTab.className = 'crud-tab px-4 py-2 rounded-xl text-xs font-medium bg-gold-500 text-white';
+                        document.querySelectorAll('.crud-panel').forEach(p => p.classList.add('hidden'));
+                        const panel = document.getElementById('crud-' + sectionId);
+                        if (panel) panel.classList.remove('hidden');
+                    }
                 }
-            }
 
-            // Update title
-            const titleEl = document.getElementById('page-title');
-            if (sectionNames[sectionId]) {
-                titleEl.textContent = sectionNames[sectionId].title;
-            }
+                // Auto-activate sub-tab for espacios
+                if (actualSection === 'espacios' && sectionId !== 'espacios') {
+                    if (typeof window.activarSubTabEspacios === 'function') {
+                        window.activarSubTabEspacios(sectionId === 'espacios-balinesas' ? 'Balinesa' : 'Mesa');
+                    }
+                }
 
-            // Update nav active states
-            // 1. Quitamos el color dorado de TODOS los enlaces y botones principales
-            document.querySelectorAll('.nav-section-link, #dashboard-parent-toggle, #services-parent-toggle, #espacios-parent-toggle').forEach(
-                el => {
-                    el.classList.remove('nav-item-active');
-                    el.classList.add('nav-item');
-                });
+                // Update title
+                const titleEl = document.getElementById('page-title');
+                if (sectionNames[sectionId]) {
+                    titleEl.textContent = sectionNames[sectionId].title;
+                }
 
-            // 2. Iluminamos el sub-enlace exacto que el usuario seleccionó
-            const activeLink = document.querySelector('.nav-section-link[data-section="' + sectionId + '"]');
-            if (activeLink) {
-                activeLink.classList.remove('nav-item');
-                activeLink.classList.add('nav-item-active');
-            }
+                // Update nav active states
+                // 1. Quitamos el color dorado de TODOS los enlaces y botones principales
+                document.querySelectorAll(
+                        '.nav-section-link, #dashboard-parent-toggle, #services-parent-toggle, #espacios-parent-toggle')
+                    .forEach(
+                        el => {
+                            el.classList.remove('nav-item-active');
+                            el.classList.add('nav-item');
+                        });
 
-            // 3. Lógica para mantener los apartados padre en dorado si estamos en sus submenús
-            const dashboardParent = document.getElementById('dashboard-parent-toggle');
-            const servicesParent = document.getElementById('services-parent-toggle');
+                // 2. Iluminamos el sub-enlace exacto que el usuario seleccionó
+                const activeLink = document.querySelector('.nav-section-link[data-section="' + sectionId + '"]');
+                if (activeLink) {
+                    activeLink.classList.remove('nav-item');
+                    activeLink.classList.add('nav-item-active');
+                }
 
-            const dashboardSections = ['general', 'bcg', 'financial', 'occupancy', 'operations', 'team'];
-            const servicesSections = ['cenas', 'balinesas', 'experiencias'];
-            const espaciosSections = ['espacios-balinesas', 'espacios-mesas'];
+                // 3. Lógica para mantener los apartados padre en dorado si estamos en sus submenús
+                const dashboardParent = document.getElementById('dashboard-parent-toggle');
+                const servicesParent = document.getElementById('services-parent-toggle');
 
-            if (dashboardSections.includes(sectionId) && dashboardParent) {
-                dashboardParent.classList.remove('nav-item');
-                dashboardParent.classList.add('nav-item-active');
-            }
+                const dashboardSections = ['general', 'bcg', 'financial', 'occupancy', 'operations', 'team'];
+                const servicesSections = ['cenas', 'balinesas', 'experiencias'];
+                const espaciosSections = ['espacios-balinesas', 'espacios-mesas'];
 
-            if (servicesSections.includes(sectionId) && servicesParent) {
-                servicesParent.classList.remove('nav-item');
-                servicesParent.classList.add('nav-item-active');
-            }
+                if (dashboardSections.includes(sectionId) && dashboardParent) {
+                    dashboardParent.classList.remove('nav-item');
+                    dashboardParent.classList.add('nav-item-active');
+                }
 
-            const espaciosParent = document.getElementById('espacios-parent-toggle');
-            if (espaciosSections.includes(sectionId) && espaciosParent) {
-                espaciosParent.classList.remove('nav-item');
-                espaciosParent.classList.add('nav-item-active');
-            }
+                if (servicesSections.includes(sectionId) && servicesParent) {
+                    servicesParent.classList.remove('nav-item');
+                    servicesParent.classList.add('nav-item-active');
+                }
 
-            // Re-render charts that might be in the shown section
-            if (window.renderChartsForSection && typeof window.renderChartsForSection === 'function') {
-                setTimeout(() => window.renderChartsForSection(actualSection), 50);
-            }
+                const espaciosParent = document.getElementById('espacios-parent-toggle');
+                if (espaciosSections.includes(sectionId) && espaciosParent) {
+                    espaciosParent.classList.remove('nav-item');
+                    espaciosParent.classList.add('nav-item-active');
+                }
 
-            // Update URL hash
-            history.pushState(null, '', '#' + sectionId);
+                // Re-render charts that might be in the shown section
+                if (window.renderChartsForSection && typeof window.renderChartsForSection === 'function') {
+                    setTimeout(() => window.renderChartsForSection(actualSection), 50);
+                }
+
+                // Update URL hash
+                history.pushState(null, '', '#' + sectionId);
 
             } finally {
                 _showSectionBusy = false;
@@ -876,12 +901,14 @@
             const container = document.getElementById('toast-container');
             if (!container) return;
             const toast = document.createElement('div');
-            const colors = type === 'success'
-                ? 'bg-sapphire-50 dark:bg-sapphire-900/20 border-sapphire-200 dark:border-sapphire-800 text-sapphire-700 dark:text-sapphire-300'
-                : 'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300';
+            const colors = type === 'success' ?
+                'bg-sapphire-50 dark:bg-sapphire-900/20 border-sapphire-200 dark:border-sapphire-800 text-sapphire-700 dark:text-sapphire-300' :
+                'bg-red-50 dark:bg-red-900/20 border-red-200 dark:border-red-800 text-red-700 dark:text-red-300';
             const icon = type === 'success' ? 'fa-circle-check' : 'fa-circle-exclamation';
-            toast.className = 'pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-xl border shadow-lg ' + colors + ' transform transition-all duration-300 translate-x-full opacity-0';
-            toast.innerHTML = '<i class="fa-solid ' + icon + ' text-sm"></i><span class="text-sm font-medium">' + message + '</span>';
+            toast.className = 'pointer-events-auto flex items-center gap-3 px-5 py-3 rounded-xl border shadow-lg ' +
+                colors + ' transform transition-all duration-300 translate-x-full opacity-0';
+            toast.innerHTML = '<i class="fa-solid ' + icon + ' text-sm"></i><span class="text-sm font-medium">' + message +
+                '</span>';
             container.appendChild(toast);
             requestAnimationFrame(() => {
                 toast.classList.remove('translate-x-full', 'opacity-0');
@@ -914,7 +941,8 @@
             e.preventDefault();
             const visible = document.querySelector('.dashboard-section:not(.hidden)');
             const section = visible ? visible.id.replace('section-', '') : 'general';
-            window.location.href = '{{ route('admin.dashboard.export', '_SECTION_') }}'.replace('_SECTION_', section);
+            window.location.href = '{{ route('admin.dashboard.export', '_SECTION_') }}'.replace('_SECTION_',
+                section);
         });
     </script>
 </body>

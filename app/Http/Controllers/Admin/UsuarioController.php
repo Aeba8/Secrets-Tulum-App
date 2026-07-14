@@ -16,11 +16,10 @@ class UsuarioController extends Controller
             ? 'unique:Usuarios,Email,' . $id . ',Id'
             : 'unique:Usuarios,Email';
 
-        $baseRules = $id
-            ? 'nullable|digits:6'
-            : 'required|digits:6';
-
-        $numeroRules = [$baseRules, function ($attr, $value, $fail) use ($id) {
+        $numeroRules = [
+            $id ? 'nullable' : 'required',
+            'digits:6',
+            function ($attr, $value, $fail) use ($id) {
             $existing = Usuario::where('Id', '!=', $id ?? 0)->get();
             foreach ($existing as $u) {
                 if (Hash::check($value, $u->Numero_de_colaborador)) {

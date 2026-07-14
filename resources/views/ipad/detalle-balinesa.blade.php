@@ -4,7 +4,7 @@
     $horario_disponible = !empty(trim($balinesa->Dias)) ? trim($balinesa->Dias) : 'Todos los días';
     $botella_incluida = !empty(trim($balinesa->ficha_tecnica))
         ? trim($balinesa->ficha_tecnica)
-        : '1 botella de Moet & Chandon Brut 750ml';
+        : 'No incluye';
 @endphp
 
 <!DOCTYPE html>
