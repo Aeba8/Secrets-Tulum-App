@@ -70,7 +70,7 @@
         }
 
         .secrets-bg {
-            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.88) 5%, rgba(24, 18, 19, 0.85) 100%), url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1920');
+            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.88) 5%, rgba(24, 18, 19, 0.85) 100%), url('{{ asset('storage/Experiencia 2.jpg') }}');
             background-size: cover;
             background-position: center;
         }
@@ -91,6 +91,11 @@
             will-change: transform;
             /* 🌟 Prepara al navegador para renderizados ultra precisos */
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .carousel-track > div {
+            overflow: hidden;
+            background: #000;
         }
 
         .text-secrets-gold {
@@ -146,13 +151,13 @@
 
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     @forelse($experiencia->imagenes ?? [] as $foto)
-                        <div class="w-full min-w-full h-full shrink-0">
+                        <div class="w-full min-w-full h-full shrink-0 overflow-hidden bg-black">
                             <img src="{{ $foto }}" class="w-full h-full object-cover cursor-pointer"
                                 alt="Slide {{ $loop->iteration }}"
                                 onclick="abrirFullscreen({{ $loop->index }})">
                         </div>
                     @empty
-                        <div class="w-full min-w-full h-full shrink-0">
+                        <div class="w-full min-w-full h-full shrink-0 overflow-hidden bg-black">
                             <img src="https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=800"
                                 class="w-full h-full object-cover cursor-pointer" alt="Slide 1"
                                 onclick="abrirFullscreen(0)">
@@ -744,10 +749,15 @@
             });
         }
 
+        let enviando = false;
+
         /**
          * Ejecuta la petición asíncrona hacia el controlador dedicado
          */
         async function enviarReservaAlServidor(txtFecha, txtHabitacion, txtVendedor, txtObservaciones) {
+            if (enviando) return;
+            enviando = true;
+
             // Animación de carga para congelar la iPad y evitar doble submit accidental
             Swal.fire({
                 title: currentLang === 'en' ? 'Processing...' : 'Procesando...',
@@ -792,6 +802,7 @@
                 const resultado = await response.json();
 
                 if (resultado.success) {
+                    enviando = false;
                     // Toast de éxito temporal
                     Swal.fire({
                         icon: 'success',
@@ -809,6 +820,7 @@
                         window.location.href = "{{ route('welcome') }}?lang=" + currentLang;
                     }, 2000);
                 } else {
+                    enviando = false;
                     swalCustomButtons.fire({
                         icon: 'error',
                         title: 'Ups...',
@@ -816,6 +828,7 @@
                     });
                 }
             } catch (error) {
+                enviando = false;
                 console.error("Error crítico en la petición:", error);
                 swalCustomButtons.fire({
                     icon: 'error',

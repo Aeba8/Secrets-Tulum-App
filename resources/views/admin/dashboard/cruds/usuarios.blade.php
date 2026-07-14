@@ -66,7 +66,8 @@
         {{-- Modal Crear/Editar Usuario --}}
         <div id="usuarioModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
             <div class="bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
-                <form id="usuarioForm" method="POST" class="p-6">
+                <form id="usuarioForm" method="POST" class="p-6"
+                      onsubmit="if(this.submitting)return false;this.submitting=true;var b=this.querySelector('button[type=submit]');b&&(b.disabled=true,b.innerHTML='<i class=&quot;fa-solid fa-spinner fa-spin mr-1&quot;></i> Guardando...');">
                     @csrf
                     <input type="hidden" id="usuario_id" name="id">
                     <input type="hidden" id="usuario_method" name="_method" value="POST">

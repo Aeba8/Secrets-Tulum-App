@@ -29,7 +29,7 @@
 
         /* Fondo difuminado inmersivo con escena de cena de gala */
         .secrets-bg {
-            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.88) 5%, rgba(24, 18, 19, 0.85) 100%), url('https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=1920');
+            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.88) 5%, rgba(24, 18, 19, 0.85) 100%), url('{{ asset('storage/Cena 2.jpg') }}');
             background-size: cover;
             background-position: center;
         }
@@ -50,6 +50,11 @@
             will-change: transform;
             /* 🌟 Prepara la aceleración por hardware en la tarjeta gráfica */
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+        }
+
+        .carousel-track > div {
+            overflow: hidden;
+            background: #000;
         }
 
         /* Identidad de Marca Dorada de Secrets */
@@ -113,14 +118,14 @@
 
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     @forelse($cena->imagenes ?? [] as $foto)
-                        <div class="w-full min-w-full h-full shrink-0">
+                        <div class="w-full min-w-full h-full shrink-0 overflow-hidden bg-black">
                             <img src="{{ $foto }}" class="w-full h-full object-cover cursor-pointer"
                                 alt="Slide {{ $loop->iteration }}"
                                 onclick="abrirFullscreen({{ $loop->index }})">
                         </div>
                     @empty
-                        <div class="w-full min-w-full h-full shrink-0">
-                            <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?q=80&w=800"
+                        <div class="w-full min-w-full h-full shrink-0 overflow-hidden bg-black">
+                            <img src="{{ asset('storage/Cena.jpeg') }}"
                                 class="w-full h-full object-cover cursor-pointer" alt="Slide 1"
                                 onclick="abrirFullscreen(0)">
                         </div>

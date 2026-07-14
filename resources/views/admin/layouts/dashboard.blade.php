@@ -937,12 +937,16 @@
     </button>
 
     <script>
+        let exportando = false;
         document.getElementById('exportBtn')?.addEventListener('click', function(e) {
+            if (exportando) return;
+            exportando = true;
             e.preventDefault();
             const visible = document.querySelector('.dashboard-section:not(.hidden)');
             const section = visible ? visible.id.replace('section-', '') : 'general';
             window.location.href = '{{ route('admin.dashboard.export', '_SECTION_') }}'.replace('_SECTION_',
                 section);
+            setTimeout(function() { exportando = false; }, 3000);
         });
     </script>
 </body>

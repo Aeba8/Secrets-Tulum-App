@@ -42,6 +42,11 @@
             transition: transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
         }
 
+        .carousel-track > div {
+            overflow: hidden;
+            background: #000;
+        }
+
         /* Paleta Dorada Corporativa de Secrets */
         .text-secrets-gold {
             color: #C5A059;
@@ -106,13 +111,13 @@
 
                 <div id="carouselTrack" class="carousel-track h-full w-full">
                     @forelse($balinesa->imagenes ?? [] as $foto)
-                        <div class="w-full min-w-full h-full shrink-0">
+                        <div class="w-full min-w-full h-full shrink-0 overflow-hidden bg-black">
                             <img src="{{ $foto }}" class="w-full h-full object-cover cursor-pointer"
                                 alt="Slide {{ $loop->iteration }}"
                                 onclick="abrirFullscreen({{ $loop->index }})">
                         </div>
                     @empty
-                        <div class="w-full min-w-full h-full shrink-0">
+                        <div class="w-full min-w-full h-full shrink-0 overflow-hidden bg-black">
                             <img src="https://images.unsplash.com/photo-1571896349842-33c89424de2d?q=80&w=800"
                                 class="w-full h-full object-cover cursor-pointer" alt="Slide 1"
                                 onclick="abrirFullscreen(0)">

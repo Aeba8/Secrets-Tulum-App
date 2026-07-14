@@ -264,6 +264,7 @@
         const t = translations[currentLang] || translations.es;
         let selectedSpaceId = null;
         let selectedSpaceName = "";
+        let enviando = false;
 
         document.addEventListener("DOMContentLoaded", () => {
             // Obtener la fecha local de hoy en formato YYYY-MM-DD sin desfase horario
@@ -449,6 +450,8 @@
         }
 
         function enviarDatosAlServidor() {
+            if (enviando) return;
+            enviando = true;
             const habitacion = document.getElementById('input-habitacion')?.value.trim();
             const colaborador = document.getElementById('input-colaborador')?.value.trim();
             const observaciones = document.getElementById('input-observaciones')?.value.trim();
@@ -490,6 +493,7 @@
                     return res.json();
                 })
                 .then(res => {
+                    enviando = false;
                     if (res.success) {
                         showToast(t.success_alert, 'success');
                         document.body.classList.add('page-exit');
@@ -506,6 +510,7 @@
                     }
                 })
                 .catch(err => {
+                    enviando = false;
                     showToast(err.message || "Error al procesar reserva", 'error');
                     if (btnSubmit && btnText) {
                         btnSubmit.disabled = false;

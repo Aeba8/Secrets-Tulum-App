@@ -56,7 +56,8 @@
     <div class="absolute inset-x-12 top-0 bottom-0 border-l border-r border-white/[0.02] pointer-events-none z-0"></div>
 
     <!-- Logout -->
-    <form action="{{ route('logout') }}" method="POST" class="absolute top-6 right-6 z-20">
+    <form action="{{ route('logout') }}" method="POST" class="absolute top-6 right-6 z-20"
+          onsubmit="if(this.submitting)return false;this.submitting=true;var b=this.querySelector('button[type=submit]');b&&(b.disabled=true);">
         @csrf
         <button type="submit"
             class="text-white/20 hover:text-[#D4AF37]/60 transition-all duration-500 text-[11px] tracking-[0.3em] uppercase font-light cursor-pointer">

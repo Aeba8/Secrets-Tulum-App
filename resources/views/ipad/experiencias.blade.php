@@ -66,7 +66,7 @@
 
 <body id="experiencias-body"
     class="font-sans h-screen w-screen overflow-hidden flex flex-col justify-between bg-cover bg-center bg-no-repeat fade-in select-none"
-    style="background-image: url('https://images.unsplash.com/photo-1540555700478-4be289fbecef?q=80&w=1920');">
+    style="background-image: url('{{ asset('storage/Experiencia.jpg') }}');">
 
     <div class="absolute inset-0 bg-black/60 z-0"></div>
 

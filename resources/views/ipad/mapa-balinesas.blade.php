@@ -278,6 +278,7 @@
 
         let selectedSpaceId = null;
         let selectedSpaceName = "";
+        let enviando = false;
 
         document.addEventListener("DOMContentLoaded", () => {
             // Obtener la fecha local de hoy en formato YYYY-MM-DD sin desfases de zona horaria
@@ -519,6 +520,8 @@
 
         // 🌟 FUNCIÓN 4: Envía los datos finales al servidor tras dar "Sí, Confirmar"
         function enviarDatosAlServidor() {
+            if (enviando) return;
+            enviando = true;
             const habitacion = document.getElementById('input-habitacion')?.value.trim();
             const colaborador = document.getElementById('input-colaborador')?.value.trim();
             const observaciones = document.getElementById('input-observaciones')?.value.trim();
@@ -565,12 +568,13 @@
                     return response.json();
                 })
                 .then(res => {
+                    enviando = false;
                     if (res.success) {
                         showToast(t.success_alert, 'success');
                         document.body.classList.add('page-exit');
                         setTimeout(() => {
                             window.location.href = `{{ route('paquetes.balinesas') }}?lang=${currentLang}`;
-                        }, 1200); // Pequeña pausa para que se aprecie el Toast de éxito
+                        }, 1200);
                     } else {
                         showToast(res.message || t.occupied_alert, 'error');
                         if (btnSubmit && btnText) {
@@ -581,6 +585,7 @@
                     }
                 })
                 .catch(err => {
+                    enviando = false;
                     console.error("Error:", err);
                     const errorMsg = (err && err.message) ? err.message : "Fallo de conexión al guardar.";
                     showToast(errorMsg, 'error');

@@ -75,7 +75,8 @@
 
         <p class="text-white/80 text-xs tracking-wider uppercase font-medium mb-8">Login Colaboradores</p>
 
-        <form action="{{ route('login') }}" method="POST" class="space-y-5 text-left">
+        <form action="{{ route('login') }}" method="POST" class="space-y-5 text-left"
+              onsubmit="if(this.submitting)return false;this.submitting=true;var b=this.querySelector('button[type=submit]');b&&(b.disabled=true,b.innerHTML='<i class=&quot;fa-solid fa-spinner fa-spin mr-1&quot;></i> Iniciando...');">
             @csrf
 
             <div>
