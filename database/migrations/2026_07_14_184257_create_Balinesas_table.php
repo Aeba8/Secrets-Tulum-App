@@ -30,7 +30,7 @@ return new class extends Migration
             $table->boolean('is_active')->default(true);
             $table->string('locacion', 100)->nullable();
 
-            $table->primary(['Id'], 'pk__balinesa__3214ec0789fd38ca');
+            
         });
     }
 
