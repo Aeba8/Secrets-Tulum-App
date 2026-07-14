@@ -6,19 +6,23 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
+    /**
+     * Run the migrations.
+     */
     public function up(): void
     {
         Schema::table('Balinesas', function (Blueprint $table) {
-            if (!Schema::hasColumn('Balinesas', 'locacion')) {
-                $table->string('locacion', 100)->nullable()->after('Descripcion');
-            }
+            $table->foreign(['id_categoria'], 'FK_Balinesas_Categoria')->references(['Id'])->on('Categorias')->onUpdate('no action')->onDelete('no action');
         });
     }
 
+    /**
+     * Reverse the migrations.
+     */
     public function down(): void
     {
         Schema::table('Balinesas', function (Blueprint $table) {
-            $table->dropColumn('locacion');
+            $table->dropForeign('FK_Balinesas_Categoria');
         });
     }
 };
