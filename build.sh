@@ -13,5 +13,5 @@ php artisan config:cache
 php artisan route:cache
 php artisan view:cache
 
-# Ejecutar migraciones de base de datos (opcional, pero recomendado)
-# php artisan migrate --force
+# Ejecutar migraciones en producción de forma segura
+php artisan migrate --force
