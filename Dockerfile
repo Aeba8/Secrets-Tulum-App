@@ -1,0 +1,40 @@
+FROM php:8.2-apache
+
+# Instalar extensiones de PHP necesarias para Laravel y PostgreSQL
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    zip \
+    unzip \
+    git \
+    libpq-dev \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install pdo pdo_pgsql gd
+
+# Habilitar mod_rewrite para Apache (Crucial para Laravel)
+RUN a2enmod rewrite
+
+# Copiar el código del proyecto al contenedor
+COPY . /var/www/html
+
+# Configurar el directorio raíz de Apache a la carpeta public de Laravel
+ENV APACHE_DOCUMENT_ROOT /var/www/html/public
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/sites-available/*.conf
+RUN sed -ri -e 's!/var/www/html!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf /etc/apache2/conf-available/*.conf
+
+# Instalar Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Ejecutar la instalación de dependencias
+WORKDIR /var/www/html
+RUN composer install --no-dev --optimize-autoloader
+
+# Dar permisos correctos a las carpetas de almacenamiento
+RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
+
+# Puerto expuesto por Render
+EXPOSE 80
+
+# Comando para optimizar y correr migraciones antes de iniciar Apache
+CMD php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && apache2-foreground
