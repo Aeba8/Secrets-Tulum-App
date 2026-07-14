@@ -1,6 +1,6 @@
 FROM php:8.2-apache
 
-# Instalar extensiones de PHP necesarias para Laravel y PostgreSQL
+# Instalar dependencias del sistema operativo y librerías de desarrollo
 RUN apt-get update && apt-get install -y \
     libpng-dev \
     libjpeg-dev \
@@ -9,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     unzip \
     git \
     libpq-dev \
+    libzip-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install pdo pdo_pgsql gd zip
 
