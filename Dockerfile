@@ -31,11 +31,13 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 WORKDIR /var/www/html
 RUN composer install --no-dev --optimize-autoloader
 
+# ... (todo lo anterior se queda igual)
+
 # Dar permisos correctos a las carpetas de almacenamiento
 RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cache
 
 # Puerto expuesto por Render
 EXPOSE 80
 
-# Comando para optimizar y correr migraciones antes de iniciar Apache
-CMD php artisan config:cache && php artisan route:cache && php artisan view:cache && php artisan migrate --force && apache2-foreground
+# COMANDO DE INICIO: Aquí es donde se ejecutan las migraciones porque ya existen las variables de entorno reales.
+CMD php artisan config:clear && php artisan cache:clear && php artisan migrate --force && apache2-foreground
