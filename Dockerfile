@@ -10,7 +10,7 @@ RUN apt-get update && apt-get install -y \
     git \
     libpq-dev \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
-    && docker-php-ext-install pdo pdo_pgsql gd
+    && docker-php-ext-install pdo pdo_pgsql gd zip
 
 # Habilitar mod_rewrite para Apache (Crucial para Laravel)
 RUN a2enmod rewrite
