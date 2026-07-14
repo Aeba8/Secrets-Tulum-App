@@ -29,7 +29,7 @@
 
         /* Fondo difuminado inmersivo con escena de cena de gala */
         .secrets-bg {
-            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.88) 5%, rgba(24, 18, 19, 0.85) 100%), url('{{ asset('storage/Cena 2.jpg') }}');
+            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.88) 5%, rgba(24, 18, 19, 0.85) 100%), url('{{ asset('images/Cena 2.jpg') }}');
             background-size: cover;
             background-position: center;
         }
@@ -125,7 +125,7 @@
                         </div>
                     @empty
                         <div class="w-full min-w-full h-full shrink-0 overflow-hidden bg-black">
-                            <img src="{{ asset('storage/Cena.jpeg') }}"
+                            <img src="{{ asset('images/Cena.jpeg') }}"
                                 class="w-full h-full object-cover cursor-pointer" alt="Slide 1"
                                 onclick="abrirFullscreen(0)">
                         </div>

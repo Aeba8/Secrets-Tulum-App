@@ -70,7 +70,7 @@
         }
 
         .secrets-bg {
-            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.88) 5%, rgba(24, 18, 19, 0.85) 100%), url('{{ asset('storage/Experiencia 2.jpg') }}');
+            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.88) 5%, rgba(24, 18, 19, 0.85) 100%), url('{{ asset('images/Experiencia 2.jpg') }}');
             background-size: cover;
             background-position: center;
         }

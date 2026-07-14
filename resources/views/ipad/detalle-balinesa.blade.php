@@ -19,7 +19,7 @@
     <style>
         /* Fondo premium de doble tono: negro absoluto y degradado inmersivo */
         .secrets-bg {
-            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.86) 5%, rgba(24, 18, 19, 0.85) 100%), url('{{ asset('storage/Balinesa.jpg') }}');
+            background-image: linear-gradient(to right, rgba(10, 8, 9, 0.86) 5%, rgba(24, 18, 19, 0.85) 100%), url('{{ asset('images/Balinesa.jpg') }}');
             background-size: cover;
             background-position: center;
         }

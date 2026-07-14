@@ -47,7 +47,7 @@
 
 <body id="welcome-body"
     class="font-sans h-screen w-screen overflow-hidden flex flex-col justify-between bg-black fade-in select-none antialiased"
-    style="background-image: url('{{  asset('storage/Secrets Tulum.jpg') }}'); background-size: cover; background-position: center;">
+    style="background-image: url('{{  asset('images/Secrets Tulum.jpg') }}'); background-size: cover; background-position: center;">
 
     <!-- Capa de oscurecimiento profundo (Aumentada a un 75% de opacidad para máximo contraste negro/oro) -->
     <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-black/60 to-black/80 z-0"></div>

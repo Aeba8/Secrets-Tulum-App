@@ -71,7 +71,7 @@
 
 <body id="cenas-body"
     class="h-screen w-screen overflow-hidden flex flex-col justify-between bg-cover bg-center bg-no-repeat fade-in select-none"
-    style="background-image: url('{{ asset('storage/Cena.jpeg') }}');">
+    style="background-image: url('{{ asset('images/Cena.jpeg') }}');">
 
     <div class="absolute inset-0 bg-black/60 z-0"></div>
 

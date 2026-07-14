@@ -32,7 +32,7 @@
     </style>
 </head>
 <body id="catalog-body" class="font-sans h-screen w-screen overflow-hidden flex flex-col justify-between bg-zinc-950 text-white fade-in select-none relative" 
-    style="background-image: linear-gradient(to bottom, rgba(15, 15, 18, 0.65), rgba(8, 8, 10, 0.75)), url('{{ asset('storage/Fondo 2.png') }}'); background-size: cover; background-position: center;">
+    style="background-image: linear-gradient(to bottom, rgba(15, 15, 18, 0.65), rgba(8, 8, 10, 0.75)), url('{{ asset('images/Fondo 2.png') }}'); background-size: cover; background-position: center;">
 
     <!-- 🌌 Capa de brillo ambiental de fondo para quitar lo "apagado" -->
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,_rgba(197,160,89,0.08)_0%,_rgba(0,0,0,0)_70%)] z-0"></div>

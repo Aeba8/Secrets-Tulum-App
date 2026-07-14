@@ -26,7 +26,7 @@
         .secrets-bg {
             /* Capa negra superpuesta combinada con la imagen de fondo */
             background-image: linear-gradient(rgba(10, 8, 9, 0.75), rgba(10, 8, 9, 0.85)), 
-                              url('{{ asset('storage/Secrets Tulum.jpg') }}'); /* <-- Pon aquí la ruta de tu imagen */
+                              url('{{ asset('images/Secrets Tulum.jpg') }}'); /* <-- Pon aquí la ruta de tu imagen */
             background-size: cover;
             background-position: center;
             background-attachment: fixed;

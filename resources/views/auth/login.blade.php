@@ -63,7 +63,7 @@
 
 <body
     class="font-sans h-screen w-screen overflow-hidden flex items-center justify-center bg-cover bg-center bg-no-repeat"
-    style="background-image: url('{{ asset('storage/Secrets Tulum.jpg') }}'); /* Reemplaza por tu render de Secrets */">
+    style="background-image: url('{{ asset('images/Secrets Tulum.jpg') }}'); /* Reemplaza por tu render de Secrets */">
 
     <div class="absolute inset-0 bg-black/40 backdrop-blur-xs"></div>
 
