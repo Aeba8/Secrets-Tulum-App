@@ -1,7 +1,7 @@
 {
   "name": "Mi PWA Laravel",
   "short_name": "LaravelPWA",
-  "start_url": "/",
+  "start_url": "/login",
   "background_color": "#09090b",
   "theme_color": "#09090b",
   "display": "standalone",
