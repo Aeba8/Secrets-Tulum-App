@@ -11,7 +11,7 @@ class CenaEspecial extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'Nombre', 'Precio', 'Costo_Operativo', 'Slug', 'id_categoria', 'imagenes',
+        'Nombre', 'Precio', 'Costo_Operativo', 'slug', 'id_categoria', 'imagenes',
         'restaurant', 'numero_personas',
         'Entrada', 'Crema', 'Plato_fuerte', 'Postre', 'ficha_tecnica', 'Estado',
     ];

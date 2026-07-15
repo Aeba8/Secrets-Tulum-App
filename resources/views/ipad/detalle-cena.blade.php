@@ -490,7 +490,7 @@
 
         function irAlMapaEspacial() {
             const packageId = "{{ $cena->Id ?? ($cena->id ?? 1) }}";
-            const packageSlug = "{{ $cena->Slug ?? ($cena->slug ?? '') }}";
+            const packageSlug = "{{ $cena->slug ?? '' }}";
             window.location.href = "{{ route('mapa.mesas') }}?package=" + packageSlug +
                 "&package_id=" + packageId + "&lang=" + currentLang;
         }

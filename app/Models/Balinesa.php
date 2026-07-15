@@ -11,7 +11,7 @@ class Balinesa extends Model
     public $timestamps = false;
 
     protected $fillable = [
-        'Nombre', 'Precio', 'Slug', 'Capacidad_Maxima', 'Is_Active', 'Id_Categoria', 'Ficha_Tecnica',
+        'Nombre', 'Precio', 'Capacidad_Maxima', 'Is_Active', 'Id_Categoria', 'Ficha_Tecnica',
         'name', 'slug', 'price', 'capacidad_maxima', 'is_active', 'id_categoria', 'ficha_tecnica',
         'imagenes', 'Productos', 'Costo_Operativo', 'Dias', 'Descripcion', 'Estado',
     ];

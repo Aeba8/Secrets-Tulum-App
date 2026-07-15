@@ -33,7 +33,7 @@ class HotelCatalogSeeder extends Seeder
         // 2. INYECTAR CENA ESPECIAL
         CenaEspecial::create([
             'Nombre' => 'Cenas Románticas Grotto',
-            'Slug' => Str::slug('Cenas Románticas Grotto'),
+            'slug' => Str::slug('Cenas Románticas Grotto'),
             'Precio' => 2500.00, // <-- Corregido con P mayúscula
             'Restaurant' => 'The Grotto', 
             'Numero_Personas' => 2,
@@ -71,7 +71,7 @@ class HotelCatalogSeeder extends Seeder
         // 4. INYECTAR CAMA BALINESA
         Balinesa::create([
             'Nombre' => 'Balinesa con Burbujas',
-            'Slug' => Str::slug('Balinesa con Burbujas'),
+            'slug' => Str::slug('Balinesa con Burbujas'),
             'Precio' => 3200.00,
             'Capacidad_Maxima' => 2,
             'Is_Active' => true,

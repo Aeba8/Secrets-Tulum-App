@@ -63,7 +63,7 @@ class CenaEspecialController extends Controller
             'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
             'numero_personas' => $validated['numero_personas'] ?? 2,
             'ficha_tecnica' => strip_tags($validated['ficha_tecnica'] ?? ''),
-            'Slug' => $slug,
+            'slug' => $slug,
             'imagenes' => $imagenes,
             'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
             'id_categoria' => $validated['categoria_id'] ?? 1,

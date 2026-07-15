@@ -54,7 +54,7 @@ class BalinesaController extends Controller
             'Nombre' => $validated['nombre'],
             'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
             'Precio' => $validated['precio'],
-            'Slug' => $slug,
+            'slug' => $slug,
             'capacidad_maxima' => $validated['capacidad'] ?? 2,
             'Dias' => strip_tags($validated['horario'] ?? ''),
             'ficha_tecnica' => strip_tags($validated['botella_incluida'] ?? ''),
