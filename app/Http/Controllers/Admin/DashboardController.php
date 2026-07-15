@@ -2,21 +2,30 @@
 
 namespace App\Http\Controllers\Admin;
 
+use App\Exports\Sections\AgendaExport;
+use App\Exports\Sections\BcgExport;
+use App\Exports\Sections\CatalogExport;
+use App\Exports\Sections\EspaciosExport;
+use App\Exports\Sections\FinancialExport;
+use App\Exports\Sections\GeneralExport;
+use App\Exports\Sections\OccupancyExport;
+use App\Exports\Sections\OperationsExport;
+use App\Exports\Sections\TeamExport;
+use App\Exports\Sections\UsuariosExport;
 use App\Http\Controllers\Controller;
 use App\Models\Balinesa;
-use App\Models\Categoria;
 use App\Models\CenaEspecial;
 use App\Models\Espacio;
 use App\Models\Experiencia;
 use App\Models\Reserva;
 use App\Models\Usuario;
 use Carbon\Carbon;
-use Illuminate\Http\Request;
+use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 
 class DashboardController extends Controller
 {
-    private ?\Illuminate\Support\Collection $usuariosMap = null;
+    private ?Collection $usuariosMap = null;
 
     private function usuarioLookup(string $numColab): ?Usuario
     {
@@ -39,7 +48,7 @@ class DashboardController extends Controller
         $inicioConsulta = Carbon::today()->subDays(90);
         $finConsulta = Carbon::today()->addDays(90);
 
-        $totalActiveSpaces = Espacio::where('Is_Active', 1)->count();
+        $totalActiveSpaces = Espacio::where('Is_Active', true)->count();
 
         // ── Collections ──
 
@@ -57,13 +66,16 @@ class DashboardController extends Controller
         $mesCount = $mesReservas->count();
 
         $sumPrice = function ($collection) {
-            return $collection->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+            return $collection->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
         };
 
         $calcChange = function ($current, $previous) {
-            if ($previous == 0) return $current > 0 ? '+100%' : '0%';
+            if ($previous == 0) {
+                return $current > 0 ? '+100%' : '0%';
+            }
             $pct = round((($current - $previous) / $previous) * 100);
-            return ($pct >= 0 ? '+' : '') . $pct . '%';
+
+            return ($pct >= 0 ? '+' : '').$pct.'%';
         };
 
         // ── KPIs ──
@@ -85,31 +97,31 @@ class DashboardController extends Controller
 
         $kpis = [
             [
-                'label'    => 'Ingresos Hoy',
-                'value'    => '$' . number_format($hoyIngresos),
-                'icon'     => 'fa-solid fa-money-bill-wave',
-                'change'   => $calcChange($hoyIngresos, $ayerIngresos),
+                'label' => 'Ingresos Hoy',
+                'value' => '$'.number_format($hoyIngresos),
+                'icon' => 'fa-solid fa-money-bill-wave',
+                'change' => $calcChange($hoyIngresos, $ayerIngresos),
                 'positive' => $hoyIngresos >= $ayerIngresos,
             ],
             [
-                'label'    => 'Reservas Hoy',
-                'value'    => (string)$hoyCount,
-                'icon'     => 'fa-solid fa-calendar-check',
-                'change'   => $calcChange($hoyCount, $ayerReservas->count()),
+                'label' => 'Reservas Hoy',
+                'value' => (string) $hoyCount,
+                'icon' => 'fa-solid fa-calendar-check',
+                'change' => $calcChange($hoyCount, $ayerReservas->count()),
                 'positive' => $hoyCount >= $ayerReservas->count(),
             ],
             [
-                'label'    => 'Ocupación Promedio',
-                'value'    => $ocupacionHoy . '%',
-                'icon'     => 'fa-solid fa-bed',
-                'change'   => $calcChange($ocupacionHoy, $ocupacionAyer),
+                'label' => 'Ocupación Promedio',
+                'value' => $ocupacionHoy.'%',
+                'icon' => 'fa-solid fa-bed',
+                'change' => $calcChange($ocupacionHoy, $ocupacionAyer),
                 'positive' => $ocupacionHoy >= $ocupacionAyer,
             ],
             [
-                'label'    => 'Ticket Promedio',
-                'value'    => '$' . number_format($ticketPromedio),
-                'icon'     => 'fa-solid fa-ticket',
-                'change'   => $calcChange($ticketPromedio, $ticketPromedioPasado),
+                'label' => 'Ticket Promedio',
+                'value' => '$'.number_format($ticketPromedio),
+                'icon' => 'fa-solid fa-ticket',
+                'change' => $calcChange($ticketPromedio, $ticketPromedioPasado),
                 'positive' => $ticketPromedio >= $ticketPromedioPasado,
             ],
         ];
@@ -119,9 +131,9 @@ class DashboardController extends Controller
         $limiteBCG = Carbon::today()->subDays(60);
 
         $serviciosBCG = collect()
-            ->merge(Experiencia::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn($m) => ['model' => $m, 'type' => 'Experiencia']))
-            ->merge(Balinesa::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn($m) => ['model' => $m, 'type' => 'Balinesa']))
-            ->merge(CenaEspecial::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn($m) => ['model' => $m, 'type' => 'Cena']));
+            ->merge(Experiencia::with(['reservas' => fn ($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn ($m) => ['model' => $m, 'type' => 'Experiencia']))
+            ->merge(Balinesa::with(['reservas' => fn ($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn ($m) => ['model' => $m, 'type' => 'Balinesa']))
+            ->merge(CenaEspecial::with(['reservas' => fn ($q) => $q->where('Dia', '>=', $limiteBCG), 'categoria'])->where('Estado', 'Activo')->get()->map(fn ($m) => ['model' => $m, 'type' => 'Cena']));
 
         $hoyCarbon = Carbon::today();
         $treintaAtras = Carbon::today()->subDays(30);
@@ -131,8 +143,8 @@ class DashboardController extends Controller
         foreach ($serviciosBCG as $s) {
             $model = $s['model'];
             $reservas = $model->reservas;
-            $reservas30 = $reservas->filter(fn($r) => Carbon::parse($r->Dia)->between($treintaAtras, $hoyCarbon));
-            $reservas60 = $reservas->filter(fn($r) => Carbon::parse($r->Dia)->lt($treintaAtras));
+            $reservas30 = $reservas->filter(fn ($r) => Carbon::parse($r->Dia)->between($treintaAtras, $hoyCarbon));
+            $reservas60 = $reservas->filter(fn ($r) => Carbon::parse($r->Dia)->lt($treintaAtras));
 
             $count30 = $reservas30->count();
             $count60 = $reservas60->count();
@@ -143,15 +155,15 @@ class DashboardController extends Controller
             $totalRevenueBCG += $revenue30;
 
             $bcgProducts[] = [
-                'name'     => $model->Nombre ?? 'Sin nombre',
-                'type'     => $s['type'],
+                'name' => $model->Nombre ?? 'Sin nombre',
+                'type' => $s['type'],
                 'category' => $model->categoria?->Nombre ?? 'Sin categoría',
-                'price'    => (int)$price,
-                'growth'   => $revenue60 > 0 ? round((($revenue30 - $revenue60) / $revenue60) * 100, 1) : ($revenue30 > 0 ? 100 : 0),
-                'share'    => 0,
-                'revenue'  => (int)$revenue30,
-                'count'    => $count30,
-                'margin'   => $price > 0 ? round((($price - $cost) / $price) * 100) : 0,
+                'price' => (int) $price,
+                'growth' => $revenue60 > 0 ? round((($revenue30 - $revenue60) / $revenue60) * 100, 1) : ($revenue30 > 0 ? 100 : 0),
+                'share' => 0,
+                'revenue' => (int) $revenue30,
+                'count' => $count30,
+                'margin' => $price > 0 ? round((($price - $cost) / $price) * 100) : 0,
             ];
         }
 
@@ -161,10 +173,10 @@ class DashboardController extends Controller
         unset($p);
 
         $bcgQuadrants = [
-            'star'     => ['label' => 'Estrella',     'desc' => 'Potenciar e invertir',     'icon' => 'fa-star',     'color' => '#C5A059'],
-            'cow'      => ['label' => 'Vaca',         'desc' => 'Mantener y optimizar',     'icon' => 'fa-cow',      'color' => '#10B981'],
+            'star' => ['label' => 'Estrella',     'desc' => 'Potenciar e invertir',     'icon' => 'fa-star',     'color' => '#C5A059'],
+            'cow' => ['label' => 'Vaca',         'desc' => 'Mantener y optimizar',     'icon' => 'fa-cow',      'color' => '#10B981'],
             'question' => ['label' => 'Incógnita',    'desc' => 'Evaluar viabilidad',       'icon' => 'fa-question', 'color' => '#3B82F6'],
-            'dog'      => ['label' => 'Perro',        'desc' => 'Reestructurar o retirar',  'icon' => 'fa-dog',      'color' => '#EF4444'],
+            'dog' => ['label' => 'Perro',        'desc' => 'Reestructurar o retirar',  'icon' => 'fa-dog',      'color' => '#EF4444'],
         ];
 
         $bcgProducts = array_map(function ($p) use ($bcgQuadrants) {
@@ -184,28 +196,28 @@ class DashboardController extends Controller
             $p['color'] = $bcgQuadrants[$p['quadrant']]['color'];
 
             $p['recommendation'] = match ($p['quadrant']) {
-                'star'     => 'Alto crecimiento y participación — mantener inversión y potenciar',
-                'cow'      => 'Alta participación, bajo crecimiento — optimizar márgenes y maximizar ingresos',
+                'star' => 'Alto crecimiento y participación — mantener inversión y potenciar',
+                'cow' => 'Alta participación, bajo crecimiento — optimizar márgenes y maximizar ingresos',
                 'question' => 'Alto crecimiento, baja participación — evaluar viabilidad y apostar selectivamente',
-                'dog'      => 'Bajo crecimiento y participación — reestructurar o retirar del catálogo',
+                'dog' => 'Bajo crecimiento y participación — reestructurar o retirar del catálogo',
             };
 
             return $p;
         }, $bcgProducts);
 
-        usort($bcgProducts, fn($a, $b) => $b['revenue'] <=> $a['revenue']);
+        usort($bcgProducts, fn ($a, $b) => $b['revenue'] <=> $a['revenue']);
 
-        $bcgMaxGrowth = !empty($bcgProducts) ? max(array_column($bcgProducts, 'growth')) : 30;
-        $bcgMaxShare  = !empty($bcgProducts) ? max(array_column($bcgProducts, 'share')) : 35;
+        $bcgMaxGrowth = ! empty($bcgProducts) ? max(array_column($bcgProducts, 'growth')) : 30;
+        $bcgMaxShare = ! empty($bcgProducts) ? max(array_column($bcgProducts, 'share')) : 35;
 
-        $productoMasRentable = !empty($bcgProducts) ? $bcgProducts[0]['name'] : 'N/A';
-        $totalProfitBCG = array_sum(array_map(fn($p) => $p['revenue'] * $p['margin'] / 100, $bcgProducts));
+        $productoMasRentable = ! empty($bcgProducts) ? $bcgProducts[0]['name'] : 'N/A';
+        $totalProfitBCG = array_sum(array_map(fn ($p) => $p['revenue'] * $p['margin'] / 100, $bcgProducts));
 
         $bcgSummary = [
-            'total_products'   => count($bcgProducts),
-            'total_revenue'    => (int)$totalRevenueBCG,
-            'total_profit'     => (int)$totalProfitBCG,
-            'most_profitable'  => $productoMasRentable,
+            'total_products' => count($bcgProducts),
+            'total_revenue' => (int) $totalRevenueBCG,
+            'total_profit' => (int) $totalProfitBCG,
+            'most_profitable' => $productoMasRentable,
         ];
 
         // ── Financial ──
@@ -214,37 +226,37 @@ class DashboardController extends Controller
         $totalRevenue = $sumPrice($mesReservas);
 
         $typeConfig = [
-            'App\Models\Experiencia'  => ['label' => 'Experiencias VIP', 'color' => '#3B82F6'],
+            'App\Models\Experiencia' => ['label' => 'Experiencias VIP', 'color' => '#3B82F6'],
             'App\Models\CenaEspecial' => ['label' => 'Cenas Especiales', 'color' => '#C5A059'],
-            'App\Models\Balinesa'     => ['label' => 'Balinesas',        'color' => '#10B981'],
+            'App\Models\Balinesa' => ['label' => 'Balinesas',        'color' => '#10B981'],
         ];
 
         $revenueByType = [];
         foreach ($typeConfig as $class => $cfg) {
             $group = $byType->get($class, collect());
-            $amount = $group->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+            $amount = $group->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
             $revenueByType[] = [
-                'type'       => $cfg['label'],
-                'amount'     => (int)$amount,
+                'type' => $cfg['label'],
+                'amount' => (int) $amount,
                 'percentage' => $totalRevenue > 0 ? round(($amount / $totalRevenue) * 100) : 0,
-                'color'      => $cfg['color'],
+                'color' => $cfg['color'],
             ];
         }
 
         $balinesasReservas = $mesReservas->where('serviciable_type', 'App\Models\Balinesa');
-        $balinesasIngresos = $balinesasReservas->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+        $balinesasIngresos = $balinesasReservas->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
         $balinesasCount = $balinesasReservas->count();
 
         $ticketAverages = [
             [
                 'label' => 'Por Habitación',
                 'value' => $balinesasCount > 0 ? round($balinesasIngresos / $balinesasCount) : 0,
-                'icon'  => 'fa-door-open',
+                'icon' => 'fa-door-open',
             ],
             [
                 'label' => 'Por Reserva',
                 'value' => $ticketPromedio,
-                'icon'  => 'fa-ticket',
+                'icon' => 'fa-ticket',
             ],
         ];
 
@@ -257,45 +269,45 @@ class DashboardController extends Controller
             $month = Carbon::today()->subMonths($i);
             $start = $month->copy()->startOfMonth();
             $end = $month->copy()->endOfMonth();
-            $reservasMes = $reservas6Meses->filter(fn($r) =>
-                Carbon::parse($r->Dia)->between($start, $end)
+            $reservasMes = $reservas6Meses->filter(fn ($r) => Carbon::parse($r->Dia)->between($start, $end)
             );
             $monthlyRevenue[] = [
-                'month'  => $month->locale('es')->monthName,
-                'amount' => (int)$reservasMes->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                'month' => $month->locale('es')->monthName,
+                'amount' => (int) $reservasMes->sum(fn ($r) => $r->serviciable?->Precio ?? 0),
             ];
         }
 
         $weeklyComparison = [
             [
-                'week'    => 'Semana Pasada',
-                'revenue' => (int)$sumPrice($semanaPasadaReservas),
+                'week' => 'Semana Pasada',
+                'revenue' => (int) $sumPrice($semanaPasadaReservas),
             ],
             [
-                'week'    => 'Esta Semana',
-                'revenue' => (int)$sumPrice($semanaActualReservas),
+                'week' => 'Esta Semana',
+                'revenue' => (int) $sumPrice($semanaActualReservas),
             ],
         ];
 
         // Top 5 packages
         $paquetesAgrupados = $mesReservas
-            ->groupBy(fn($r) => $r->serviciable_type . '::' . $r->serviciable_id)
+            ->groupBy(fn ($r) => $r->serviciable_type.'::'.$r->serviciable_id)
             ->map(function ($group) {
                 $first = $group->first();
                 $service = $first->serviciable;
-                $revenue = $group->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+                $revenue = $group->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
                 $cost = $service?->Costo_Operativo ?? 0;
                 $typeLabel = match ($first->serviciable_type) {
-                    'App\Models\Balinesa'     => 'Balinesa',
+                    'App\Models\Balinesa' => 'Balinesa',
                     'App\Models\CenaEspecial' => 'Cena',
-                    'App\Models\Experiencia'  => 'Experiencia',
-                    default                   => 'Otros',
+                    'App\Models\Experiencia' => 'Experiencia',
+                    default => 'Otros',
                 };
+
                 return [
-                    'name'    => $service?->Nombre ?? 'Sin nombre',
-                    'type'    => $typeLabel,
-                    'revenue' => (int)$revenue,
-                    'margin'  => $revenue > 0 ? round((($revenue - $cost) / $revenue) * 100) : 0,
+                    'name' => $service?->Nombre ?? 'Sin nombre',
+                    'type' => $typeLabel,
+                    'revenue' => (int) $revenue,
+                    'margin' => $revenue > 0 ? round((($revenue - $cost) / $revenue) * 100) : 0,
                 ];
             })
             ->sortByDesc('revenue')
@@ -310,15 +322,16 @@ class DashboardController extends Controller
         // ── Ticket Promedio por Categoría ──
 
         $ticketByCategory = $mesReservas
-            ->groupBy(fn($r) => $r->serviciable?->categoria?->Nombre ?? 'Sin categoría')
+            ->groupBy(fn ($r) => $r->serviciable?->categoria?->Nombre ?? 'Sin categoría')
             ->map(function ($group) {
                 $catName = $group->first()->serviciable?->categoria?->Nombre ?? 'Sin categoría';
-                $total = $group->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+                $total = $group->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
                 $count = $group->count();
+
                 return [
                     'label' => $catName,
                     'value' => $count > 0 ? round($total / $count) : 0,
-                    'icon'  => 'fa-tag',
+                    'icon' => 'fa-tag',
                 ];
             })
             ->values()
@@ -327,7 +340,7 @@ class DashboardController extends Controller
         // ── Revenue por Día de la Semana ──
 
         $ultimas4Semanas = Carbon::today()->subWeeks(4);
-        $reservas4semanas = $reservas6Meses->filter(fn($r) => Carbon::parse($r->Dia)->greaterThanOrEqualTo($ultimas4Semanas));
+        $reservas4semanas = $reservas6Meses->filter(fn ($r) => Carbon::parse($r->Dia)->greaterThanOrEqualTo($ultimas4Semanas));
 
         $dowRevenue = array_fill(0, 7, 0);
         foreach ($reservas4semanas as $r) {
@@ -338,24 +351,25 @@ class DashboardController extends Controller
         $dayNames = [0 => 'Dom', 1 => 'Lun', 2 => 'Mar', 3 => 'Mié', 4 => 'Jue', 5 => 'Vie', 6 => 'Sáb'];
         $revenueByDayOfWeek = [];
         foreach ([1, 2, 3, 4, 5, 6, 0] as $dow) {
-            $revenueByDayOfWeek[] = ['day' => $dayNames[$dow], 'amount' => (int)($dowRevenue[$dow] ?? 0)];
+            $revenueByDayOfWeek[] = ['day' => $dayNames[$dow], 'amount' => (int) ($dowRevenue[$dow] ?? 0)];
         }
 
         // ── Top 5 por Cantidad de Reservas ──
 
         $topByCount = $mesReservas
-            ->groupBy(fn($r) => $r->serviciable_type . '::' . $r->serviciable_id)
+            ->groupBy(fn ($r) => $r->serviciable_type.'::'.$r->serviciable_id)
             ->map(function ($group) {
                 $first = $group->first();
                 $typeLabel = match ($first->serviciable_type) {
-                    'App\Models\Balinesa'     => 'Balinesa',
+                    'App\Models\Balinesa' => 'Balinesa',
                     'App\Models\CenaEspecial' => 'Cena',
-                    'App\Models\Experiencia'  => 'Experiencia',
-                    default                   => 'Otros',
+                    'App\Models\Experiencia' => 'Experiencia',
+                    default => 'Otros',
                 };
+
                 return [
-                    'name'  => $first->serviciable?->Nombre ?? 'Sin nombre',
-                    'type'  => $typeLabel,
+                    'name' => $first->serviciable?->Nombre ?? 'Sin nombre',
+                    'type' => $typeLabel,
                     'count' => $group->count(),
                 ];
             })
@@ -364,7 +378,7 @@ class DashboardController extends Controller
             ->values()
             ->toArray();
 
-        $topByCount = array_map(fn($pkg, $i) => ['position' => $i + 1] + $pkg, $topByCount, array_keys($topByCount));
+        $topByCount = array_map(fn ($pkg, $i) => ['position' => $i + 1] + $pkg, $topByCount, array_keys($topByCount));
 
         // ── Evolución Ticket Promedio (6 meses) ──
 
@@ -373,12 +387,12 @@ class DashboardController extends Controller
             $month = Carbon::today()->subMonths($i);
             $start = $month->copy()->startOfMonth();
             $end = $month->copy()->endOfMonth();
-            $reservasMes = $reservas6Meses->filter(fn($r) => Carbon::parse($r->Dia)->between($start, $end));
+            $reservasMes = $reservas6Meses->filter(fn ($r) => Carbon::parse($r->Dia)->between($start, $end));
             $count = $reservasMes->count();
-            $revenue = $reservasMes->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+            $revenue = $reservasMes->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
             $monthlyTicketAvg[] = [
                 'month' => $month->locale('es')->monthName,
-                'avg'   => $count > 0 ? round($revenue / $count) : 0,
+                'avg' => $count > 0 ? round($revenue / $count) : 0,
             ];
         }
 
@@ -392,15 +406,15 @@ class DashboardController extends Controller
         }
 
         $marginDistribution = [
-            ['range' => '0-25%',  'count' => count(array_filter($allMargins, fn($m) => $m >= 0 && $m <= 25)),  'color' => '#EF4444'],
-            ['range' => '26-50%', 'count' => count(array_filter($allMargins, fn($m) => $m > 25 && $m <= 50)), 'color' => '#F59E0B'],
-            ['range' => '51-75%', 'count' => count(array_filter($allMargins, fn($m) => $m > 50 && $m <= 75)), 'color' => '#3B82F6'],
-            ['range' => '76-100%','count' => count(array_filter($allMargins, fn($m) => $m > 75)),              'color' => '#10B981'],
+            ['range' => '0-25%',  'count' => count(array_filter($allMargins, fn ($m) => $m >= 0 && $m <= 25)),  'color' => '#EF4444'],
+            ['range' => '26-50%', 'count' => count(array_filter($allMargins, fn ($m) => $m > 25 && $m <= 50)), 'color' => '#F59E0B'],
+            ['range' => '51-75%', 'count' => count(array_filter($allMargins, fn ($m) => $m > 50 && $m <= 75)), 'color' => '#3B82F6'],
+            ['range' => '76-100%', 'count' => count(array_filter($allMargins, fn ($m) => $m > 75)),              'color' => '#10B981'],
         ];
 
         // ── Crecimiento Mensual ──
 
-        $mesActualRevenue = !empty($monthlyRevenue) ? end($monthlyRevenue)['amount'] : 0;
+        $mesActualRevenue = ! empty($monthlyRevenue) ? end($monthlyRevenue)['amount'] : 0;
         $mesAnteriorRevenue = count($monthlyRevenue) >= 2 ? $monthlyRevenue[count($monthlyRevenue) - 2]['amount'] : 0;
         $crecimientoMensual = $mesAnteriorRevenue > 0 ? round((($mesActualRevenue - $mesAnteriorRevenue) / $mesAnteriorRevenue) * 100) : 0;
         $proyeccionMensual = $mesActualRevenue;
@@ -415,16 +429,17 @@ class DashboardController extends Controller
 
         // ── Occupancy by Zone ──
 
-        $totalByZone = Espacio::where('Is_Active', 1)
-            ->selectRaw('Zona, COUNT(*) as total')
-            ->groupBy('Zona')
+        // Código Corregido para PostgreSQL
+        $totalByZone = Espacio::where('Is_Active', true)
+            ->selectRaw('"Zona", COUNT(*) as total')
+            ->groupBy('"Zona"')
             ->pluck('total', 'Zona');
 
         $reservedTodayByZone = Reserva::whereDate('Dia', $hoy)
             ->whereNotNull('id_espacio')
             ->join('Espacios', 'Reservas.id_espacio', '=', 'Espacios.Id')
-            ->selectRaw('Espacios.Zona, COUNT(DISTINCT Reservas.id_espacio) as reserved')
-            ->groupBy('Espacios.Zona')
+            ->selectRaw('"Espacios"."Zona", COUNT(DISTINCT "Reservas"."id_espacio") as reserved')
+            ->groupBy('"Espacios"."Zona"')
             ->pluck('reserved', 'Zona');
 
         $zoneColors = ['#C5A059', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B'];
@@ -434,9 +449,9 @@ class DashboardController extends Controller
             $reserved = $reservedTodayByZone[$zone] ?? 0;
             $pct = $total > 0 ? round(($reserved / $total) * 100) : 0;
             $occupancyByZone[] = [
-                'zone'       => $zone,
+                'zone' => $zone,
                 'percentage' => $pct,
-                'color'      => $zoneColors[$colorIndex % count($zoneColors)],
+                'color' => $zoneColors[$colorIndex % count($zoneColors)],
             ];
             $colorIndex++;
         }
@@ -469,11 +484,12 @@ class DashboardController extends Controller
 
         // ── Operations ──
 
+        // Código Corregido para PostgreSQL
         $avgLeadTime = Reserva::whereBetween('Dia', [Carbon::today()->subDays(90), Carbon::today()])
             ->whereNotNull('created_at')
-            ->selectRaw('AVG(DATEDIFF(day, created_at, Dia)) as avg')
+            ->selectRaw('AVG(DATE_PART(\'day\', "Dia" - "created_at")) as avg')
             ->value('avg');
-        $avgLeadTime = round((float)($avgLeadTime ?? 0), 1);
+        $avgLeadTime = round((float) ($avgLeadTime ?? 0), 1);
 
         $alerts = [];
         foreach ($totalByZone as $zone => $total) {
@@ -483,18 +499,18 @@ class DashboardController extends Controller
 
             if ($pct >= 95) {
                 $alerts[] = [
-                    'severity'  => 'danger',
-                    'zone'      => $zone,
-                    'message'   => "$zone: $available de $total disponibles",
-                    'detail'    => "Ocupación al $pct% — considerar cierre de ventas",
+                    'severity' => 'danger',
+                    'zone' => $zone,
+                    'message' => "$zone: $available de $total disponibles",
+                    'detail' => "Ocupación al $pct% — considerar cierre de ventas",
                     'indicator' => '🔴',
                 ];
             } elseif ($pct >= 80) {
                 $alerts[] = [
-                    'severity'  => 'warning',
-                    'zone'      => $zone,
-                    'message'   => "$zone: $available de $total disponibles",
-                    'detail'    => "Ocupación al $pct% — límite operativo próximo",
+                    'severity' => 'warning',
+                    'zone' => $zone,
+                    'message' => "$zone: $available de $total disponibles",
+                    'detail' => "Ocupación al $pct% — límite operativo próximo",
                     'indicator' => '🟡',
                 ];
             }
@@ -502,10 +518,10 @@ class DashboardController extends Controller
 
         if (empty($alerts)) {
             $alerts[] = [
-                'severity'  => 'info',
-                'zone'      => 'General',
-                'message'   => 'Todas las zonas con disponibilidad normal',
-                'detail'    => 'Sin novedades operativas',
+                'severity' => 'info',
+                'zone' => 'General',
+                'message' => 'Todas las zonas con disponibilidad normal',
+                'detail' => 'Sin novedades operativas',
                 'indicator' => '🟢',
             ];
         }
@@ -521,13 +537,14 @@ class DashboardController extends Controller
                 $usuario = $this->usuarioLookup($numColab);
                 $totalRes = $group->count();
                 $completadas = $group->where('Estado', 'Completado')->count();
-                $revenue = $group->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+                $revenue = $group->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
+
                 return [
-                    'name'         => $usuario?->Nombre ?? 'Sin nombre',
-                    'id'           => $numColab,
+                    'name' => $usuario?->Nombre ?? 'Sin nombre',
+                    'id' => $numColab,
                     'reservations' => $totalRes,
-                    'amount'       => (int)$revenue,
-                    'efficiency'   => $totalRes > 0 ? round(($completadas / $totalRes) * 100) : 0,
+                    'amount' => (int) $revenue,
+                    'efficiency' => $totalRes > 0 ? round(($completadas / $totalRes) * 100) : 0,
                 ];
             })
             ->sortByDesc('amount')
@@ -574,14 +591,14 @@ class DashboardController extends Controller
         // ── Booking Pace (últ. 3 meses vs mes actual) ──
 
         $bookingPace = [];
-        $primerDiaMes = (int)Carbon::today()->day;
+        $primerDiaMes = (int) Carbon::today()->day;
         $tresMesesAtras = Carbon::today()->subMonths(3)->startOfMonth();
 
         $reservasBookingPace = Reserva::whereBetween('Dia', [$tresMesesAtras, Carbon::today()])->get(['Dia']);
 
         $historial = [];
         foreach ($reservasBookingPace as $r) {
-            $diaMes = (int)Carbon::parse($r->Dia)->day;
+            $diaMes = (int) Carbon::parse($r->Dia)->day;
             $fecha = Carbon::parse($r->Dia);
             if ($fecha->between($tresMesesAtras, Carbon::today()->subDay()->endOfMonth())) {
                 $historial[$diaMes] = ($historial[$diaMes] ?? 0) + 1;
@@ -592,7 +609,7 @@ class DashboardController extends Controller
         foreach ($reservasBookingPace as $r) {
             $fecha = Carbon::parse($r->Dia);
             if ($fecha->month === Carbon::today()->month && $fecha->year === Carbon::today()->year) {
-                $diaMes = (int)$fecha->day;
+                $diaMes = (int) $fecha->day;
                 $actualPace[$diaMes] = ($actualPace[$diaMes] ?? 0) + 1;
             }
         }
@@ -600,8 +617,8 @@ class DashboardController extends Controller
         $numMonths = 3;
         for ($d = 1; $d <= $primerDiaMes; $d++) {
             $bookingPace[] = [
-                'day'     => $d,
-                'actual'  => (int)($actualPace[$d] ?? 0),
+                'day' => $d,
+                'actual' => (int) ($actualPace[$d] ?? 0),
                 'average' => round(($historial[$d] ?? 0) / $numMonths, 1),
             ];
         }
@@ -626,11 +643,11 @@ class DashboardController extends Controller
             $count = $demandCounts[$fechaStr] ?? 0;
             $intensity = $maxDemand > 0 ? min(4, max(0, floor(($count / $maxDemand) * 4) + 1)) : 1;
             $demandCalendar[] = [
-                'date'      => $fechaStr,
-                'day'       => $fecha->day,
-                'dayName'   => $fecha->locale('es')->shortDayName,
-                'month'     => $fecha->locale('es')->monthName,
-                'count'     => $count,
+                'date' => $fechaStr,
+                'day' => $fecha->day,
+                'dayName' => $fecha->locale('es')->shortDayName,
+                'month' => $fecha->locale('es')->monthName,
+                'count' => $count,
                 'intensity' => $intensity,
             ];
         }
@@ -643,14 +660,14 @@ class DashboardController extends Controller
             ->groupBy('Habitacion');
 
         $totalHabs = $habitacionesGrupo->count();
-        $repeatHabs = $habitacionesGrupo->filter(fn($g) => $g->count() > 1)->count();
+        $repeatHabs = $habitacionesGrupo->filter(fn ($g) => $g->count() > 1)->count();
         $repeatGuestRate = $totalHabs > 0 ? round(($repeatHabs / $totalHabs) * 100, 1) : 0;
 
         $habitacionesRevenue = $habitacionesGrupo->map(function ($group, $habitacion) {
             return [
-                'habitacion'   => $habitacion,
+                'habitacion' => $habitacion,
                 'reservations' => $group->count(),
-                'revenue'      => (int)$group->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                'revenue' => (int) $group->sum(fn ($r) => $r->serviciable?->Precio ?? 0),
             ];
         });
 
@@ -663,7 +680,7 @@ class DashboardController extends Controller
         // ── Space Utilization (últimos 30 días) ──
 
         $ultimos30 = Carbon::today()->subDays(30);
-        $espaciosActivos = Espacio::where('Is_Active', 1)->get();
+        $espaciosActivos = Espacio::where('Is_Active', true)->get();
         $totalDias = 30;
 
         $spaceUtilization = [];
@@ -676,17 +693,17 @@ class DashboardController extends Controller
 
             $pct = $totalDias > 0 ? round(($diasOcupados / $totalDias) * 100) : 0;
             $spaceUtilization[] = [
-                'nombre'      => $esp->Nombre,
-                'tipo'        => $esp->Tipo,
-                'zona'        => $esp->Zona,
-                'capacidad'   => $esp->Capacidad,
+                'nombre' => $esp->Nombre,
+                'tipo' => $esp->Tipo,
+                'zona' => $esp->Zona,
+                'capacidad' => $esp->Capacidad,
                 'dias_ocupados' => $diasOcupados,
-                'total_dias'  => $totalDias,
+                'total_dias' => $totalDias,
                 'utilizacion' => $pct,
             ];
         }
 
-        usort($spaceUtilization, fn($a, $b) => $b['utilizacion'] <=> $a['utilizacion']);
+        usort($spaceUtilization, fn ($a, $b) => $b['utilizacion'] <=> $a['utilizacion']);
 
         // ── Colaborador Trend (top 5 por revenue, últimos 6 meses) ──
 
@@ -696,9 +713,9 @@ class DashboardController extends Controller
             ->whereNotNull('Numero_de_colaborador_vendedor')
             ->where('Numero_de_colaborador_vendedor', '!=', '')
             ->groupBy('Numero_de_colaborador_vendedor')
-            ->map(fn($group) => [
-                'id'   => $group->first()->Numero_de_colaborador_vendedor,
-                'rev'  => $group->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+            ->map(fn ($group) => [
+                'id' => $group->first()->Numero_de_colaborador_vendedor,
+                'rev' => $group->sum(fn ($r) => $r->serviciable?->Precio ?? 0),
                 'name' => $this->usuarioLookup($group->first()->Numero_de_colaborador_vendedor)?->Nombre ?? 'Sin nombre',
             ])
             ->sortByDesc('rev')
@@ -718,19 +735,18 @@ class DashboardController extends Controller
                 $month = Carbon::today()->subMonths($i);
                 $start = $month->copy()->startOfMonth();
                 $end = $month->copy()->endOfMonth();
-                $reservasMes = $reservasTrend->filter(fn($r) =>
-                    $r->Numero_de_colaborador_vendedor === $colab['id']
+                $reservasMes = $reservasTrend->filter(fn ($r) => $r->Numero_de_colaborador_vendedor === $colab['id']
                     && Carbon::parse($r->Dia)->between($start, $end)
                 );
                 $monthly[] = [
-                    'month'  => $month->locale('es')->monthName,
-                    'amount' => (int)$reservasMes->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                    'month' => $month->locale('es')->monthName,
+                    'amount' => (int) $reservasMes->sum(fn ($r) => $r->serviciable?->Precio ?? 0),
                 ];
             }
             $colaboradorTrend[] = [
                 'colaborador' => $colab['name'],
-                'id'          => $colab['id'],
-                'monthly'     => $monthly,
+                'id' => $colab['id'],
+                'monthly' => $monthly,
             ];
         }
 
@@ -795,13 +811,13 @@ class DashboardController extends Controller
 
         switch ($section) {
             case 'general':
-                $totalRev = $mesReservas->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+                $totalRev = $mesReservas->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
                 $totalRes = $mesReservas->count();
                 $kpis = [
-                    ['label' => 'Ingresos Hoy', 'value' => '$' . number_format($totalRev), 'icon' => 'fa-dollar-sign', 'change' => '', 'positive' => true],
-                    ['label' => 'Reservas Hoy', 'value' => (string)$totalRes, 'icon' => 'fa-calendar-check', 'change' => '', 'positive' => true],
-                    ['label' => 'Ocupación Promedio', 'value' => $totalRes > 0 ? round(($mesReservas->where('Estado', 'Completado')->count() / $totalRes) * 100) . '%' : '0%', 'icon' => 'fa-bed', 'change' => '', 'positive' => true],
-                    ['label' => 'Ticket Promedio', 'value' => '$' . number_format($totalRes > 0 ? round($totalRev / $totalRes) : 0), 'icon' => 'fa-ticket', 'change' => '', 'positive' => true],
+                    ['label' => 'Ingresos Hoy', 'value' => '$'.number_format($totalRev), 'icon' => 'fa-dollar-sign', 'change' => '', 'positive' => true],
+                    ['label' => 'Reservas Hoy', 'value' => (string) $totalRes, 'icon' => 'fa-calendar-check', 'change' => '', 'positive' => true],
+                    ['label' => 'Ocupación Promedio', 'value' => $totalRes > 0 ? round(($mesReservas->where('Estado', 'Completado')->count() / $totalRes) * 100).'%' : '0%', 'icon' => 'fa-bed', 'change' => '', 'positive' => true],
+                    ['label' => 'Ticket Promedio', 'value' => '$'.number_format($totalRes > 0 ? round($totalRev / $totalRes) : 0), 'icon' => 'fa-ticket', 'change' => '', 'positive' => true],
                 ];
 
                 $revenueByType = $this->getRevenueByType($mesReservas);
@@ -809,14 +825,15 @@ class DashboardController extends Controller
                 $monthlyRevenue = $this->getMonthlyRevenue($seisMesesAtras, $hoy);
 
                 return Excel::download(
-                    new \App\Exports\Sections\GeneralExport(compact('kpis', 'revenueByType', 'bookingPace', 'monthlyRevenue')),
+                    new GeneralExport(compact('kpis', 'revenueByType', 'bookingPace', 'monthlyRevenue')),
                     'general.xlsx'
                 );
 
             case 'bcg':
                 $bcgData = $this->computeBcgData($limiteBCG);
+
                 return Excel::download(
-                    new \App\Exports\Sections\BcgExport($bcgData['products'], $bcgData['summary']),
+                    new BcgExport($bcgData['products'], $bcgData['summary']),
                     'bcg.xlsx'
                 );
 
@@ -831,7 +848,7 @@ class DashboardController extends Controller
                 $marginDistribution = $this->getMarginDistribution($mesReservas);
 
                 return Excel::download(
-                    new \App\Exports\Sections\FinancialExport(compact(
+                    new FinancialExport(compact(
                         'revenueByType', 'topPackages', 'topByCount', 'revenueByDayOfWeek',
                         'monthlyRevenue', 'weeklyComparison', 'ticketByCategory', 'marginDistribution'
                     )),
@@ -845,7 +862,7 @@ class DashboardController extends Controller
                 $demandCalendar = $this->getDemandCalendar($hoy);
 
                 return Excel::download(
-                    new \App\Exports\Sections\OccupancyExport(compact(
+                    new OccupancyExport(compact(
                         'occupancyByZone', 'peakDays', 'topSpenders', 'demandCalendar'
                     )),
                     'ocupacion.xlsx'
@@ -857,7 +874,7 @@ class DashboardController extends Controller
                 $avgLeadTime = $this->getAvgLeadTime();
 
                 return Excel::download(
-                    new \App\Exports\Sections\OperationsExport(compact(
+                    new OperationsExport(compact(
                         'spaceUtilization', 'alerts', 'avgLeadTime'
                     )),
                     'operaciones.xlsx'
@@ -868,7 +885,7 @@ class DashboardController extends Controller
                 $colaboradorTrend = $this->getColaboradorTrend($seisMesesAtras, $hoy);
 
                 return Excel::download(
-                    new \App\Exports\Sections\TeamExport($topCollaborators, $colaboradorTrend),
+                    new TeamExport($topCollaborators, $colaboradorTrend),
                     'equipo.xlsx'
                 );
 
@@ -881,33 +898,33 @@ class DashboardController extends Controller
                     ->get();
 
                 return Excel::download(
-                    new \App\Exports\Sections\AgendaExport($agendaReservations),
+                    new AgendaExport($agendaReservations),
                     'agenda.xlsx'
                 );
 
             case 'cenas':
-                $cenas = \App\Models\CenaEspecial::with('categoria')->get();
-                $balinesas = \App\Models\Balinesa::with('categoria')->get();
-                $experiencias = \App\Models\Experiencia::with('categoria')->get();
+                $cenas = CenaEspecial::with('categoria')->get();
+                $balinesas = Balinesa::with('categoria')->get();
+                $experiencias = Experiencia::with('categoria')->get();
 
                 return Excel::download(
-                    new \App\Exports\Sections\CatalogExport(compact('cenas', 'balinesas', 'experiencias')),
+                    new CatalogExport(compact('cenas', 'balinesas', 'experiencias')),
                     'catalogo.xlsx'
                 );
 
             case 'usuarios':
-                $usuarios = \App\Models\Usuario::where('Rol', 'Operativo')->get();
+                $usuarios = Usuario::where('Rol', 'Operativo')->get();
 
                 return Excel::download(
-                    new \App\Exports\Sections\UsuariosExport($usuarios),
+                    new UsuariosExport($usuarios),
                     'usuarios.xlsx'
                 );
 
             case 'espacios':
-                $espacios = \App\Models\Espacio::all();
+                $espacios = Espacio::all();
 
                 return Excel::download(
-                    new \App\Exports\Sections\EspaciosExport($espacios),
+                    new EspaciosExport($espacios),
                     'espacios.xlsx'
                 );
 
@@ -920,12 +937,15 @@ class DashboardController extends Controller
     {
         $types = ['Experiencia' => 'Experiencias VIP', 'Balinesa' => 'Balinesas', 'CenaEspecial' => 'Cenas Especiales'];
         $result = [];
-        $total = $reservas->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+        $total = $reservas->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
         foreach ($types as $class => $label) {
-            $amount = $reservas->filter(fn($r) => str_contains($r->serviciable_type ?? '', $class))
-                ->sum(fn($r) => $r->serviciable?->Precio ?? 0);
-            $result[] = ['type' => $label, 'amount' => (int)$amount, 'percentage' => $total > 0 ? round(($amount / $total) * 100) : 0, 'color' => match($class) {'Experiencia' => '#C5A059', 'Balinesa' => '#10B981', default => '#3B82F6'}];
+            $amount = $reservas->filter(fn ($r) => str_contains($r->serviciable_type ?? '', $class))
+                ->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
+            $result[] = ['type' => $label, 'amount' => (int) $amount, 'percentage' => $total > 0 ? round(($amount / $total) * 100) : 0, 'color' => match ($class) {
+                'Experiencia' => '#C5A059', 'Balinesa' => '#10B981', default => '#3B82F6'
+            }];
         }
+
         return $result;
     }
 
@@ -940,9 +960,10 @@ class DashboardController extends Controller
                 ->whereBetween('Dia', [$start, $end])
                 ->with('serviciable')
                 ->get()
-                ->sum(fn($r) => $r->serviciable?->Precio ?? 0);
-            $data[] = ['month' => $m->locale('es')->monthName, 'amount' => (int)$amount];
+                ->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
+            $data[] = ['month' => $m->locale('es')->monthName, 'amount' => (int) $amount];
         }
+
         return $data;
     }
 
@@ -960,6 +981,7 @@ class DashboardController extends Controller
             $data[] = ['day' => $dia, 'actual' => $actual, 'average' => $prevMonths ? round(array_sum($prevMonths) / count($prevMonths), 1) : 0];
             $dia++;
         }
+
         return $data;
     }
 
@@ -972,23 +994,23 @@ class DashboardController extends Controller
 
         $thisWeek = Reserva::whereBetween('Dia', [$inicioSemana, $finSemana])
             ->with('serviciable')->get()
-            ->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+            ->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
         $lastWeek = Reserva::whereBetween('Dia', [$inicioSemanaPasada, $finSemanaPasada])
             ->with('serviciable')->get()
-            ->sum(fn($r) => $r->serviciable?->Precio ?? 0);
+            ->sum(fn ($r) => $r->serviciable?->Precio ?? 0);
 
         return [
-            ['week' => 'Semana Pasada', 'revenue' => (int)$lastWeek],
-            ['week' => 'Esta Semana', 'revenue' => (int)$thisWeek],
+            ['week' => 'Semana Pasada', 'revenue' => (int) $lastWeek],
+            ['week' => 'Esta Semana', 'revenue' => (int) $thisWeek],
         ];
     }
 
     private function computeBcgData($limite)
     {
         $servicios = collect()
-            ->merge(\App\Models\Experiencia::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Experiencia']))
-            ->merge(\App\Models\Balinesa::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Balinesa']))
-            ->merge(\App\Models\CenaEspecial::with(['reservas' => fn($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn($m) => ['model' => $m, 'type' => 'Cena']));
+            ->merge(Experiencia::with(['reservas' => fn ($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn ($m) => ['model' => $m, 'type' => 'Experiencia']))
+            ->merge(Balinesa::with(['reservas' => fn ($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn ($m) => ['model' => $m, 'type' => 'Balinesa']))
+            ->merge(CenaEspecial::with(['reservas' => fn ($q) => $q->where('Dia', '>=', $limite), 'categoria'])->get()->map(fn ($m) => ['model' => $m, 'type' => 'Cena']));
 
         $hoy = Carbon::today();
         $treintaAtras = $hoy->copy()->subDays(30);
@@ -998,8 +1020,8 @@ class DashboardController extends Controller
         foreach ($servicios as $s) {
             $model = $s['model'];
             $reservas = $model->reservas;
-            $reservas30 = $reservas->filter(fn($r) => Carbon::parse($r->Dia)->between($treintaAtras, $hoy));
-            $reservas60 = $reservas->filter(fn($r) => Carbon::parse($r->Dia)->lt($treintaAtras));
+            $reservas30 = $reservas->filter(fn ($r) => Carbon::parse($r->Dia)->between($treintaAtras, $hoy));
+            $reservas60 = $reservas->filter(fn ($r) => Carbon::parse($r->Dia)->lt($treintaAtras));
 
             $count30 = $reservas30->count();
             $count60 = $reservas60->count();
@@ -1011,9 +1033,9 @@ class DashboardController extends Controller
 
             $products[] = [
                 'name' => $model->Nombre ?? 'Sin nombre', 'type' => $s['type'],
-                'category' => $model->categoria?->Nombre ?? 'Sin categoría', 'price' => (int)$price,
+                'category' => $model->categoria?->Nombre ?? 'Sin categoría', 'price' => (int) $price,
                 'growth' => $revenue60 > 0 ? round((($revenue30 - $revenue60) / $revenue60) * 100, 1) : ($revenue30 > 0 ? 100 : 0),
-                'share' => 0, 'revenue' => (int)$revenue30, 'count' => $count30,
+                'share' => 0, 'revenue' => (int) $revenue30, 'count' => $count30,
                 'margin' => $price > 0 ? round((($price - $cost) / $price) * 100) : 0,
             ];
         }
@@ -1031,7 +1053,8 @@ class DashboardController extends Controller
         ];
 
         $products = array_map(function ($p) use ($quadrants) {
-            $g = $p['growth']; $s = $p['share'];
+            $g = $p['growth'];
+            $s = $p['share'];
             $p['quadrant'] = $g >= 10 && $s >= 10 ? 'star' : ($g < 10 && $s >= 10 ? 'cow' : ($g >= 10 && $s < 10 ? 'question' : 'dog'));
             $p['color'] = $quadrants[$p['quadrant']]['color'];
             $p['recommendation'] = match ($p['quadrant']) {
@@ -1040,16 +1063,17 @@ class DashboardController extends Controller
                 'question' => 'Alto crecimiento, baja participación — evaluar viabilidad',
                 'dog' => 'Bajo crecimiento y participación — reestructurar o retirar',
             };
+
             return $p;
         }, $products);
 
-        usort($products, fn($a, $b) => $b['revenue'] <=> $a['revenue']);
-        $productoMasRentable = !empty($products) ? $products[0]['name'] : 'N/A';
-        $totalProfit = array_sum(array_map(fn($p) => $p['revenue'] * $p['margin'] / 100, $products));
+        usort($products, fn ($a, $b) => $b['revenue'] <=> $a['revenue']);
+        $productoMasRentable = ! empty($products) ? $products[0]['name'] : 'N/A';
+        $totalProfit = array_sum(array_map(fn ($p) => $p['revenue'] * $p['margin'] / 100, $products));
 
         $summary = [
-            'total_products' => count($products), 'total_revenue' => (int)$totalRevenue,
-            'total_profit' => (int)$totalProfit, 'most_profitable' => $productoMasRentable,
+            'total_products' => count($products), 'total_revenue' => (int) $totalRevenue,
+            'total_profit' => (int) $totalProfit, 'most_profitable' => $productoMasRentable,
         ];
 
         return ['products' => $products, 'summary' => $summary];
@@ -1057,27 +1081,27 @@ class DashboardController extends Controller
 
     private function getTopPackages($reservas)
     {
-        return $reservas->groupBy(fn($r) => ($r->serviciable ? get_class($r->serviciable) : $r->serviciable_type) . '::' . $r->serviciable_id)
-            ->map(fn($g) => [
+        return $reservas->groupBy(fn ($r) => ($r->serviciable ? get_class($r->serviciable) : $r->serviciable_type).'::'.$r->serviciable_id)
+            ->map(fn ($g) => [
                 'name' => $g->first()->serviciable?->Nombre ?? 'N/A',
                 'type' => class_basename($g->first()->serviciable_type ?? ''),
-                'revenue' => (int)$g->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                'revenue' => (int) $g->sum(fn ($r) => $r->serviciable?->Precio ?? 0),
                 'margin' => 0,
             ])
             ->sortByDesc('revenue')->take(5)->values()
-            ->map(fn($p, $i) => ['position' => $i + 1] + $p)->toArray();
+            ->map(fn ($p, $i) => ['position' => $i + 1] + $p)->toArray();
     }
 
     private function getTopByCount($reservas)
     {
-        return $reservas->groupBy(fn($r) => ($r->serviciable ? get_class($r->serviciable) : $r->serviciable_type) . '::' . $r->serviciable_id)
-            ->map(fn($g) => [
+        return $reservas->groupBy(fn ($r) => ($r->serviciable ? get_class($r->serviciable) : $r->serviciable_type).'::'.$r->serviciable_id)
+            ->map(fn ($g) => [
                 'name' => $g->first()->serviciable?->Nombre ?? 'N/A',
                 'type' => class_basename($g->first()->serviciable_type ?? ''),
                 'count' => $g->count(),
             ])
             ->sortByDesc('count')->take(5)->values()
-            ->map(fn($p, $i) => ['position' => $i + 1] + $p)->toArray();
+            ->map(fn ($p, $i) => ['position' => $i + 1] + $p)->toArray();
     }
 
     private function getRevenueByDayOfWeek($reservas)
@@ -1085,15 +1109,16 @@ class DashboardController extends Controller
         $days = ['Lun', 'Mar', 'Mié', 'Jue', 'Vie', 'Sáb', 'Dom'];
         $data = [];
         foreach ($days as $i => $label) {
-            $data[] = ['day' => $label, 'amount' => (int)$reservas->filter(fn($r) => Carbon::parse($r->Dia)->dayOfWeek === ($i + 1))->sum(fn($r) => $r->serviciable?->Precio ?? 0)];
+            $data[] = ['day' => $label, 'amount' => (int) $reservas->filter(fn ($r) => Carbon::parse($r->Dia)->dayOfWeek === ($i + 1))->sum(fn ($r) => $r->serviciable?->Precio ?? 0)];
         }
+
         return $data;
     }
 
     private function getTicketByCategory($reservas)
     {
-        return $reservas->groupBy(fn($r) => $r->serviciable?->categoria?->Nombre ?? 'General')
-            ->map(fn($g, $label) => ['label' => $label, 'value' => (int)round($g->sum(fn($r) => $r->serviciable?->Precio ?? 0) / max($g->count(), 1))])
+        return $reservas->groupBy(fn ($r) => $r->serviciable?->categoria?->Nombre ?? 'General')
+            ->map(fn ($g, $label) => ['label' => $label, 'value' => (int) round($g->sum(fn ($r) => $r->serviciable?->Precio ?? 0) / max($g->count(), 1))])
             ->values()->toArray();
     }
 
@@ -1104,18 +1129,25 @@ class DashboardController extends Controller
             $price = $r->serviciable?->Precio ?? 0;
             $cost = $r->serviciable?->Costo_Operativo ?? 0;
             $margin = $price > 0 ? round((($price - $cost) / $price) * 100) : 0;
-            if ($margin <= 25) $dist[0]['count']++;
-            elseif ($margin <= 50) $dist[1]['count']++;
-            elseif ($margin <= 75) $dist[2]['count']++;
-            else $dist[3]['count']++;
+            if ($margin <= 25) {
+                $dist[0]['count']++;
+            } elseif ($margin <= 50) {
+                $dist[1]['count']++;
+            } elseif ($margin <= 75) {
+                $dist[2]['count']++;
+            } else {
+                $dist[3]['count']++;
+            }
         }
+
         return $dist;
     }
 
     private function getOccupancyByZone($reservas)
     {
-        return \App\Models\Espacio::where('Is_Active', true)->get()->map(function ($e) use ($reservas) {
+        return Espacio::where('Is_Active', true)->get()->map(function ($e) use ($reservas) {
             $count = $reservas->where('id_espacio', $e->Id)->count();
+
             return ['zone' => $e->Nombre, 'percentage' => min(round(($count / max($reservas->count(), 1)) * 100), 100), 'color' => '#C5A059'];
         })->toArray();
     }
@@ -1126,20 +1158,23 @@ class DashboardController extends Controller
         $data = [];
         $max = 1;
         foreach ($days as $i => $label) {
-            $count = $reservas->filter(fn($r) => Carbon::parse($r->Dia)->dayOfWeek === ($i + 1))->count();
-            if ($count > $max) $max = $count;
+            $count = $reservas->filter(fn ($r) => Carbon::parse($r->Dia)->dayOfWeek === ($i + 1))->count();
+            if ($count > $max) {
+                $max = $count;
+            }
             $data[] = ['day' => $label, 'intensity' => $count];
         }
         foreach ($data as &$d) {
             $d['intensity'] = $max > 0 ? max(round(($d['intensity'] / $max) * 5), 1) : 1;
         }
+
         return $data;
     }
 
     private function getTopSpenders($reservas)
     {
         return $reservas->whereNotNull('Habitacion')->groupBy('Habitacion')
-            ->map(fn($g) => ['habitacion' => $g->first()->Habitacion, 'reservations' => $g->count(), 'revenue' => (int)$g->sum(fn($r) => $r->serviciable?->Precio ?? 0)])
+            ->map(fn ($g) => ['habitacion' => $g->first()->Habitacion, 'reservations' => $g->count(), 'revenue' => (int) $g->sum(fn ($r) => $r->serviciable?->Precio ?? 0)])
             ->sortByDesc('revenue')->take(5)->values()->toArray();
     }
 
@@ -1151,14 +1186,16 @@ class DashboardController extends Controller
             $count = Reserva::whereDate('Dia', $date)->count();
             $data[] = ['date' => $date->format('Y-m-d'), 'day' => $date->day, 'dayName' => substr($date->locale('es')->dayName, 0, 3), 'month' => $date->locale('es')->monthName, 'count' => $count, 'intensity' => $count > 3 ? 4 : ($count > 1 ? 3 : ($count > 0 ? 2 : 1))];
         }
+
         return $data;
     }
 
     private function getSpaceUtilization($from, $to)
     {
-        return \App\Models\Espacio::where('Is_Active', true)->get()->map(function ($e) use ($from, $to) {
+        return Espacio::where('Is_Active', true)->get()->map(function ($e) use ($from, $to) {
             $diasOcupados = Reserva::where('id_espacio', $e->Id)->whereBetween('Dia', [$from, $to])->distinct('Dia')->count('Dia');
             $totalDias = $from->diffInDays($to) ?: 30;
+
             return ['nombre' => $e->Nombre, 'tipo' => $e->Tipo ?? '', 'zona' => $e->Zona ?? '', 'capacidad' => $e->Capacidad ?? 0, 'dias_ocupados' => $diasOcupados, 'total_dias' => $totalDias, 'utilizacion' => round(($diasOcupados / $totalDias) * 100)];
         })->sortByDesc('utilizacion')->values()->toArray();
     }
@@ -1166,13 +1203,13 @@ class DashboardController extends Controller
     private function getAlerts($reservas)
     {
         $alerts = [];
-        $altaOcupacion = \App\Models\Espacio::where('Is_Active', true)->get()->filter(function ($e) use ($reservas) {
+        $altaOcupacion = Espacio::where('Is_Active', true)->get()->filter(function ($e) use ($reservas) {
             return $reservas->where('id_espacio', $e->Id)->count() > 15;
         });
         foreach ($altaOcupacion as $e) {
             $alerts[] = ['severity' => 'warning', 'zone' => $e->Nombre, 'message' => "Alta demanda en {$e->Nombre}", 'detail' => 'Considere abrir más espacios', 'indicator' => '⚠️'];
         }
-        $bajaOcupacion = \App\Models\Espacio::where('Is_Active', true)->get()->filter(function ($e) use ($reservas) {
+        $bajaOcupacion = Espacio::where('Is_Active', true)->get()->filter(function ($e) use ($reservas) {
             return $reservas->where('id_espacio', $e->Id)->count() < 2;
         });
         foreach ($bajaOcupacion as $e) {
@@ -1181,6 +1218,7 @@ class DashboardController extends Controller
         if (empty($alerts)) {
             $alerts[] = ['severity' => 'info', 'zone' => 'General', 'message' => 'Todo en orden', 'detail' => 'Sin alertas', 'indicator' => '✅'];
         }
+
         return $alerts;
     }
 
@@ -1189,7 +1227,8 @@ class DashboardController extends Controller
         $avg = Reserva::where('created_at', '>=', Carbon::today()->subDays(90))
             ->whereNotNull('Dia')
             ->get()
-            ->avg(fn($r) => Carbon::parse($r->Dia)->diffInDays(Carbon::parse($r->created_at)));
+            ->avg(fn ($r) => Carbon::parse($r->Dia)->diffInDays(Carbon::parse($r->created_at)));
+
         return round($avg ?? 0, 1);
     }
 
@@ -1201,9 +1240,10 @@ class DashboardController extends Controller
             ->map(function ($g) {
                 $numColab = $g->first()->Numero_de_colaborador_vendedor;
                 $usuario = $this->usuarioLookup($numColab);
+
                 return [
                     'name' => $usuario?->Nombre ?? 'Sin nombre', 'id' => $numColab,
-                    'reservations' => $g->count(), 'amount' => (int)$g->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                    'reservations' => $g->count(), 'amount' => (int) $g->sum(fn ($r) => $r->serviciable?->Precio ?? 0),
                     'efficiency' => $g->count() > 0 ? round(($g->where('Estado', 'Completado')->count() / $g->count()) * 100) : 0,
                 ];
             })
@@ -1223,9 +1263,9 @@ class DashboardController extends Controller
             ->get();
 
         $top5Ids = $mesReservas->groupBy('Numero_de_colaborador_vendedor')
-            ->map(fn($g) => [
+            ->map(fn ($g) => [
                 'id' => $g->first()->Numero_de_colaborador_vendedor,
-                'rev' => $g->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                'rev' => $g->sum(fn ($r) => $r->serviciable?->Precio ?? 0),
                 'name' => $this->usuarioLookup($g->first()->Numero_de_colaborador_vendedor)?->Nombre ?? 'Sin nombre',
             ])
             ->sortByDesc('rev')->take(5)->values();
@@ -1243,17 +1283,17 @@ class DashboardController extends Controller
                 $month = Carbon::today()->subMonths($i);
                 $start = $month->copy()->startOfMonth();
                 $end = $month->copy()->endOfMonth();
-                $reservasMes = $reservasTrend->filter(fn($r) =>
-                    $r->Numero_de_colaborador_vendedor === $colab['id']
+                $reservasMes = $reservasTrend->filter(fn ($r) => $r->Numero_de_colaborador_vendedor === $colab['id']
                     && Carbon::parse($r->Dia)->between($start, $end)
                 );
                 $monthly[] = [
                     'month' => $month->locale('es')->monthName,
-                    'amount' => (int)$reservasMes->sum(fn($r) => $r->serviciable?->Precio ?? 0),
+                    'amount' => (int) $reservasMes->sum(fn ($r) => $r->serviciable?->Precio ?? 0),
                 ];
             }
             $trend[] = ['colaborador' => $colab['name'], 'id' => $colab['id'], 'monthly' => $monthly];
         }
+
         return $trend;
     }
 }

@@ -23,7 +23,7 @@ class HotelWebController extends Controller
     {
         // Buscamos por el slug en minúsculas o mayúsculas según manejes tu BD
         $experiencia = Experiencia::where('slug', $slug)
-            ->orWhere('Slug', $slug)
+            ->orWhere('slug', $slug)
             ->firstOrFail();
 
         return view('ipad.detalle-experiencia', compact('experiencia'));

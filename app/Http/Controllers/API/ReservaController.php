@@ -36,7 +36,7 @@ class ReservaController extends Controller
             // 2. Filtrar los espacios físicos de la tabla 'Espacios' (SOLO LOS ACTIVOS)
             if ($type === Balinesa::class) {
                 $espaciosTotales = Espacio::where('Tipo', 'Balinesa')
-                    ->where('Is_Active', 1) // 🌟 Filtro para ocultar los 'False'
+                    ->where('Is_Active', true) // 🌟 Filtro para ocultar los 'False'
                     ->get();
             } elseif ($type === CenaEspecial::class) {
                 $cena = CenaEspecial::find($id);
@@ -45,7 +45,7 @@ class ReservaController extends Controller
                 }
                 $espaciosTotales = Espacio::where('Tipo', 'Mesa')
                     ->where('Zona', $cena->restaurant)
-                    ->where('Is_Active', 1) // 🌟 Filtro para ocultar los 'False'
+                    ->where('Is_Active', true) // 🌟 Filtro para ocultar los 'False'
                     ->get();
             } else {
                 return response()->json([
