@@ -78,6 +78,10 @@
         .fs-modal { backdrop-filter: blur(6px); }
         .fs-modal img { touch-action: manipulation; }
     </style>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
 </head>
 
 <body class="secrets-bg text-stone-200 font-sans min-h-screen flex flex-col justify-between select-none overflow-hidden">
@@ -563,6 +567,9 @@
             if (e.key === 'ArrowLeft') moveFsCarousel(-1);
             if (e.key === 'ArrowRight') moveFsCarousel(1);
         });
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
 
 </body>

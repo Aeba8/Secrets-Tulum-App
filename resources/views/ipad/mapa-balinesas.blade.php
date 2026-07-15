@@ -70,6 +70,10 @@
             }
         }
     </style>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
 </head>
 
 <body class="bg-[#0A0809] text-white font-sans antialiased min-h-screen overflow-x-hidden secrets-bg fade-in">
@@ -603,6 +607,9 @@
                 window.location.href = `/hotel/detalle-balinesa/${packageSlug}?lang=${currentLang}`;
             }, 400);
         }
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
 
 

@@ -62,6 +62,10 @@
             background: rgba(197, 160, 89, 0.6);
         }
     </style>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
 </head>
 
 <body id="balinesas-body"
@@ -523,6 +527,9 @@
                 window.location.href = `/hotel/detalle-balinesa/${slug}?lang=${currentLang}`;
             }, 400);
         }
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
 </body>
 

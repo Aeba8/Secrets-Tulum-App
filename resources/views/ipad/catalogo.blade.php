@@ -30,6 +30,10 @@
                         0 0 40px 5px rgba(197, 160, 89, 0.15);
         }
     </style>
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="/images/icon-192.png">
+    <link rel="manifest" href="/manifest.json">
 </head>
 <body id="catalog-body" class="font-sans h-screen w-screen overflow-hidden flex flex-col justify-between bg-zinc-950 text-white fade-in select-none relative" 
     style="background-image: linear-gradient(to bottom, rgba(15, 15, 18, 0.65), rgba(8, 8, 10, 0.75)), url('{{ asset('images/Fondo 2.png') }}'); background-size: cover; background-position: center;">
@@ -139,6 +143,9 @@
                 window.location.href = targetUrl + "?lang=" + currentLang;
             }, 400);
         }
+    </script>
+    <script>
+    if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
 </body>
 </html>
