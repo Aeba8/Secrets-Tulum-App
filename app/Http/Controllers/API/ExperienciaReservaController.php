@@ -41,7 +41,7 @@ class ExperienciaReservaController extends Controller
                 'Observaciones' => $request->observaciones,
                 'created_at' => now(),
                 'updated_at' => now(),
-            ]);
+            ], 'Id');
 
             return response()->json([
                 'success' => true,

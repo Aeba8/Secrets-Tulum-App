@@ -156,7 +156,7 @@ class ReservaController extends Controller
                     'Observaciones' => $request->observaciones,
                     'created_at' => now(),
                     'updated_at' => now(),
-                ]);
+                ], 'Id');
             });
 
             return response()->json([
@@ -168,7 +168,7 @@ class ReservaController extends Controller
         } catch (\Illuminate\Http\Exceptions\HttpResponseException $e) {
             return $e->getResponse();
         } catch (\Exception $e) {
-            Log::error('Error al guardar reserva: '.$e->getMessage());
+            Log::error('Error al guardar reserva', ['exception' => $e]);
 
             return response()->json([
                 'success' => false,

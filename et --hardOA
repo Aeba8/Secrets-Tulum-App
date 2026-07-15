@@ -1,0 +1,39 @@
+[33m3487999[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmain[m[33m, [m[1;31morigin/main[m[33m)[m Convertir app a PWA
+[33m06c8024[m Tradución SQL a POSTGRE
+[33m6b3bf93[m Correción de los Campos en M y m en Balinesas y Cenas
+[33mcb25ac8[m Correción del Slug-slug de Balinesas y Cenas
+[33meec10b7[m Corregir consultas agrupadas y comillas dobles para PostgreSQL
+[33m9f03318[m Adaptación a Postgre
+[33m52fc94f[m Configuracion del inicio de sesion
+[33m4adc610[m Cambio de carpeta de las imagenes locales
+[33md0174c7[m Forzar HTTPS en producción para el login
+[33md8b8599[m Agregar Adminer para gestión web de base de datos
+[33m06d35ff[m Forzar uso de DATABASE_URL en config y limpiar arranque de Docker
+[33m3107488[m Mover migraciones al comando CMD de inicio
+[33ma216559[m Corregir duplicación de llave primaria y decimales en Balinesas
+[33mf09221c[m Solucionar dependencias de libzip-dev
+[33mcb6c6b9[m Habilitar extension zip de PHP para excel
+[33md112cae[m Configuración de la DB de Render y Docker
+[33m738926a[m Configuración de la DB de Render
+[33mc4e7ff9[m Configuración de Render
+[33md977f6b[m Migraciones de la DB
+[33mde1676d[m Corrección de bugs/Programa al 95%
+[33ma38c7ea[m Corrección de bugs/Programa al 90%
+[33m596d13e[m Corrección de bugs
+[33m5edd4ef[m Creación de las Metricas
+[33m4ea565e[m Creación de la Agenda
+[33ma335c50[m Crud de Usuarios y Espacios mas correción de bugs visuales en el ipad y efectos/mejoras  visuales en admin
+[33me5f2433[m Crud de Experiencias
+[33m3cae7e2[m Crud Balinesas
+[33m00da770[m Crud al 90% de Balinesas
+[33m70deceb[m Mejoras Visuales e Implementación de la Api Cloudinary
+[33m74a50a4[m Boceto del Apartado Admin
+[33m00211a0[m Reserva de las experiencias mas filtros en los formularios
+[33me5817c1[m Reserva de las mesas
+[33mcfb2c84[m Mapeo Y Reservacion de las Balinesas
+[33madf6ade[m Filtro funcional de los apartados
+[33m8b76617[m Blade de los Detalles de cada Categoria
+[33ma57ad68[m Detalle de las Balinesas ya bien estructurado y conectado a la base de datos
+[33m0596144[m Controlador de Reservas,validacion anti-overbooking.Extension de tiempo en .env y seguridad. Blade ya funcionando de Login,Balinesas,Catalogo,Cenas,Experiencias,Welcome y rutas protegidas
+[33mbb87c93[m Modelos Eloquent y relaciones polimórficas
+[33m82fbda0[m Initial commit: Estructura base de Laravel y Modelos mapeados a SQL Server
