@@ -430,16 +430,16 @@ class DashboardController extends Controller
         // ── Occupancy by Zone ──
 
         // Código Corregido para PostgreSQL
-        $totalByZone = Espacio::where('Is_Active', true)
+        $totalByZone = Espacio::where('Is_Active', 1)
             ->selectRaw('"Zona", COUNT(*) as total')
-            ->groupBy('"Zona"')
+            ->groupByRaw('"Zona"') // <-- Usamos groupByRaw para evitar las comillas triples
             ->pluck('total', 'Zona');
 
         $reservedTodayByZone = Reserva::whereDate('Dia', $hoy)
             ->whereNotNull('id_espacio')
             ->join('Espacios', 'Reservas.id_espacio', '=', 'Espacios.Id')
             ->selectRaw('"Espacios"."Zona", COUNT(DISTINCT "Reservas"."id_espacio") as reserved')
-            ->groupBy('"Espacios"."Zona"')
+            ->groupByRaw('"Espacios"."Zona"') // <-- Usamos groupByRaw aquí también
             ->pluck('reserved', 'Zona');
 
         $zoneColors = ['#C5A059', '#10B981', '#3B82F6', '#8B5CF6', '#F59E0B'];
