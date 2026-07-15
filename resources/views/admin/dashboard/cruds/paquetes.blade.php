@@ -61,14 +61,14 @@
                                 <tr
                                     class="border-b border-sand-200 dark:border-charcoal-500 last:border-0 hover:bg-sand-50 dark:hover:bg-charcoal-500 transition-colors">
                                     <td class="px-5 py-3.5 text-gray-900 dark:text-gray-100 font-medium">
-                                        {{ $pe->nombre }}</td>
+                                        {{ $pe->Nombre }}</td>
                                     <td class="px-5 py-3.5 text-gray-500 dark:text-gray-400 max-w-[200px] truncate">
-                                        {{ $pe->descripcion ?? '—' }}</td>
+                                        {{ $pe->Descripcion ?? '—' }}</td>
                                     <td class="px-5 py-3.5 text-gray-900 dark:text-gray-100 text-right font-mono">
-                                        ${{ number_format($pe->precio, 2) }}</td>
+                                        ${{ number_format($pe->Precio, 2) }}</td>
                                     <td
                                         class="px-5 py-3.5 text-gray-500 dark:text-gray-400 text-right font-mono text-sm">
-                                        {{ $pe->costo_operativo ? '$' . number_format($pe->costo_operativo, 2) : '—' }}
+                                        {{ $pe->Costo_Operativo ? '$' . number_format($pe->Costo_Operativo, 2) : '—' }}
                                     </td>
                                     <td class="px-5 py-3.5 text-gray-900 dark:text-gray-100 text-center font-mono">
                                         {{ $pe->numero_personas ?? '—' }}</td>
@@ -91,8 +91,8 @@
                                     </td>
                                     <td class="px-5 py-3.5 text-center">
                                         <span
-                                            class="text-xs px-2 py-0.5 rounded-md border {{ ($pe->estado ?? 'Inactivo') === 'Activo' ? 'bg-sapphire-50 dark:bg-sapphire-900/20 text-sapphire-600 dark:text-sapphire-400 border-sapphire-200 dark:border-sapphire-800' : 'bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700' }}">
-                                            {{ $pe->estado ?? 'Inactivo' }}
+                                            class="text-xs px-2 py-0.5 rounded-md border {{ ($pe->Estado ?? 'Inactivo') === 'Activo' ? 'bg-sapphire-50 dark:bg-sapphire-900/20 text-sapphire-600 dark:text-sapphire-400 border-sapphire-200 dark:border-sapphire-800' : 'bg-gray-50 dark:bg-gray-800 text-gray-500 dark:text-gray-400 border-gray-200 dark:border-gray-700' }}">
+                                            {{ $pe->Estado ?? 'Inactivo' }}
                                         </span>
                                     </td>
                                     <td class="px-5 py-3.5 text-center">
@@ -100,26 +100,26 @@
                                             class="flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500">
                                             <button
                                                 onclick='openExperienciaModal({{ json_encode([
-                                                    'id' => $pe->id,
-                                                    'nombre' => $pe->nombre,
-                                                    'descripcion' => $pe->descripcion,
-                                                    'precio' => $pe->precio,
-                                                    'tipo' => $pe->tipo,
-                                                    'lugar' => $pe->lugar,
-                                                    'duracion' => $pe->duracion,
-                                                    'horario' => $pe->horario,
+                                                    'id' => $pe->Id,
+                                                    'nombre' => $pe->Nombre,
+                                                    'descripcion' => $pe->Descripcion,
+                                                    'precio' => $pe->Precio,
+                                                    'tipo' => $pe->Tipo,
+                                                    'lugar' => $pe->Lugar,
+                                                    'duracion' => $pe->Duracion,
+                                                    'horario' => $pe->Horario,
                                                     'numero_personas' => $pe->numero_personas,
-                                                    'costo_operativo' => $pe->costo_operativo,
-                                                    'productos' => $pe->productos,
+                                                    'costo_operativo' => $pe->Costo_Operativo,
+                                                    'productos' => $pe->Productos,
                                                     'ficha_tecnica' => $pe->ficha_tecnica,
-                                                    'activo' => ($pe->estado ?? 'Inactivo') === 'Activo',
+                                                    'activo' => ($pe->Estado ?? 'Inactivo') === 'Activo',
                                                     'imagenes' => $pe->imagenes,
                                                 ]) }})'
                                                 class="hover:text-gold-500 transition-colors"><i
                                                     class="fa-solid fa-pen text-xs"></i></button>
-                                            @if (($pe->estado ?? 'Inactivo') === 'Activo')
+                                            @if (($pe->Estado ?? 'Inactivo') === 'Activo')
                                                 <form method="POST"
-                                                    action="{{ route('admin.experiencias.destroy', $pe->id) }}"
+                                                    action="{{ route('admin.experiencias.destroy', $pe->Id) }}"
                                                     class="inline form-confirm"
                                                     data-message="¿Desactivar esta experiencia?">
                                                     @csrf @method('DELETE')
@@ -129,7 +129,7 @@
                                                 </form>
                                             @else
                                                 <form method="POST"
-                                                    action="{{ route('admin.experiencias.activate', $pe->id) }}"
+                                                    action="{{ route('admin.experiencias.activate', $pe->Id) }}"
                                                     class="inline form-confirm"
                                                     data-message="¿Activar esta experiencia?">
                                                     @csrf @method('PATCH')

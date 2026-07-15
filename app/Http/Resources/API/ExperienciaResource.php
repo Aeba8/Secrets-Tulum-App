@@ -10,23 +10,23 @@ class ExperienciaResource extends JsonResource
     public function toArray(Request $request): array
     {
         return [
-            'id'              => $this->id,
+            'id'              => $this->Id,
             'id_categoria'    => (int) $this->id_categoria,
-            'nombre'          => $this->nombre,
+            'nombre'          => $this->Nombre,
             'slug'            => $this->slug,
-            'precio'          => (float) $this->precio,
-            'tipo'            => $this->tipo,
-            'lugar'           => $this->lugar,
-            'duracion'        => $this->duracion,
-            'horario'         => $this->horario,
+            'precio'          => (float) $this->Precio,
+            'tipo'            => $this->Tipo,
+            'lugar'           => $this->Lugar,
+            'duracion'        => $this->Duracion,
+            'horario'         => $this->Horario,
             'numero_personas' => (int) $this->numero_personas,
-            'is_active'       => ($this->estado ?? 'Inactivo') === 'Activo',
+            'is_active'       => ($this->Estado ?? 'Inactivo') === 'Activo',
             'ficha_tecnica'   => $this->ficha_tecnica,
-            'descripcion'     => $this->descripcion,
-            'productos'       => $this->productos,
+            'descripcion'     => $this->Descripcion,
+            'productos'       => $this->Productos,
             'imagenes'        => $this->imagenes,
-            'costo_operativo' => (float) $this->costo_operativo,
-            'estado'          => $this->estado,
+            'costo_operativo' => (float) $this->Costo_Operativo,
+            'estado'          => $this->Estado,
         ];
     }
 }

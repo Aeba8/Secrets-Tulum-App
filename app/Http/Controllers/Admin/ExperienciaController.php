@@ -59,20 +59,20 @@ class ExperienciaController extends Controller
         $ficha_tecnica = $botella . ($servicio_extra ? '|' . $servicio_extra : '');
 
         Experiencia::create([
-            'nombre' => $validated['nombre'],
-            'descripcion' => strip_tags($validated['descripcion'] ?? ''),
-            'precio' => $validated['precio'],
-            'tipo' => strip_tags($validated['tipo'] ?? ''),
-            'lugar' => strip_tags($validated['lugar'] ?? ''),
-            'duracion' => strip_tags($validated['duracion'] ?? ''),
-            'horario' => strip_tags($validated['horario'] ?? ''),
+            'Nombre' => $validated['nombre'],
+            'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
+            'Precio' => $validated['precio'],
+            'Tipo' => strip_tags($validated['tipo'] ?? ''),
+            'Lugar' => strip_tags($validated['lugar'] ?? ''),
+            'Duracion' => strip_tags($validated['duracion'] ?? ''),
+            'Horario' => strip_tags($validated['horario'] ?? ''),
             'numero_personas' => $validated['numero_personas'] ?? 2,
-            'costo_operativo' => $validated['costo_operativo'] ?? 0,
-            'productos' => strip_tags($validated['productos'] ?? ''),
+            'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
+            'Productos' => strip_tags($validated['productos'] ?? ''),
             'ficha_tecnica' => $ficha_tecnica,
             'slug' => $slug,
             'imagenes' => $imagenes,
-            'estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
+            'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
             'id_categoria' => $validated['categoria_id'] ?? 1,
         ]);
 
@@ -111,19 +111,19 @@ class ExperienciaController extends Controller
         $ficha_tecnica = $botella . ($servicio_extra ? '|' . $servicio_extra : '');
 
         $experiencia->update([
-            'nombre' => $validated['nombre'],
-            'descripcion' => strip_tags($validated['descripcion'] ?? ''),
-            'precio' => $validated['precio'],
-            'tipo' => strip_tags($validated['tipo'] ?? ''),
-            'lugar' => strip_tags($validated['lugar'] ?? ''),
-            'duracion' => strip_tags($validated['duracion'] ?? ''),
-            'horario' => strip_tags($validated['horario'] ?? ''),
+            'Nombre' => $validated['nombre'],
+            'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
+            'Precio' => $validated['precio'],
+            'Tipo' => strip_tags($validated['tipo'] ?? ''),
+            'Lugar' => strip_tags($validated['lugar'] ?? ''),
+            'Duracion' => strip_tags($validated['duracion'] ?? ''),
+            'Horario' => strip_tags($validated['horario'] ?? ''),
             'numero_personas' => $validated['numero_personas'] ?? 2,
-            'costo_operativo' => $validated['costo_operativo'] ?? 0,
-            'productos' => strip_tags($validated['productos'] ?? ''),
+            'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
+            'Productos' => strip_tags($validated['productos'] ?? ''),
             'ficha_tecnica' => $ficha_tecnica,
             'imagenes' => $imagenes,
-            'estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
+            'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
         ]);
 
         return redirect(route('admin.dashboard') . '#experiencias')

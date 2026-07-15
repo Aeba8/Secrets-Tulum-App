@@ -50,13 +50,13 @@ class HotelCatalogSeeder extends Seeder
 
         // 3. INYECTAR EXPERIENCIA TIPO SPA
         Experiencia::create([
-            'nombre' => 'Spa con Burbujas',
+            'Nombre' => 'Spa con Burbujas',
             'slug' => Str::slug('Spa con Burbujas'),
-            'precio' => 1800.00,
-            'tipo' => 'SPA', 
-            'lugar' => 'Spa Principal',
-            'duracion' => '2 masajes de 25 mins',
-            'horario' => '24 h',
+            'Precio' => 1800.00,
+            'Tipo' => 'SPA', 
+            'Lugar' => 'Spa Principal',
+            'Duracion' => '2 masajes de 25 mins',
+            'Horario' => '24 h',
             'numero_personas' => 2,
             'is_active' => true,
             'id_categoria' => $catExperiencia->Id, 

@@ -391,7 +391,7 @@
         'App\\Models\\CenaEspecial': {!! $espacios->where('Tipo', 'Mesa')->where('Is_Active', 1)->map(function ($e) {
                 return ['id' => $e->Id, 'nombre' => $e->Nombre, 'zona' => $e->Zona];
             })->values()->toJson() !!},
-        'App\\Models\\Experiencia': @json($espacios->where('nombre', 'Sin Espacio Físico')->map(fn($e) => ['id' => $e->id, 'nombre' => $e->nombre])->values()),
+        'App\\Models\\Experiencia': @json($espacios->where('Nombre', 'Sin Espacio Físico')->map(fn($e) => ['id' => $e->Id, 'nombre' => $e->Nombre])->values()),
     };
 
     // ── Confirm dialog ──
