@@ -34,6 +34,6 @@ class Balinesa extends Model
 
     public function categoria()
     {
-        return $this->belongsTo(Categoria::class, 'Id_Categoria', 'Id');
+        return $this->belongsTo(Categoria::class, 'id_categoria', 'Id');
     }
 }

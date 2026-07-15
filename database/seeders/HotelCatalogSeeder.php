@@ -50,17 +50,17 @@ class HotelCatalogSeeder extends Seeder
 
         // 3. INYECTAR EXPERIENCIA TIPO SPA
         Experiencia::create([
-            'Nombre' => 'Spa con Burbujas',
-            'Slug' => Str::slug('Spa con Burbujas'),
-            'Precio' => 1800.00,
-            'Tipo' => 'SPA', 
-            'Lugar' => 'Spa Principal',
-            'Duracion' => '2 masajes de 25 mins',
-            'Horario' => '24 h',
-            'Numero_Personas' => 2,
-            'Is_Active' => true,
-            'Id_Categoria' => $catExperiencia->Id, 
-            'Ficha_Tecnica' => [
+            'nombre' => 'Spa con Burbujas',
+            'slug' => Str::slug('Spa con Burbujas'),
+            'precio' => 1800.00,
+            'tipo' => 'SPA', 
+            'lugar' => 'Spa Principal',
+            'duracion' => '2 masajes de 25 mins',
+            'horario' => '24 h',
+            'numero_personas' => 2,
+            'is_active' => true,
+            'id_categoria' => $catExperiencia->Id, 
+            'ficha_tecnica' => [
                 'botella_incluida' => '1 botella de Moët & Chandon Brut 750ml',
                 'descripcion' => 'Disfrute de un oasis de relajación absoluta con nuestra sesión exclusiva de hidroterapia seguida de masajes focalizados diseñados para liberar la tensión corporal.',
                 'producto' => 'Plato artesanal de fresas selectas cubiertas con chocolate semi-amargo.',
@@ -75,7 +75,7 @@ class HotelCatalogSeeder extends Seeder
             'Precio' => 3200.00,
             'Capacidad_Maxima' => 2,
             'Is_Active' => true,
-            'Id_Categoria' => $catExperiencia->Id, 
+            'id_categoria' => $catExperiencia->Id, 
             'Ficha_Tecnica' => [
                 'comida' => 'Caja China', 
                 'botella_incluida' => '1 botella de Moët & Chandon Brut 750ml',

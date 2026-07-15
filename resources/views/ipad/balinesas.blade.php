@@ -362,7 +362,7 @@
                             }
 
                             return {
-                                slug: balinesa.slug || balinesa.Slug,
+                                slug: balinesa.slug,
                                 nombre: nombre,
                                 botellaIncluida: botellaIncluida,
                                 botellaRaw: botellaOriginalEspañol,

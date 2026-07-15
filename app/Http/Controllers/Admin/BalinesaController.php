@@ -62,7 +62,7 @@ class BalinesaController extends Controller
             'Costo_Operativo' => $validated['costo_operativo'] ?? 0,
             'imagenes' => $imagenes,
             'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
-            'Id_Categoria' => $validated['categoria_id'] ?? 1,
+            'id_categoria' => $validated['categoria_id'] ?? 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#balinesas')

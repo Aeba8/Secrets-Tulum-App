@@ -203,7 +203,7 @@
                         <p class="text-[10px] text-secrets-gold font-medium uppercase tracking-[0.15em] font-mono">
                             {{ request('lang') == 'en' ? 'Max Capacity:' : 'Número de personas:' }}</p>
                         <p class="text-stone-100 font-light mt-0.5">
-                            {{ $experiencia->Numero_Personas ?? $experiencia->numero_personas }} pax</p>
+                            {{ $experiencia->numero_personas }} pax</p>
                     </div>
                     <div>
                         <p class="text-[10px] text-secrets-gold font-medium uppercase tracking-[0.15em] font-mono">

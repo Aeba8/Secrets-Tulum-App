@@ -6,22 +6,22 @@ use Illuminate\Database\Eloquent\Model;
 
 class Experiencia extends Model
 {
-    protected $table = 'Experiencias';
-    protected $primaryKey = 'Id';
+    protected $table = 'experiencias';
+    protected $primaryKey = 'id';
     public $timestamps = false;
 
     protected $fillable = [
-        'Nombre', 'Descripcion', 'Precio', 'Costo_Operativo', 'Slug', 'Tipo', 'Lugar',
-        'Duracion', 'Horario', 'Numero_Personas', 'id_categoria', 'imagenes',
-        'Productos', 'ficha_tecnica', 'Estado',
+        'nombre', 'descripcion', 'precio', 'costo_operativo', 'slug', 'tipo', 'lugar',
+        'duracion', 'horario', 'numero_personas', 'id_categoria', 'imagenes',
+        'productos', 'ficha_tecnica', 'estado',
     ];
 
     protected function casts(): array
     {
         return [
             'imagenes' => 'array',
-            'Costo_Operativo' => 'decimal:2',
-            'Numero_Personas' => 'integer',
+            'costo_operativo' => 'decimal:2',
+            'numero_personas' => 'integer',
         ];
     }
 
