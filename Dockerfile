@@ -40,4 +40,5 @@ RUN chown -R www-data:www-data /var/www/html/storage /var/www/html/bootstrap/cac
 EXPOSE 80
 
 # COMANDO DE INICIO: Aquí es donde se ejecutan las migraciones porque ya existen las variables de entorno reales.
-CMD php artisan migrate --force && apache2-foreground
+RUN chmod +x start.sh
+CMD php artisan migrate --force && ./start.sh
