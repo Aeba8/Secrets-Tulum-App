@@ -276,6 +276,8 @@
                     <select id="espacio_zona" name="zona" required
                         class="w-full px-3 py-2.5 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition">
                     </select>
+                    <input type="text" id="espacio_zona_nueva" name="zona_nueva" placeholder="Escribe el nombre de la nueva zona"
+                        class="w-full mt-2 px-3 py-2.5 rounded-xl border border-gold-500 dark:border-gold-500 bg-white dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 hidden transition">
                     @error('zona')
                         <p class="text-xs text-red-500 mt-1">{{ $message }}</p>
                     @enderror
@@ -361,12 +363,7 @@
 
 @push('scripts')
     <script>
-        const zonasPorTipo = {
-            'Balinesa': ['Hotel', 'The Beach Club'],
-            'Mesa': ["Terraza Willy's", 'Rosewater', 'La taqueria', 'The Market Cafe',
-                'Blue Water', 'Jasmine', 'Bordeaux', 'The grotto', 'Portofino', 'Gazebo'
-            ],
-        };
+        const zonasPorTipo = @json($zonasPorTipo);
 
         let espacioConfirmCallback = null;
 
@@ -591,14 +588,39 @@
         function llenarSelectZona(tipo, selected) {
             const select = document.getElementById('espacio_zona');
             select.innerHTML = '';
+            const input = document.getElementById('espacio_zona_nueva');
             const zonas = zonasPorTipo[tipo] || [];
+            let found = false;
             zonas.forEach(function(z) {
                 const opt = document.createElement('option');
                 opt.value = z;
                 opt.textContent = z;
-                if (z === selected) opt.selected = true;
+                if (z === selected) { opt.selected = true; found = true; }
                 select.appendChild(opt);
             });
+            if (selected && !found) {
+                const opt = document.createElement('option');
+                opt.value = selected;
+                opt.textContent = selected;
+                opt.selected = true;
+                select.appendChild(opt);
+            }
+            const newOpt = document.createElement('option');
+            newOpt.value = '__new__';
+            newOpt.textContent = '➕ Otra zona...';
+            select.appendChild(newOpt);
+
+            input.classList.add('hidden');
+            input.value = '';
+            select.onchange = function() {
+                if (this.value === '__new__') {
+                    input.classList.remove('hidden');
+                    input.focus();
+                } else {
+                    input.classList.add('hidden');
+                    input.value = '';
+                }
+            };
         }
 
         function openEspacioModal(tipo, data, zonaPorDefecto) {

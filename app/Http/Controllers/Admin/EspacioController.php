@@ -15,6 +15,7 @@ class EspacioController extends Controller
             'nombre'     => 'required|string|max:50',
             'tipo'       => 'required|in:Balinesa,Mesa',
             'zona'       => 'required|string|max:50',
+            'zona_nueva' => 'nullable|string|max:50',
             'capacidad'  => 'required|integer|min:1|max:100',
             'activo'     => 'nullable|in:0,1,on,off',
         ];
@@ -62,10 +63,15 @@ class EspacioController extends Controller
     {
         $validated = $this->validarYFallar($request);
 
+        $zona = $validated['zona'];
+        if ($zona === '__new__' && !empty($validated['zona_nueva'])) {
+            $zona = strip_tags($validated['zona_nueva']);
+        }
+
         Espacio::create([
             'Nombre'    => strip_tags($validated['nombre']),
             'Tipo'      => $validated['tipo'],
-            'Zona'      => strip_tags($validated['zona']),
+            'Zona'      => strip_tags($zona),
             'Capacidad' => (int) $validated['capacidad'],
             'Estado'    => 'DISPONIBLE',
             'Is_Active' => $request->boolean('activo'),
@@ -81,10 +87,15 @@ class EspacioController extends Controller
         $espacio = Espacio::findOrFail($id);
         $validated = $this->validarYFallar($request);
 
+        $zona = $validated['zona'];
+        if ($zona === '__new__' && !empty($validated['zona_nueva'])) {
+            $zona = strip_tags($validated['zona_nueva']);
+        }
+
         $espacio->update([
             'Nombre'    => strip_tags($validated['nombre']),
             'Tipo'      => $validated['tipo'],
-            'Zona'      => strip_tags($validated['zona']),
+            'Zona'      => strip_tags($zona),
             'Capacidad' => (int) $validated['capacidad'],
             'Is_Active' => $request->boolean('activo'),
         ]);

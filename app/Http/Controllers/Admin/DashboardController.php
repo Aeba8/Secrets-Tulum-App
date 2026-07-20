@@ -586,6 +586,9 @@ class DashboardController extends Controller
         $paquetesEventos = Experiencia::all();
         $usuarios = Usuario::where('Rol', 'Operativo')->get();
         $espacios = Espacio::all();
+        $zonasPorTipo = $espacios->groupBy('Tipo')->map(function ($items) {
+            return $items->pluck('Zona')->unique()->values();
+        });
         $fondos = [];
 
         // ── Booking Pace (últ. 3 meses vs mes actual) ──
@@ -784,6 +787,7 @@ class DashboardController extends Controller
             'balinesas',
             'usuarios',
             'espacios',
+            'zonasPorTipo',
             'fondos',
             'inicioConsulta',
             'finConsulta',
