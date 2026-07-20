@@ -87,7 +87,7 @@
                     </thead>
                     <tbody>
                         @forelse ($todosB as $e)
-                            <tr data-estado="{{ $e->Estado }}" data-activo="{{ $e->Is_Active }}"
+                            <tr data-id="{{ $e->Id }}" data-estado="{{ $e->Estado }}" data-activo="{{ $e->Is_Active }}"
                                 data-zona="{{ $e->Zona }}"
                                 class="border-b border-sand-200 dark:border-charcoal-500 last:border-0 hover:bg-sand-50 dark:hover:bg-charcoal-500 transition-colors">
                                 <td class="px-5 py-3.5 text-gray-900 dark:text-gray-100 font-medium">
@@ -105,6 +105,8 @@
                                 <td class="px-5 py-3.5 text-center">
                                     <div
                                         class="flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500">
+                                        <button onclick="reordenar('espacios', {{ $e->Id }}, 'up')" class="hover:text-gold-500 transition-colors" title="Subir"><i class="fa-solid fa-chevron-up text-xs"></i></button>
+                                        <button onclick="reordenar('espacios', {{ $e->Id }}, 'down')" class="hover:text-gold-500 transition-colors" title="Bajar"><i class="fa-solid fa-chevron-down text-xs"></i></button>
                                         <button
                                             onclick='openEspacioModal("{{ $e->Tipo }}", {!! json_encode([
                                                 'id' => $e->Id,
@@ -170,7 +172,7 @@
                     </thead>
                     <tbody>
                         @forelse ($todosM as $e)
-                            <tr data-estado="{{ $e->Estado }}" data-activo="{{ $e->Is_Active }}"
+                            <tr data-id="{{ $e->Id }}" data-estado="{{ $e->Estado }}" data-activo="{{ $e->Is_Active }}"
                                 data-zona="{{ $e->Zona }}"
                                 class="border-b border-sand-200 dark:border-charcoal-500 last:border-0 hover:bg-sand-50 dark:hover:bg-charcoal-500 transition-colors">
                                 <td class="px-5 py-3.5 text-gray-900 dark:text-gray-100 font-medium">
@@ -188,6 +190,8 @@
                                 <td class="px-5 py-3.5 text-center">
                                     <div
                                         class="flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500">
+                                        <button onclick="reordenar('espacios', {{ $e->Id }}, 'up')" class="hover:text-gold-500 transition-colors" title="Subir"><i class="fa-solid fa-chevron-up text-xs"></i></button>
+                                        <button onclick="reordenar('espacios', {{ $e->Id }}, 'down')" class="hover:text-gold-500 transition-colors" title="Bajar"><i class="fa-solid fa-chevron-down text-xs"></i></button>
                                         <button
                                             onclick='openEspacioModal("{{ $e->Tipo }}", {!! json_encode([
                                                 'id' => $e->Id,

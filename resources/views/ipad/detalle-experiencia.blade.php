@@ -691,7 +691,7 @@
         /**
          * Solicita confirmación explícita del usuario y valida los 4 y 6 dígitos estrictos
          */
-        function solicitarConfirmacion() {
+        async function solicitarConfirmacion() {
             const txtFecha = document.getElementById('input-fecha').value;
             const txtHabitacion = document.getElementById('input-habitacion').value.trim();
             const txtVendedor = document.getElementById('input-vendedor').value.trim();
@@ -731,7 +731,89 @@
                 return;
             }
 
-            // 🌟 4. Modal estético previo a insertar en SQL Server
+            // 🌟 4. Modal de Términos y Condiciones (previo a confirmación)
+            const lang = currentLang;
+            const tycTitle = lang === 'en' ? 'TERMS AND CONDITIONS' : 'TÉRMINOS Y CONDICIONES';
+            const tycLabel = lang === 'en' ? 'I have read and accept the terms and conditions' :
+                'He leído y acepto los términos y condiciones';
+            const tycMandatory = lang === 'en' ? 'You must accept the terms to continue' :
+                'Debes aceptar los términos para continuar';
+            const tycAccept = lang === 'en' ? 'ACCEPT AND CONTINUE' : 'ACEPTAR Y CONTINUAR';
+            const tycCancel = lang === 'en' ? 'CANCEL' : 'CANCELAR';
+            const tycLoading = lang === 'en' ? 'Loading...' : 'Cargando...';
+
+            // Cargar términos desde la API
+            let textoTerminos = '';
+            try {
+                const tycRes = await fetch('{{ route("api.terminos") }}', {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                });
+                const tycData = await tycRes.json();
+                textoTerminos = tycData.texto || '';
+            } catch (e) {
+                textoTerminos = '';
+            }
+
+            if (!textoTerminos) {
+                // Si no hay términos, saltar directo a la confirmación
+                mostrarConfirmacionReserva(txtFecha, txtHabitacion, txtVendedor, txtObservaciones);
+                return;
+            }
+
+            const resultTyc = await swalCustomButtons.fire({
+                title: tycTitle,
+                html: `
+                    <div class="text-left bg-black/40 border border-white/5 p-4 rounded-xl mt-3 max-h-[35vh] overflow-y-auto text-[11px] text-stone-300 leading-relaxed" style="text-transform:none; font-family: inherit;">
+                        <p>${textoTerminos}</p>
+                    </div>
+                    <label class="flex items-center gap-3 cursor-pointer mt-4 justify-center select-none" style="text-transform:none;">
+                        <input type="checkbox" id="tyc-check-sw" class="w-4 h-4 rounded border-white/20 bg-black/30 text-[#C5A059] focus:ring-[#C5A059]/40 focus:ring-offset-0 cursor-pointer">
+                        <span class="text-xs text-stone-300">${tycLabel}</span>
+                    </label>
+                `,
+                icon: 'info',
+                showCancelButton: true,
+                confirmButtonText: tycAccept,
+                cancelButtonText: tycCancel,
+                reverseButtons: true,
+                confirmButtonColor: '#C5A059',
+                cancelButtonColor: '#262626',
+                didOpen: () => {
+                    const popup = Swal.getPopup();
+                    const chk = popup.querySelector('#tyc-check-sw');
+                    const confirmBtn = Swal.getConfirmButton();
+                    confirmBtn.disabled = true;
+                    confirmBtn.style.opacity = '0.4';
+                    confirmBtn.style.cursor = 'not-allowed';
+                    chk?.addEventListener('change', () => {
+                        if (chk.checked) {
+                            confirmBtn.disabled = false;
+                            confirmBtn.style.opacity = '1';
+                            confirmBtn.style.cursor = 'pointer';
+                        } else {
+                            confirmBtn.disabled = true;
+                            confirmBtn.style.opacity = '0.4';
+                            confirmBtn.style.cursor = 'not-allowed';
+                        }
+                    });
+                },
+                preConfirm: () => {
+                    const chk = Swal.getPopup().querySelector('#tyc-check-sw');
+                    if (!chk?.checked) {
+                        Swal.showValidationMessage(tycMandatory);
+                        return false;
+                    }
+                    return true;
+                }
+            });
+
+            if (!resultTyc.isConfirmed) return;
+
+            // 🌟 5. Modal de confirmación final de reservación
+            mostrarConfirmacionReserva(txtFecha, txtHabitacion, txtVendedor, txtObservaciones);
+        }
+
+        function mostrarConfirmacionReserva(txtFecha, txtHabitacion, txtVendedor, txtObservaciones) {
             swalCustomButtons.fire({
                 title: currentLang === 'en' ? 'CONFIRM RESERVATION?' : '¿CONFIRMAR RESERVACIÓN?',
                 html: `
@@ -745,7 +827,9 @@
                 showCancelButton: true,
                 confirmButtonText: currentLang === 'en' ? 'CONFIRM AND BOOK' : 'CONFIRMAR Y RESERVAR',
                 cancelButtonText: currentLang === 'en' ? 'REVIEW DATA' : 'REVISAR DATOS',
-                reverseButtons: true
+                reverseButtons: true,
+                confirmButtonColor: '#C5A059',
+                cancelButtonColor: '#262626'
             }).then((result) => {
                 if (result.isConfirmed) {
                     enviarReservaAlServidor(txtFecha, txtHabitacion, txtVendedor, txtObservaciones);
@@ -846,6 +930,7 @@
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
 
+@include('ipad._back-prevention')
 </body>
 
 </html>

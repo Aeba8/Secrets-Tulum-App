@@ -68,6 +68,8 @@ class EspacioController extends Controller
             $zona = strip_tags($validated['zona_nueva']);
         }
 
+        $ultimoOrden = Espacio::max('Orden') ?? 0;
+
         Espacio::create([
             'Nombre'    => strip_tags($validated['nombre']),
             'Tipo'      => $validated['tipo'],
@@ -75,6 +77,7 @@ class EspacioController extends Controller
             'Capacidad' => (int) $validated['capacidad'],
             'Estado'    => 'DISPONIBLE',
             'Is_Active' => $request->boolean('activo'),
+            'Orden'     => $ultimoOrden + 1,
         ]);
 
         $hash = $validated['tipo'] === 'Balinesa' ? '#espacios-balinesas' : '#espacios-mesas';

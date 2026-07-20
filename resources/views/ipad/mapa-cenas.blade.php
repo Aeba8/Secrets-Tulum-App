@@ -224,6 +224,46 @@
         </div>
     </div>
 
+    <!-- 🌟 MODAL DE TÉRMINOS Y CONDICIONES -->
+    <div id="terminos-modal"
+        class="fixed inset-0 z-[90] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity duration-300 opacity-0">
+        <div
+            class="bg-gradient-to-b from-neutral-900 to-neutral-950 border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex items-center gap-3 mb-4">
+                <div
+                    class="w-10 h-10 bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-xl flex items-center justify-center text-[#C5A059]">
+                    <i class="fa-solid fa-file-contract text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wide text-white" data-key="terms_title">Términos y Condiciones</h4>
+                    <p class="text-[11px] text-stone-400 mt-0.5" data-key="terms_subtitle">Debes aceptar para continuar</p>
+                </div>
+            </div>
+
+            <div id="terminos-texto"
+                class="bg-black/30 border border-white/5 p-4 rounded-xl mb-4 max-h-[35vh] overflow-y-auto text-[11px] text-stone-300 leading-relaxed">
+                <div class="flex items-center justify-center py-6">
+                    <i class="fa-solid fa-circle-notch text-[#C5A059] animate-spin"></i>
+                </div>
+            </div>
+
+            <label class="flex items-start gap-3 cursor-pointer mb-5 select-none">
+                <input type="checkbox" id="terminos-checkbox"
+                    class="mt-0.5 w-4 h-4 rounded border-white/20 bg-black/30 text-[#C5A059] focus:ring-[#C5A059]/40 focus:ring-offset-0 cursor-pointer">
+                <span class="text-[11px] text-stone-300 leading-tight" data-key="terms_accept_label">He leído y acepto los términos y condiciones</span>
+            </label>
+
+            <div class="flex gap-3">
+                <button onclick="cerrarTerminosModal()"
+                    class="flex-1 bg-neutral-800 hover:bg-neutral-700 text-stone-300 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all"
+                    data-key="terms_cancel">Cancelar</button>
+                <button id="btn-aceptar-terminos" disabled onclick="abrirConfirmacionFinal()"
+                    class="flex-1 bg-neutral-700 text-stone-500 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all cursor-not-allowed"
+                    data-key="terms_accept">Aceptar y Continuar</button>
+            </div>
+        </div>
+    </div>
+
     <script>
         // 🟢 Leemos los parámetros directamente de la URL de la iPad de forma limpia y dinámica
         const urlParams = new URLSearchParams(window.location.search);
@@ -249,7 +289,14 @@
                 success_alert: "¡Cena especial reservada con éxito!",
                 occupied_alert: "Esta mesa acaba de ser tomada por otra reserva.",
                 validation_habitacion: "La habitación debe constar de 4 números.",
-                validation_colaborador: "El número de colaborador debe ser de 6 números."
+                validation_colaborador: "El número de colaborador debe ser de 6 números.",
+                terms_title: "Términos y Condiciones",
+                terms_subtitle: "Debes aceptar para continuar",
+                terms_accept_label: "He leído y acepto los términos y condiciones",
+                terms_mandatory: "Debes aceptar los términos para continuar",
+                terms_cancel: "Cancelar",
+                terms_accept: "Aceptar y Continuar",
+                terms_error: "No se pudieron cargar los términos. Intenta de nuevo."
             },
             en: {
                 no_spaces: "No tables configured for this restaurant.",
@@ -261,7 +308,14 @@
                 success_alert: "Special dinner booked successfully!",
                 occupied_alert: "This table was just taken by another reservation.",
                 validation_habitacion: "Room number must be 4 digits.",
-                validation_colaborador: "Collaborator ID must be 6 digits."
+                validation_colaborador: "Collaborator ID must be 6 digits.",
+                terms_title: "Terms and Conditions",
+                terms_subtitle: "You must accept to continue",
+                terms_accept_label: "I have read and accept the terms and conditions",
+                terms_mandatory: "You must accept the terms to continue",
+                terms_cancel: "Cancel",
+                terms_accept: "Accept and Continue",
+                terms_error: "Could not load terms. Please try again."
             }
         };
 
@@ -434,15 +488,86 @@
                 return;
             }
 
-            document.getElementById('modal-space-name').innerText = selectedSpaceName;
-            document.getElementById('modal-room-number').innerText = habitacion;
+            abrirTerminosModal();
+        }
 
-            const modal = document.getElementById('confirm-modal');
+        // 🌟 Modal de Términos y Condiciones
+        let terminosCargados = false;
+
+        function abrirTerminosModal() {
+            const checkbox = document.getElementById('terminos-checkbox');
+            const btnAceptar = document.getElementById('btn-aceptar-terminos');
+            checkbox.checked = false;
+            btnAceptar.disabled = true;
+            btnAceptar.className = 'flex-1 bg-neutral-700 text-stone-500 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all cursor-not-allowed';
+
+            const modal = document.getElementById('terminos-modal');
             modal.classList.remove('hidden');
             setTimeout(() => {
                 modal.classList.remove('opacity-0');
                 modal.querySelector('div').classList.remove('scale-95');
             }, 10);
+
+            if (!terminosCargados) cargarTerminos();
+        }
+
+        function cargarTerminos() {
+            const container = document.getElementById('terminos-texto');
+            const origin = window.location.origin;
+            fetch(`${origin}/hotel/internal-api/terminos`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.texto) {
+                    container.innerHTML = `<p>${data.texto}</p>`;
+                    terminosCargados = true;
+                } else {
+                    container.innerHTML = `<p class="text-stone-500 text-center">${t.terms_error}</p>`;
+                }
+            })
+            .catch(() => {
+                container.innerHTML = `<p class="text-stone-500 text-center">${t.terms_error}</p>`;
+            });
+        }
+
+        document.getElementById('terminos-checkbox')?.addEventListener('change', function() {
+            const btnAceptar = document.getElementById('btn-aceptar-terminos');
+            if (this.checked) {
+                btnAceptar.disabled = false;
+                btnAceptar.className = 'flex-1 bg-[#C5A059] hover:bg-[#b08e4f] text-black font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl shadow-[0_4px_15px_rgba(197,160,89,0.2)] transition-all';
+            } else {
+                btnAceptar.disabled = true;
+                btnAceptar.className = 'flex-1 bg-neutral-700 text-stone-500 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all cursor-not-allowed';
+            }
+        });
+
+        function cerrarTerminosModal() {
+            const modal = document.getElementById('terminos-modal');
+            if (!modal) return;
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function abrirConfirmacionFinal() {
+            const checkbox = document.getElementById('terminos-checkbox');
+            if (!checkbox.checked) {
+                showToast(t.terms_mandatory, 'error');
+                return;
+            }
+            cerrarTerminosModal();
+            setTimeout(() => {
+                const habitacion = document.getElementById('input-habitacion')?.value.trim();
+                document.getElementById('modal-space-name').innerText = selectedSpaceName;
+                document.getElementById('modal-room-number').innerText = habitacion;
+                const modal = document.getElementById('confirm-modal');
+                modal.classList.remove('hidden');
+                setTimeout(() => {
+                    modal.classList.remove('opacity-0');
+                    modal.querySelector('div').classList.remove('scale-95');
+                }, 10);
+            }, 350);
         }
 
         function cerrarConfirmacionModal() {
@@ -533,6 +658,7 @@
     <script>
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
+@include('ipad._back-prevention')
 </body>
 
 </html>

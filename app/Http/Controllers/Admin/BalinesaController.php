@@ -50,6 +50,8 @@ class BalinesaController extends Controller
 
         $slug = Str::slug($validated['nombre']);
 
+        $ultimoOrden = Balinesa::max('Orden') ?? 0;
+
         Balinesa::create([
             'Nombre' => $validated['nombre'],
             'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
@@ -63,6 +65,7 @@ class BalinesaController extends Controller
             'imagenes' => $imagenes,
             'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
             'id_categoria' => $validated['categoria_id'] ?? 1,
+            'Orden' => $ultimoOrden + 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#balinesas')

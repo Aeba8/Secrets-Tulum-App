@@ -58,6 +58,8 @@ class ExperienciaController extends Controller
         $servicio_extra = strip_tags($validated['servicio_extra'] ?? '');
         $ficha_tecnica = $botella . ($servicio_extra ? '|' . $servicio_extra : '');
 
+        $ultimoOrden = Experiencia::max('Orden') ?? 0;
+
         Experiencia::create([
             'Nombre' => $validated['nombre'],
             'Descripcion' => strip_tags($validated['descripcion'] ?? ''),
@@ -74,6 +76,7 @@ class ExperienciaController extends Controller
             'imagenes' => $imagenes,
             'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
             'id_categoria' => $validated['categoria_id'] ?? 1,
+            'Orden' => $ultimoOrden + 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#experiencias')

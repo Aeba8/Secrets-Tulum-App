@@ -51,9 +51,9 @@
             Secrets Tulum
         </div>
         
-        <div class="text-[9px] tracking-[0.2em] font-semibold text-zinc-950 bg-gradient-to-r from-[#E5C483] to-[#C5A059] px-4 py-1.5 rounded-md uppercase shadow-md shadow-[#C5A059]/10">
-            {{ request('lang') == 'en' ? 'Exclusive Catalog' : 'Catálogo Exclusivo' }}
-        </div>
+        {{--  <div class="text-[9px] tracking-[0.2em] font-semibold text-zinc-950 bg-gradient-to-r from-[#E5C483] to-[#C5A059] px-4 py-1.5 rounded-md uppercase shadow-md shadow-[#C5A059]/10"> -->
+          {{ request('lang') == 'en' ? 'Exclusive Catalog' : 'Catálogo Exclusivo' }}  
+        </div> --}}
     </header>
 
     <!-- 🍽️ Contenido Principal -->
@@ -147,5 +147,6 @@
     <script>
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
+@include('ipad._back-prevention')
 </body>
 </html>

@@ -449,6 +449,11 @@
                         <i class="fa-solid fa-chair w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Mesas</span>
                     </a>
+                    <button onclick="openTerminosAdminModal()"
+                        class="nav-item flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 w-full text-left">
+                        <i class="fa-solid fa-file-contract w-4 text-center flex-shrink-0"></i>
+                        <span class="whitespace-nowrap nav-label">Términos y Condiciones</span>
+                    </button>
                 </div>
             </nav>
 
@@ -531,6 +536,37 @@
     </div>
 
     <div id="toast-container" class="fixed top-24 right-8 z-[100] flex flex-col gap-3 pointer-events-none"></div>
+
+    <!-- 🌟 Modal Editar Términos y Condiciones -->
+    <div id="terminosModal"
+        class="fixed inset-0 bg-black/60 backdrop-blur-sm hidden items-center justify-center z-[70] p-4">
+        <div
+            class="bg-white dark:bg-charcoal-600 border border-sand-200 dark:border-charcoal-500 rounded-2xl w-full max-w-lg max-h-[90vh] overflow-y-auto shadow-2xl">
+            <form method="POST" action="{{ route('admin.settings.terminos') }}" class="p-6">
+                @csrf
+                @method('PUT')
+                <div class="flex items-center justify-between mb-6">
+                    <h3 class="text-gray-900 dark:text-gray-100 font-semibold text-base">Términos y Condiciones</h3>
+                    <button type="button" onclick="closeTerminosAdminModal()"
+                        class="text-gray-400 hover:text-gray-600 dark:hover:text-gray-200 transition-colors text-xl leading-none">&times;</button>
+                </div>
+                <div>
+                    <label class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">
+                        Texto que verán los usuarios en las iPads antes de confirmar una reserva
+                    </label>
+                    <textarea name="texto" rows="8" maxlength="5000" required
+                        class="w-full px-3 py-2.5 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-700 text-gray-900 dark:text-gray-100 text-sm focus:outline-none focus:ring-2 focus:ring-gold-500/40 focus:border-gold-500 transition resize-none">{{ $terminos ?? '' }}</textarea>
+                    <p class="text-xs text-gray-400 mt-1">Máximo 5,000 caracteres. Se admite HTML básico.</p>
+                </div>
+                <div class="flex justify-end gap-3 mt-6 pt-4 border-t border-sand-200 dark:border-charcoal-500">
+                    <button type="button" onclick="closeTerminosAdminModal()"
+                        class="px-4 py-2 rounded-xl text-sm font-medium text-gray-600 dark:text-gray-400 hover:bg-sand-100 dark:hover:bg-charcoal-500 transition-colors">Cancelar</button>
+                    <button type="submit"
+                        class="px-5 py-2 rounded-xl text-sm font-medium bg-gold-500 text-white hover:bg-gold-600 transition-colors">Guardar</button>
+                </div>
+            </form>
+        </div>
+    </div>
 
     <script>
         const sectionNames = {
@@ -929,6 +965,37 @@
                 e.target.closest('.alert-card').remove();
             }
         });
+
+        // Modal Términos y Condiciones
+        function openTerminosAdminModal() {
+            const modal = document.getElementById('terminosModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+        }
+        function closeTerminosAdminModal() {
+            const modal = document.getElementById('terminosModal');
+            modal.classList.remove('flex');
+            modal.classList.add('hidden');
+        }
+    </script>
+
+    <script>
+        function reordenar(modelo, id, dir) {
+            const tr = document.querySelector(`tr[data-id="${id}"]`);
+            const tbody = tr?.closest('tbody');
+            if (!tbody) return;
+            const rows = [...tbody.querySelectorAll('tr[data-id]')];
+            const idx = rows.indexOf(tr);
+            if (dir === 'up' && idx > 0) tbody.insertBefore(tr, rows[idx - 1]);
+            else if (dir === 'down' && idx < rows.length - 1) tbody.insertBefore(rows[idx + 1], tr);
+            else return;
+            const orden = [...tbody.querySelectorAll('tr[data-id]')].map(r => r.dataset.id);
+            fetch(`{{ url('admin/reordenar') }}/${modelo}`, {
+                method: 'POST',
+                headers: {'X-CSRF-TOKEN': '{{ csrf_token() }}', 'Content-Type': 'application/json'},
+                body: JSON.stringify({orden})
+            }).catch(e => console.error('Error al reordenar:', e));
+        }
     </script>
 
     @stack('scripts')

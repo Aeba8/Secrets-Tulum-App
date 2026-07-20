@@ -18,6 +18,7 @@ use App\Models\CenaEspecial;
 use App\Models\Espacio;
 use App\Models\Experiencia;
 use App\Models\Reserva;
+use App\Models\Setting;
 use App\Models\Usuario;
 use Carbon\Carbon;
 use Illuminate\Support\Collection;
@@ -581,14 +582,15 @@ class DashboardController extends Controller
 
         // ── CRUD data ──
 
-        $balinesas = Balinesa::all();
-        $cenasEspeciales = CenaEspecial::all();
-        $paquetesEventos = Experiencia::all();
-        $usuarios = Usuario::where('Rol', 'Operativo')->get();
-        $espacios = Espacio::all();
+        $balinesas = Balinesa::orderBy('Orden')->get();
+        $cenasEspeciales = CenaEspecial::orderBy('Orden')->get();
+        $paquetesEventos = Experiencia::orderBy('Orden')->get();
+        $usuarios = Usuario::where('Rol', 'Operativo')->orderBy('Id')->get();
+        $espacios = Espacio::orderBy('Orden')->get();
         $zonasPorTipo = $espacios->groupBy('Tipo')->map(function ($items) {
             return $items->pluck('Zona')->unique()->values();
         });
+        $terminos = Setting::valor('terminos_y_condiciones', '');
         $fondos = [];
 
         // ── Booking Pace (últ. 3 meses vs mes actual) ──
@@ -797,6 +799,7 @@ class DashboardController extends Controller
             'topSpenders',
             'spaceUtilization',
             'colaboradorTrend',
+            'terminos',
         ));
     }
 
@@ -907,9 +910,9 @@ class DashboardController extends Controller
                 );
 
             case 'cenas':
-                $cenas = CenaEspecial::with('categoria')->get();
-                $balinesas = Balinesa::with('categoria')->get();
-                $experiencias = Experiencia::with('categoria')->get();
+                $cenas = CenaEspecial::with('categoria')->orderBy('Orden')->get();
+                $balinesas = Balinesa::with('categoria')->orderBy('Orden')->get();
+                $experiencias = Experiencia::with('categoria')->orderBy('Orden')->get();
 
                 return Excel::download(
                     new CatalogExport(compact('cenas', 'balinesas', 'experiencias')),
@@ -925,7 +928,7 @@ class DashboardController extends Controller
                 );
 
             case 'espacios':
-                $espacios = Espacio::all();
+                $espacios = Espacio::orderBy('Orden')->get();
 
                 return Excel::download(
                     new EspaciosExport($espacios),

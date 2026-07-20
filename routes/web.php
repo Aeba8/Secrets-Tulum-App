@@ -7,10 +7,13 @@ use App\Http\Controllers\Admin\ExperienciaController;
 use App\Http\Controllers\Admin\UsuarioController;
 use App\Http\Controllers\Admin\EspacioController;
 use App\Http\Controllers\Admin\AgendaController;
+use App\Http\Controllers\Admin\SettingController;
 use App\Http\Controllers\API\ExperienciaReservaController;
 use App\Http\Controllers\API\ReservaController;
+use App\Http\Controllers\API\TerminosController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\HotelWebController;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -58,6 +61,10 @@ Route::middleware(['auth', 'role:Operativo'])->group(function () {
     // 🌟 NUEVA RUTA EXCLUSIVA: Para reservar experiencias VIP sin mapa
     Route::post('/hotel/internal-api/reservar-experiencia', [ExperienciaReservaController::class, 'store'])
         ->name('api.experiencias.reservar');
+
+    // 🌟 Términos y Condiciones
+    Route::get('/hotel/internal-api/terminos', [TerminosController::class, 'show'])
+        ->name('api.terminos');
 
     // Detalles de los Paquetes
     Route::get('/hotel/detalle-balinesa/{slug}', [HotelWebController::class, 'detalleBalinesa'])
@@ -113,9 +120,26 @@ Route::middleware(['auth', 'role:Admin,SuperAdmin'])->prefix('admin')->name('adm
     Route::delete('/espacios/{id}', [EspacioController::class, 'destroy'])->name('espacios.destroy');
     Route::patch('/espacios/{id}/activate', [EspacioController::class, 'activate'])->name('espacios.activate');
 
+    Route::post('/reordenar/{modelo}', function (Request $request, $modelo) {
+        $clases = [
+            'balinesas'    => App\Models\Balinesa::class,
+            'cenas'        => App\Models\CenaEspecial::class,
+            'experiencias' => App\Models\Experiencia::class,
+            'espacios'     => App\Models\Espacio::class,
+        ];
+        $clase = $clases[$modelo] ?? abort(404);
+        foreach ($request->input('orden', []) as $pos => $id) {
+            $clase::where('Id', $id)->update(['Orden' => $pos]);
+        }
+        return response()->json(['ok' => true]);
+    })->name('reordenar');
+
     // Agenda (Reservas CRUD)
     Route::post('/agenda', [AgendaController::class, 'store'])->name('agenda.store');
     Route::put('/agenda/{id}', [AgendaController::class, 'update'])->name('agenda.update');
     Route::delete('/agenda/{id}', [AgendaController::class, 'destroy'])->name('agenda.destroy');
     Route::patch('/agenda/{id}/activate', [AgendaController::class, 'activate'])->name('agenda.activate');
+
+    // Configuración
+    Route::put('/settings/terminos', [SettingController::class, 'updateTerminos'])->name('settings.terminos');
 });

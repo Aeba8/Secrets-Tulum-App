@@ -9,9 +9,12 @@ use App\Models\Usuario;
 
 class AuthController extends Controller
 {
-    // Renderiza la hermosa vista Glassmorphism que preparamos
     public function showLogin()
     {
+        if (Auth::check()) {
+            $usuario = Auth::user();
+            return redirect()->intended($usuario->Rol === 'Operativo' ? '/welcome' : '/admin/dashboard');
+        }
         return view('auth.login');
     }
 

@@ -474,6 +474,7 @@
     <script>
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('/sw.js'); }
     </script>
+@include('ipad._back-prevention')
 </body>
 
 </html>

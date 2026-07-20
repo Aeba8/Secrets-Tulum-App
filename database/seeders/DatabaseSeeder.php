@@ -50,6 +50,7 @@ class DatabaseSeeder extends Seeder
         // Llamamos al seeder del catálogo para las tablets
         $this->call([
             HotelCatalogSeeder::class,
+            SettingSeeder::class,
         ]);
     }
 }

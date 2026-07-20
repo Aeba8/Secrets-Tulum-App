@@ -52,6 +52,8 @@ class CenaEspecialController extends Controller
 
         $slug = Str::slug($validated['nombre']);
 
+        $ultimoOrden = CenaEspecial::max('Orden') ?? 0;
+
         CenaEspecial::create([
             'Nombre' => $validated['nombre'],
             'restaurant' => $validated['restaurant'],
@@ -67,6 +69,7 @@ class CenaEspecialController extends Controller
             'imagenes' => $imagenes,
             'Estado' => $request->boolean('activo') ? 'Activo' : 'Inactivo',
             'id_categoria' => $validated['categoria_id'] ?? 1,
+            'Orden' => $ultimoOrden + 1,
         ]);
 
         return redirect(route('admin.dashboard') . '#cenas')
