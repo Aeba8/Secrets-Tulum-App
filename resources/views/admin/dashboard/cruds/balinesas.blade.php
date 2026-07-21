@@ -85,8 +85,8 @@
                                     <td class="px-5 py-4 text-center">
                                         <div
                                             class="flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500">
-                                            <button onclick="reordenar('balinesas', {{ $ba->Id }}, 'up')" class="hover:text-gold-500 transition-colors" title="Subir"><i class="fa-solid fa-chevron-up text-xs"></i></button>
-                                            <button onclick="reordenar('balinesas', {{ $ba->Id }}, 'down')" class="hover:text-gold-500 transition-colors" title="Bajar"><i class="fa-solid fa-chevron-down text-xs"></i></button>
+                                            <button onclick="reordenar('balinesas', {{ $ba->Id }}, 'up', this)" class="hover:text-gold-500 transition-colors" title="Subir"><i class="fa-solid fa-chevron-up text-xs"></i></button>
+                                            <button onclick="reordenar('balinesas', {{ $ba->Id }}, 'down', this)" class="hover:text-gold-500 transition-colors" title="Bajar"><i class="fa-solid fa-chevron-down text-xs"></i></button>
                                             <button
                                                 onclick='openBalinesaModal({{ json_encode([
                                                     'id' => $ba->Id,

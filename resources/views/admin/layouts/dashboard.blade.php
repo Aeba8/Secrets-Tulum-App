@@ -980,10 +980,11 @@
     </script>
 
     <script>
-        function reordenar(modelo, id, dir) {
-            const tr = document.querySelector(`tr[data-id="${id}"]`);
-            const tbody = tr?.closest('tbody');
+        function reordenar(modelo, id, dir, clickedEl) {
+            const tbody = clickedEl.closest('tbody');
             if (!tbody) return;
+            const tr = tbody.querySelector(`tr[data-id="${id}"]`);
+            if (!tr) return;
             const rows = [...tbody.querySelectorAll('tr[data-id]')];
             const idx = rows.indexOf(tr);
             if (dir === 'up' && idx > 0) tbody.insertBefore(tr, rows[idx - 1]);
