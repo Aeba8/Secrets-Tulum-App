@@ -22,6 +22,8 @@
 
         /* Efecto premium de luz reflejada */
         .premium-glow {
+            -webkit-backdrop-filter: blur(24px);
+            backdrop-filter: blur(24px);
             box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 
                         0 0 30px 0 rgba(197, 160, 89, 0.04);
         }

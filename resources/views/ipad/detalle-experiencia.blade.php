@@ -367,6 +367,44 @@
         }
     </style>
 
+    <!-- 🌟 MODAL DE TÉRMINOS Y CONDICIONES -->
+    <div id="terminos-modal"
+        class="fixed inset-0 z-[90] hidden flex items-center justify-center p-4 bg-black/60 backdrop-blur-md transition-opacity duration-300 opacity-0">
+        <div class="bg-gradient-to-b from-neutral-900 to-neutral-950 border border-white/10 rounded-2xl p-6 max-w-sm w-full shadow-2xl transform scale-95 transition-transform duration-300">
+            <div class="flex items-center gap-3 mb-4">
+                <div class="w-10 h-10 bg-[#C5A059]/10 border border-[#C5A059]/20 rounded-xl flex items-center justify-center text-[#C5A059]">
+                    <i class="fa-solid fa-file-contract text-lg"></i>
+                </div>
+                <div>
+                    <h4 class="text-sm font-bold uppercase tracking-wide text-white" data-key="terms_title">{{ request('lang') == 'en' ? 'Terms and Conditions' : 'Términos y Condiciones' }}</h4>
+                    <p class="text-[11px] text-stone-400 mt-0.5" data-key="terms_subtitle">{{ request('lang') == 'en' ? 'You must accept to continue' : 'Debes aceptar para continuar' }}</p>
+                </div>
+            </div>
+
+            <div id="terminos-texto"
+                class="bg-black/30 border border-white/5 p-4 rounded-xl mb-4 max-h-[35vh] overflow-y-auto text-[11px] text-stone-300 leading-relaxed">
+                <div class="flex items-center justify-center py-6">
+                    <i class="fa-solid fa-circle-notch text-[#C5A059] animate-spin"></i>
+                </div>
+            </div>
+
+            <label class="flex items-start gap-3 cursor-pointer mb-5 select-none">
+                <input type="checkbox" id="terminos-checkbox"
+                    class="mt-0.5 w-4 h-4 rounded border-white/20 bg-black/30 text-[#C5A059] focus:ring-[#C5A059]/40 focus:ring-offset-0 cursor-pointer">
+                <span class="text-[11px] text-stone-300 leading-tight" data-key="terms_accept_label">{{ request('lang') == 'en' ? 'I have read and accept the terms and conditions' : 'He leído y acepto los términos y condiciones' }}</span>
+            </label>
+
+            <div class="flex gap-3">
+                <button onclick="cerrarTerminosModal()"
+                    class="flex-1 bg-neutral-800 hover:bg-neutral-700 text-stone-300 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all"
+                    data-key="terms_cancel">{{ request('lang') == 'en' ? 'Cancel' : 'Cancelar' }}</button>
+                <button id="btn-aceptar-terminos" disabled onclick="abrirConfirmacionFinal()"
+                    class="flex-1 bg-neutral-700 text-stone-500 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all cursor-not-allowed"
+                    data-key="terms_accept">{{ request('lang') == 'en' ? 'Accept and Continue' : 'Aceptar y Continuar' }}</button>
+            </div>
+        </div>
+    </div>
+
     <!-- Fullscreen Zoom Modal -->
     <div id="fsModal" class="fixed inset-0 bg-black/95 fs-modal z-50 hidden items-center justify-center" onclick="cerrarFullscreen(event)">
         <button onclick="event.stopPropagation(); cerrarFullscreen(event)"
@@ -697,7 +735,6 @@
             const txtVendedor = document.getElementById('input-vendedor').value.trim();
             const txtObservaciones = document.getElementById('input-observaciones').value;
 
-            // 1. Validar campos obligatorios vacíos
             if (!txtFecha || !txtHabitacion || !txtVendedor) {
                 swalCustomButtons.fire({
                     icon: 'error',
@@ -708,7 +745,6 @@
                 return;
             }
 
-            // 🌟 2. Validación Estricta: Exactamente 4 números para Habitación
             if (!/^\d{4}$/.test(txtHabitacion)) {
                 swalCustomButtons.fire({
                     icon: 'warning',
@@ -719,7 +755,6 @@
                 return;
             }
 
-            // 🌟 3. Validación Estricta: Exactamente 6 números para Colaborador
             if (!/^\d{6}$/.test(txtVendedor)) {
                 swalCustomButtons.fire({
                     icon: 'warning',
@@ -731,86 +766,89 @@
                 return;
             }
 
-            // 🌟 4. Modal de Términos y Condiciones (previo a confirmación)
-            const lang = currentLang;
-            const tycTitle = lang === 'en' ? 'TERMS AND CONDITIONS' : 'TÉRMINOS Y CONDICIONES';
-            const tycLabel = lang === 'en' ? 'I have read and accept the terms and conditions' :
-                'He leído y acepto los términos y condiciones';
-            const tycMandatory = lang === 'en' ? 'You must accept the terms to continue' :
-                'Debes aceptar los términos para continuar';
-            const tycAccept = lang === 'en' ? 'ACCEPT AND CONTINUE' : 'ACEPTAR Y CONTINUAR';
-            const tycCancel = lang === 'en' ? 'CANCEL' : 'CANCELAR';
-            const tycLoading = lang === 'en' ? 'Loading...' : 'Cargando...';
+            abrirTerminosModal();
+        }
 
-            // Cargar términos desde la API
-            let textoTerminos = '';
-            try {
-                const tycRes = await fetch('{{ route("api.terminos") }}', {
-                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-                });
-                const tycData = await tycRes.json();
-                textoTerminos = tycData.texto || '';
-            } catch (e) {
-                textoTerminos = '';
+        // ── Términos y Condiciones ──
+        let terminosCargados = false;
+
+        function abrirTerminosModal() {
+            const checkbox = document.getElementById('terminos-checkbox');
+            const btnAceptar = document.getElementById('btn-aceptar-terminos');
+            checkbox.checked = false;
+            btnAceptar.disabled = true;
+            btnAceptar.className = 'flex-1 bg-neutral-700 text-stone-500 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all cursor-not-allowed';
+
+            const modal = document.getElementById('terminos-modal');
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modal.querySelector('div').classList.remove('scale-95');
+            }, 10);
+
+            if (!terminosCargados) cargarTerminos();
+        }
+
+        function cargarTerminos() {
+            const container = document.getElementById('terminos-texto');
+            const origin = window.location.origin;
+            fetch(`${origin}/hotel/internal-api/terminos`, {
+                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+            })
+            .then(res => res.json())
+            .then(data => {
+                if (data.success && data.texto) {
+                    container.innerHTML = `<p>${data.texto}</p>`;
+                    terminosCargados = true;
+                } else {
+                    container.innerHTML = `<p class="text-stone-500 text-center">${currentLang === 'en' ? 'Could not load terms.' : 'No se pudieron cargar los términos.'}</p>`;
+                }
+            })
+            .catch(() => {
+                container.innerHTML = `<p class="text-stone-500 text-center">${currentLang === 'en' ? 'Could not load terms.' : 'No se pudieron cargar los términos.'}</p>`;
+            });
+        }
+
+        document.getElementById('terminos-checkbox')?.addEventListener('change', function() {
+            const btnAceptar = document.getElementById('btn-aceptar-terminos');
+            if (this.checked) {
+                btnAceptar.disabled = false;
+                btnAceptar.className = 'flex-1 bg-[#C5A059] hover:bg-[#b08e4f] text-black font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl shadow-[0_4px_15px_rgba(197,160,89,0.2)] transition-all';
+            } else {
+                btnAceptar.disabled = true;
+                btnAceptar.className = 'flex-1 bg-neutral-700 text-stone-500 font-bold text-[10px] uppercase tracking-widest py-3 rounded-xl transition-all cursor-not-allowed';
             }
+        });
 
-            if (!textoTerminos) {
-                // Si no hay términos, saltar directo a la confirmación
-                mostrarConfirmacionReserva(txtFecha, txtHabitacion, txtVendedor, txtObservaciones);
+        function cerrarTerminosModal() {
+            const modal = document.getElementById('terminos-modal');
+            if (!modal) return;
+            modal.classList.add('opacity-0');
+            modal.querySelector('div').classList.add('scale-95');
+            setTimeout(() => modal.classList.add('hidden'), 300);
+        }
+
+        function abrirConfirmacionFinal() {
+            const checkbox = document.getElementById('terminos-checkbox');
+            if (!checkbox.checked) {
+                swalCustomButtons.fire({
+                    icon: 'warning',
+                    title: currentLang === 'en' ? 'ACCEPT REQUIRED' : 'ACEPTE LOS TÉRMINOS',
+                    text: currentLang === 'en' ? 'You must accept the terms to continue.' :
+                        'Debes aceptar los términos para continuar.'
+                });
                 return;
             }
 
-            const resultTyc = await swalCustomButtons.fire({
-                title: tycTitle,
-                html: `
-                    <div class="text-left bg-black/40 border border-white/5 p-4 rounded-xl mt-3 max-h-[35vh] overflow-y-auto text-[11px] text-stone-300 leading-relaxed" style="text-transform:none; font-family: inherit;">
-                        <p>${textoTerminos}</p>
-                    </div>
-                    <label class="flex items-center gap-3 cursor-pointer mt-4 justify-center select-none" style="text-transform:none;">
-                        <input type="checkbox" id="tyc-check-sw" class="w-4 h-4 rounded border-white/20 bg-black/30 text-[#C5A059] focus:ring-[#C5A059]/40 focus:ring-offset-0 cursor-pointer">
-                        <span class="text-xs text-stone-300">${tycLabel}</span>
-                    </label>
-                `,
-                icon: 'info',
-                showCancelButton: true,
-                confirmButtonText: tycAccept,
-                cancelButtonText: tycCancel,
-                reverseButtons: true,
-                confirmButtonColor: '#C5A059',
-                cancelButtonColor: '#262626',
-                didOpen: () => {
-                    const popup = Swal.getPopup();
-                    const chk = popup.querySelector('#tyc-check-sw');
-                    const confirmBtn = Swal.getConfirmButton();
-                    confirmBtn.disabled = true;
-                    confirmBtn.style.opacity = '0.4';
-                    confirmBtn.style.cursor = 'not-allowed';
-                    chk?.addEventListener('change', () => {
-                        if (chk.checked) {
-                            confirmBtn.disabled = false;
-                            confirmBtn.style.opacity = '1';
-                            confirmBtn.style.cursor = 'pointer';
-                        } else {
-                            confirmBtn.disabled = true;
-                            confirmBtn.style.opacity = '0.4';
-                            confirmBtn.style.cursor = 'not-allowed';
-                        }
-                    });
-                },
-                preConfirm: () => {
-                    const chk = Swal.getPopup().querySelector('#tyc-check-sw');
-                    if (!chk?.checked) {
-                        Swal.showValidationMessage(tycMandatory);
-                        return false;
-                    }
-                    return true;
-                }
-            });
+            const txtFecha = document.getElementById('input-fecha').value;
+            const txtHabitacion = document.getElementById('input-habitacion').value.trim();
+            const txtVendedor = document.getElementById('input-vendedor').value.trim();
+            const txtObservaciones = document.getElementById('input-observaciones').value;
 
-            if (!resultTyc.isConfirmed) return;
-
-            // 🌟 5. Modal de confirmación final de reservación
-            mostrarConfirmacionReserva(txtFecha, txtHabitacion, txtVendedor, txtObservaciones);
+            cerrarTerminosModal();
+            setTimeout(() => {
+                mostrarConfirmacionReserva(txtFecha, txtHabitacion, txtVendedor, txtObservaciones);
+            }, 350);
         }
 
         function mostrarConfirmacionReserva(txtFecha, txtHabitacion, txtVendedor, txtObservaciones) {
@@ -905,7 +943,7 @@
 
                     document.body.classList.add('page-exit');
                     setTimeout(() => {
-                        window.location.href = "{{ route('welcome') }}?lang=" + currentLang;
+                        window.location.href = "{{ route('paquetes.experiencias') }}?lang=" + currentLang;
                     }, 2000);
                 } else {
                     enviando = false;

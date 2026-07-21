@@ -322,7 +322,7 @@
 
                 {{-- Dashboard General (toggle padre) --}}
                 <button id="dashboard-parent-toggle"
-                    class="flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200 nav-item-active w-full text-left">
+                    class="flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 nav-item-active w-full text-left">
                     <i class="fa-solid fa-gauge-high w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label flex-1">Dashboard General</span>
                     <i id="dashboard-chevron"
@@ -331,37 +331,37 @@
 
                 {{-- Sub-apartados (colapsable) --}}
                 <div id="submenu-container"
-                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 dark:space-y-1 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
+                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
                     <span
                         class="sidebar-text-muted text-[10px] uppercase tracking-widest font-semibold ml-3 nav-label block mt-2 mb-1">Módulos
                         de Métricas</span>
 
                     <a href="#bcg" data-section="bcg"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-star w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Matriz BCG</span>
                     </a>
 
                     <a href="#financial" data-section="financial"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-chart-line w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Métricas Financieras</span>
                     </a>
 
                     <a href="#occupancy" data-section="occupancy"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-calendar-day w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Ocupación y Demanda</span>
                     </a>
 
                     <a href="#operations" data-section="operations"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-gears w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Operación y Logística</span>
                     </a>
 
                     <a href="#team" data-section="team"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 nav-item">
                         <i class="fa-solid fa-users w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Rendimiento del Equipo</span>
                     </a>
@@ -372,7 +372,7 @@
 
                 {{-- Agenda (active) --}}
                 <a href="#agenda" data-section="agenda"
-                    class="nav-item nav-section-link flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200">
+                    class="nav-item nav-section-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200">
                     <i class="fa-solid fa-calendar-days w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label">Agenda de Reservas</span>
                 </a>
@@ -381,7 +381,7 @@
 
                 {{-- Gestión de Servicios (toggle padre) --}}
                 <button id="services-parent-toggle"
-                    class="nav-item flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
                     <i class="fa-solid fa-concierge-bell w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label flex-1">Gestión de Servicios</span>
                     <i id="services-chevron"
@@ -390,25 +390,25 @@
 
                 {{-- Sub-CRUDs (colapsable) --}}
                 <div id="services-submenu"
-                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 dark:space-y-1 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
+                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
                     <span
                         class="sidebar-text-muted text-[10px] uppercase tracking-widest font-semibold ml-3 nav-label block mt-2 mb-1">Administración
                         de Catálogo</span>
 
                     <a href="#cenas" data-section="cenas"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-utensils w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Cenas Especiales</span>
                     </a>
 
                     <a href="#balinesas" data-section="balinesas"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Balinesas</span>
                     </a>
 
                     <a href="#experiencias" data-section="experiencias"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-gem w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Experiencias VIP</span>
                     </a>
@@ -419,7 +419,7 @@
 
                 {{-- Usuarios Operativos (standalone) --}}
                 <a href="#usuarios" data-section="usuarios"
-                    class="nav-item nav-section-link flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200">
+                    class="nav-item nav-section-link flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200">
                     <i class="fa-solid fa-users-gear w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label">Usuarios Operativos</span>
                 </a>
@@ -428,7 +428,7 @@
 
                 {{-- Espacios (parent toggle) --}}
                 <button id="espacios-parent-toggle"
-                    class="nav-item flex items-center gap-3 px-3 py-2.5 dark:px-4 dark:py-3 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
+                    class="nav-item flex items-center gap-3 px-3 py-2.5 rounded-xl text-sm font-medium transition-all duration-200 w-full text-left">
                     <i class="fa-solid fa-table-cells w-5 text-center flex-shrink-0"></i>
                     <span class="whitespace-nowrap nav-label flex-1">Espacios</span>
                     <i id="espacios-chevron"
@@ -438,19 +438,19 @@
 
                 {{-- Sub-apartados de Espacios --}}
                 <div id="espacios-submenu"
-                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 dark:space-y-1 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
+                    class="sidebar-submenu-border ml-2 border-l-2 pl-2 space-y-0.5 overflow-hidden transition-all duration-300 max-h-[500px] opacity-100">
                     <a href="#espacios-balinesas" data-section="espacios-balinesas"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-umbrella-beach w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Balinesas</span>
                     </a>
                     <a href="#espacios-mesas" data-section="espacios-mesas"
-                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200">
+                        class="nav-item nav-section-link flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200">
                         <i class="fa-solid fa-chair w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Mesas</span>
                     </a>
                     <button onclick="openTerminosAdminModal()"
-                        class="nav-item flex items-center gap-3 px-3 py-2 dark:px-3 dark:py-2.5 rounded-lg text-xs font-medium transition-all duration-200 w-full text-left">
+                        class="nav-item flex items-center gap-3 px-3 py-2 rounded-lg text-xs font-medium transition-all duration-200 w-full text-left">
                         <i class="fa-solid fa-file-contract w-4 text-center flex-shrink-0"></i>
                         <span class="whitespace-nowrap nav-label">Términos y Condiciones</span>
                     </button>
