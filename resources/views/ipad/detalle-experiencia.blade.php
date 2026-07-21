@@ -789,24 +789,27 @@
             if (!terminosCargados) cargarTerminos();
         }
 
-        function cargarTerminos() {
+        async function cargarTerminos() {
             const container = document.getElementById('terminos-texto');
             const origin = window.location.origin;
-            fetch(`${origin}/hotel/internal-api/terminos`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-            })
-            .then(res => res.json())
-            .then(data => {
+            try {
+                const res = await fetch(`${origin}/hotel/internal-api/terminos`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                });
+                const data = await res.json();
                 if (data.success && data.texto) {
-                    container.innerHTML = `<p>${data.texto}</p>`;
+                    let texto = data.texto;
+                    if (currentLang === 'en') {
+                        texto = await traducirTextoAIngles(texto);
+                    }
+                    container.innerHTML = `<p>${texto}</p>`;
                     terminosCargados = true;
                 } else {
                     container.innerHTML = `<p class="text-stone-500 text-center">${currentLang === 'en' ? 'Could not load terms.' : 'No se pudieron cargar los términos.'}</p>`;
                 }
-            })
-            .catch(() => {
+            } catch (e) {
                 container.innerHTML = `<p class="text-stone-500 text-center">${currentLang === 'en' ? 'Could not load terms.' : 'No se pudieron cargar los términos.'}</p>`;
-            });
+            }
         }
 
         document.getElementById('terminos-checkbox')?.addEventListener('change', function() {

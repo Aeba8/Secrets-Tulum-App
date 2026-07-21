@@ -577,24 +577,40 @@
             if (!terminosCargados) cargarTerminos();
         }
 
-        function cargarTerminos() {
+        async function traducirTextoAIngles(textoOriginal) {
+            if (!textoOriginal || textoOriginal.trim() === "") return "";
+            try {
+                const response = await fetch(
+                    `https://api.mymemory.translated.net/get?q=${encodeURIComponent(textoOriginal)}&langpair=es|en`);
+                const data = await response.json();
+                return data.responseData?.translatedText || textoOriginal;
+            } catch (error) {
+                console.error("Error en la traducción automática:", error);
+                return textoOriginal;
+            }
+        }
+
+        async function cargarTerminos() {
             const container = document.getElementById('terminos-texto');
             const origin = window.location.origin;
-            fetch(`${origin}/hotel/internal-api/terminos`, {
-                headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
-            })
-            .then(res => res.json())
-            .then(data => {
+            try {
+                const res = await fetch(`${origin}/hotel/internal-api/terminos`, {
+                    headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
+                });
+                const data = await res.json();
                 if (data.success && data.texto) {
-                    container.innerHTML = `<p>${data.texto}</p>`;
+                    let texto = data.texto;
+                    if (currentLang === 'en') {
+                        texto = await traducirTextoAIngles(texto);
+                    }
+                    container.innerHTML = `<p>${texto}</p>`;
                     terminosCargados = true;
                 } else {
                     container.innerHTML = `<p class="text-stone-500 text-center">${t.terms_error}</p>`;
                 }
-            })
-            .catch(() => {
+            } catch (e) {
                 container.innerHTML = `<p class="text-stone-500 text-center">${t.terms_error}</p>`;
-            });
+            }
         }
 
         document.getElementById('terminos-checkbox')?.addEventListener('change', function() {
