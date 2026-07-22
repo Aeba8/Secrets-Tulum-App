@@ -773,6 +773,22 @@
             }
         }
 
+        document.addEventListener('keydown', function(e) {
+            if (e.key === 'F11') {
+                e.preventDefault();
+                toggleFullscreen();
+            }
+        });
+
+        document.addEventListener('fullscreenchange', function() {
+            const btn = document.querySelector('button[onclick="toggleFullscreen()"] i');
+            if (btn) {
+                btn.className = document.fullscreenElement
+                    ? 'fa-solid fa-compress text-sm'
+                    : 'fa-solid fa-expand text-sm';
+            }
+        });
+
         // ── Navigation by hash sections ──
         let _showSectionBusy = false;
 

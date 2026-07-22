@@ -53,12 +53,12 @@ class DashboardController extends Controller
 
         // ── Collections ──
 
-        $hoyReservas = Reserva::whereDate('Dia', $hoy)->with('serviciable')->get();
-        $ayerReservas = Reserva::whereDate('Dia', $ayer)->with('serviciable')->get();
-        $semanaActualReservas = Reserva::whereBetween('Dia', [$inicioSemana, $finSemana])->with('serviciable')->get();
-        $semanaPasadaReservas = Reserva::whereBetween('Dia', [$inicioSemanaPasada, $finSemanaPasada])->with('serviciable')->get();
-        $mesReservas = Reserva::whereBetween('Dia', [$inicioMes, $finMes])->with('serviciable')->get();
-        $mesPasadoReservas = Reserva::whereBetween('Dia', [$inicioMesPasado, $finMesPasado])->with('serviciable')->get();
+        $hoyReservas = Reserva::whereDate('Dia', $hoy)->whereNotIn('Estado', ['Cancelado', 'No-Show'])->with('serviciable')->get();
+        $ayerReservas = Reserva::whereDate('Dia', $ayer)->whereNotIn('Estado', ['Cancelado', 'No-Show'])->with('serviciable')->get();
+        $semanaActualReservas = Reserva::whereBetween('Dia', [$inicioSemana, $finSemana])->whereNotIn('Estado', ['Cancelado', 'No-Show'])->with('serviciable')->get();
+        $semanaPasadaReservas = Reserva::whereBetween('Dia', [$inicioSemanaPasada, $finSemanaPasada])->whereNotIn('Estado', ['Cancelado', 'No-Show'])->with('serviciable')->get();
+        $mesReservas = Reserva::whereBetween('Dia', [$inicioMes, $finMes])->whereNotIn('Estado', ['Cancelado', 'No-Show'])->with('serviciable')->get();
+        $mesPasadoReservas = Reserva::whereBetween('Dia', [$inicioMesPasado, $finMesPasado])->whereNotIn('Estado', ['Cancelado', 'No-Show'])->with('serviciable')->get();
 
         $this->usuariosMap = Usuario::all()->keyBy('Numero_de_colaborador');
 
@@ -556,6 +556,11 @@ class DashboardController extends Controller
         $topCollaborators = array_map(function ($col, $i) {
             return ['position' => $i + 1] + $col;
         }, $colaboradores, array_keys($colaboradores));
+
+        // ── Auto-completar reservas vencidas ──
+        Reserva::whereDate('Dia', '<', $hoy)
+            ->where('Estado', 'Confirmado')
+            ->update(['Estado' => 'Completado']);
 
         // ── Agenda ──
 

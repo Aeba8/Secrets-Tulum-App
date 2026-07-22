@@ -192,7 +192,7 @@
             class="flex-1 overflow-y-auto">
             <div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">
                 <div class="text-white/40 text-center py-10 tracking-widest text-xs uppercase">
-                    <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> Cargando menú...
+                    <i class="fa-solid fa-circle-notch animate-spin mr-2"></i> <span data-key="loading">Cargando menú...</span>
                 </div>
             </div>
         </div>
