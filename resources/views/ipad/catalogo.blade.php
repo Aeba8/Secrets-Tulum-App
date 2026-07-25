@@ -22,12 +22,12 @@
 
         /* Efecto premium de luz reflejada */
         .premium-glow {
-            -webkit-backdrop-filter: blur(24px);
-            backdrop-filter: blur(24px);
             box-shadow: 0 15px 35px -5px rgba(0, 0, 0, 0.5), 
                         0 0 30px 0 rgba(197, 160, 89, 0.04);
         }
         .group:hover .premium-glow {
+            -webkit-backdrop-filter: blur(12px);
+            backdrop-filter: blur(12px);
             box-shadow: 0 20px 40px -5px rgba(0, 0, 0, 0.6), 
                         0 0 40px 5px rgba(197, 160, 89, 0.15);
         }
@@ -44,7 +44,7 @@
     <div class="absolute inset-0 bg-[radial-gradient(circle_at_50%_40%,_rgba(197,160,89,0.08)_0%,_rgba(0,0,0,0)_70%)] z-0"></div>
 
     <!-- 🏷️ Header Líquido y Premium -->
-    <header class="relative z-10 w-full flex flex-row justify-between items-center px-8 py-5 border-b border-white/[0.08] backdrop-blur-md bg-zinc-950/20 shadow-sm">
+    <header class="relative z-10 w-full flex flex-row justify-between items-center px-8 py-5 border-b border-white/[0.08] backdrop-blur-md bg-zinc-850/20 shadow-sm"> 
         <button onclick="navigateWithAnimation('{{ route('welcome') }}')" class="text-white/70 hover:text-[#C5A059] flex items-center gap-2.5 text-[10px] uppercase tracking-[0.25em] font-medium transition-all active:scale-95 cursor-pointer">
             <i class="fa-solid fa-arrow-left text-[9px] text-[#C5A059]"></i> <span>{{ request('lang') == 'en' ? 'Back' : 'Atrás' }}</span>
         </button>
@@ -93,7 +93,7 @@
 
                 <!-- Tarjeta de Alto Impacto / Cristal de Lujo -->
                 <button onclick="navigateWithAnimation('{{ $targetRoute }}')" 
-                    class="group relative premium-glow bg-zinc-900/90 hover:bg-zinc-900/80 backdrop-blur-xl border border-white/[0.12] hover:border-[#E5C483]/60 rounded-2xl p-8 flex flex-col items-center justify-center gap-6 transition-all duration-500 cursor-pointer transform active:scale-[0.98] min-h-[230px] w-full overflow-hidden">
+                    class="group relative premium-glow bg-zinc-900/40 hover:bg-zinc-900/60 border border-white/[0.12] hover:border-[#E5C483]/60 rounded-2xl p-8 flex flex-col items-center justify-center gap-6 transition-all duration-500 cursor-pointer transform active:scale-[0.98] min-h-[230px] w-full overflow-hidden">
                     
                     <!-- Resplandor superior sutil permanente que se enciende en Hover -->
                     <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-20 bg-[#C5A059]/10 group-hover:bg-[#C5A059]/30 rounded-full blur-xl transition-all duration-500"></div>

@@ -55,7 +55,7 @@
     style="background-image: url('{{ asset('images/Secrets Tulum.jpg') }}'); background-size: cover; background-position: center;">
 
     <!-- Capa de oscurecimiento profundo (Aumentada a un 75% de opacidad para máximo contraste negro/oro) -->
-    <div class="absolute inset-0 bg-gradient-to-b from-black/85 via-black/60 to-black/80 z-0"></div>
+    <div class="absolute inset-0 bg-gradient-to-b from-black/70 via-black/60 to-black/65 z-0"></div>
 
     <!-- Líneas decorativas ultrafinas para dar aspecto de app de diseño arquitectónico -->
     <div class="absolute inset-x-12 top-0 bottom-0 border-l border-r border-white/[0.02] pointer-events-none z-0"></div>
