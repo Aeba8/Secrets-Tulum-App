@@ -125,6 +125,9 @@
                     <th class="text-center px-5 py-3 font-medium">Fecha</th>
                     <th class="text-center px-5 py-3 font-medium">Estado</th>
                     <th class="text-center px-5 py-3 font-medium">Colaborador</th>
+                    <th class="text-right px-5 py-3 font-medium">Precio Operativo</th>
+                    <th class="text-right px-5 py-3 font-medium">Precio Final</th>
+                    <th class="text-right px-5 py-3 font-medium">Ganancia</th>
                     <th class="text-center px-5 py-3 font-medium">Acciones</th>
                 </tr>
             </thead>
@@ -185,6 +188,17 @@
                         </td>
                         <td class="px-5 py-3.5 text-gray-400 dark:text-gray-500 text-center text-xs font-mono">
                             {{ $res->Numero_de_colaborador_vendedor ?? '—' }}</td>
+                        @php
+                            $costoOperativo = $res->serviciable->Costo_Operativo ?? 0;
+                            $precioFinal = $res->serviciable->Precio ?? 0;
+                            $ganancia = $precioFinal - $costoOperativo;
+                        @endphp
+                        <td class="px-5 py-3.5 text-right text-gray-500 dark:text-gray-400 text-xs font-mono">
+                            ${{ number_format($costoOperativo, 2) }}</td>
+                        <td class="px-5 py-3.5 text-right text-gray-700 dark:text-gray-300 text-xs font-mono font-medium">
+                            ${{ number_format($precioFinal, 2) }}</td>
+                        <td class="px-5 py-3.5 text-right text-xs font-mono font-medium {{ $ganancia >= 0 ? 'text-emerald-600 dark:text-emerald-400' : 'text-red-600 dark:text-red-400' }}">
+                            ${{ number_format($ganancia, 2) }}</td>
                         <td class="px-5 py-3.5 text-center">
                             <div class="flex items-center justify-center gap-2 text-gray-400 dark:text-gray-500">
                                 <button onclick='openAgendaModal({!! json_encode(
@@ -228,7 +242,7 @@
                     </tr>
                 @empty
                     <tr class="fila-vacia">
-                        <td colspan="9" class="px-5 py-8 text-center text-gray-400 dark:text-gray-500 text-sm">No
+                        <td colspan="12" class="px-5 py-8 text-center text-gray-400 dark:text-gray-500 text-sm">No
                             hay reservas en este período.</td>
                     </tr>
                 @endforelse

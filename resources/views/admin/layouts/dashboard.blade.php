@@ -1041,8 +1041,25 @@
             e.preventDefault();
             const visible = document.querySelector('.dashboard-section:not(.hidden)');
             const section = visible ? visible.id.replace('section-', '') : 'general';
-            window.location.href = '{{ route('admin.dashboard.export', '_SECTION_') }}'.replace('_SECTION_',
-                section);
+            let url = '{{ route('admin.dashboard.export', '_SECTION_') }}'.replace('_SECTION_', section);
+
+            if (section === 'agenda') {
+                const params = new URLSearchParams();
+                const desde = document.getElementById('agenda-fecha-desde')?.value;
+                const hasta = document.getElementById('agenda-fecha-hasta')?.value;
+                const tipo = document.querySelector('.agenda-filter-dropdown[data-filter="tipo"]')?.dataset.filtro;
+                const estado = document.querySelector('.agenda-filter-dropdown[data-filter="estado"]')?.dataset.filtro;
+                const q = document.querySelector('.agenda-search')?.value;
+                if (desde) params.set('desde', desde);
+                if (hasta) params.set('hasta', hasta);
+                if (tipo && tipo !== 'all') params.set('tipo', tipo);
+                if (estado && estado !== 'all') params.set('estado', estado);
+                if (q) params.set('q', q);
+                const qs = params.toString();
+                if (qs) url += '?' + qs;
+            }
+
+            window.location.href = url;
             setTimeout(function() { exportando = false; }, 3000);
         });
     </script>

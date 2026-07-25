@@ -21,6 +21,7 @@ use App\Models\Reserva;
 use App\Models\Setting;
 use App\Models\Usuario;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Collection;
 use Maatwebsite\Excel\Facades\Excel;
 
@@ -808,7 +809,7 @@ class DashboardController extends Controller
         ));
     }
 
-    public function export($section)
+    public function export($section, Request $request)
     {
         $hoy = Carbon::today();
         $inicioMes = $hoy->copy()->startOfMonth();
@@ -904,10 +905,44 @@ class DashboardController extends Controller
             case 'agenda':
                 $inicioConsulta = $hoy->copy()->subDays(90);
                 $finConsulta = $hoy->copy()->addDays(90);
-                $agendaReservations = Reserva::whereBetween('Dia', [$inicioConsulta, $finConsulta])
-                    ->with(['espacio', 'serviciable'])
-                    ->orderBy('Dia')
-                    ->get();
+
+                $desde = $request->query('desde');
+                $hasta = $request->query('hasta');
+                $tipo = $request->query('tipo');
+                $estado = $request->query('estado');
+                $q = $request->query('q');
+
+                $agendaQuery = Reserva::whereBetween('Dia', [$inicioConsulta, $finConsulta])
+                    ->with(['espacio', 'serviciable']);
+
+                if ($desde) {
+                    $agendaQuery->where('Dia', '>=', $desde);
+                }
+                if ($hasta) {
+                    $agendaQuery->where('Dia', '<=', $hasta);
+                }
+                if ($tipo && $tipo !== 'all') {
+                    $tipoMap = [
+                        'Balinesa' => 'App\\Models\\Balinesa',
+                        'CenaEspecial' => 'App\\Models\\CenaEspecial',
+                        'Experiencia' => 'App\\Models\\Experiencia',
+                    ];
+                    $agendaQuery->where('serviciable_type', $tipoMap[$tipo] ?? $tipo);
+                }
+                if ($estado && $estado !== 'all') {
+                    $agendaQuery->where('Estado', $estado);
+                }
+                if ($q) {
+                    $agendaQuery->where(function ($query) use ($q) {
+                        $query->where('Habitacion', 'like', "%{$q}%")
+                            ->orWhere('Observaciones', 'like', "%{$q}%")
+                            ->orWhereHas('serviciable', function ($sq) use ($q) {
+                                $sq->where('Nombre', 'like', "%{$q}%");
+                            });
+                    });
+                }
+
+                $agendaReservations = $agendaQuery->orderBy('Dia')->get();
 
                 return Excel::download(
                     new AgendaExport($agendaReservations),

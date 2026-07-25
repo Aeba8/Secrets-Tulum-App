@@ -30,8 +30,11 @@ class AgendaExport implements FromCollection, WithTitle, ShouldAutoSize, WithSty
     {
         $rows = [];
         $rows[] = ['Agenda de Reservas'];
-        $rows[] = ['#', 'Fecha', 'Habitación', 'Servicio', 'Tipo', 'Espacio', 'Colaborador', 'Estado', 'Observaciones', 'Creado'];
+        $rows[] = ['#', 'Fecha', 'Habitación', 'Servicio', 'Tipo', 'Espacio', 'Colaborador', 'Precio Operativo', 'Precio Final', 'Ganancia', 'Estado', 'Observaciones', 'Creado'];
         foreach ($this->reservations as $r) {
+            $costoOperativo = $r->serviciable->Costo_Operativo ?? 0;
+            $precioFinal = $r->serviciable->Precio ?? 0;
+            $ganancia = $precioFinal - $costoOperativo;
             $rows[] = [
                 $r->Id,
                 $r->Dia ? date('d/m/Y', strtotime($r->Dia)) : '',
@@ -40,6 +43,9 @@ class AgendaExport implements FromCollection, WithTitle, ShouldAutoSize, WithSty
                 class_basename($r->serviciable_type ?? ''),
                 $r->espacio?->Nombre ?? 'N/A',
                 $r->Numero_de_colaborador_vendedor ?? '',
+                $costoOperativo,
+                $precioFinal,
+                $ganancia,
                 $r->Estado ?? '',
                 $r->Observaciones ?? '',
                 $r->created_at ? $r->created_at->format('d/m/Y H:i') : '',
