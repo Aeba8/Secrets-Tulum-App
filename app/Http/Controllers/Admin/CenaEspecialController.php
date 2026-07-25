@@ -37,9 +37,18 @@ class CenaEspecialController extends Controller
         ];
     }
 
+    protected function mensajesValidacion(): array
+    {
+        return [
+            'imagenes.*.image' => 'El archivo debe ser una imagen.',
+            'imagenes.*.mimes' => 'Solo se permiten formatos JPEG, PNG y WebP. En iPad, convierta las fotos HEIC antes de subir.',
+            'imagenes.*.max' => 'Cada imagen no debe exceder 5MB.',
+        ];
+    }
+
     public function store(Request $request)
     {
-        $validated = $request->validate($this->reglasValidacion());
+        $validated = $request->validate($this->reglasValidacion(), $this->mensajesValidacion());
 
         $imagenes = [];
 
@@ -80,7 +89,7 @@ class CenaEspecialController extends Controller
     {
         $cena = CenaEspecial::findOrFail($id);
 
-        $validated = $request->validate($this->reglasValidacion());
+        $validated = $request->validate($this->reglasValidacion(), $this->mensajesValidacion());
 
         $imagenes = $cena->imagenes ?? [];
 

@@ -251,7 +251,7 @@
                                 class="block text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider mb-1">Imágenes</label>
                             <div class="relative">
                                 <input type="file" id="balinesa_imagenes" name="imagenes[]" multiple
-                                    accept="image/*"
+                                    accept="image/jpeg,image/png,image/webp"
                                     class="w-full px-3 py-2.5 rounded-xl border border-sand-200 dark:border-charcoal-500 bg-white dark:bg-charcoal-700 text-sm text-gray-500 dark:text-gray-400 file:mr-3 file:py-1.5 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-medium file:bg-gold-500 file:text-white hover:file:bg-gold-600 transition file:cursor-pointer">
                             </div>
                             <div id="balinesa_preview" class="flex gap-2 mt-2 flex-wrap"></div>

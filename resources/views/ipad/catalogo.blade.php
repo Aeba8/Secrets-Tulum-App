@@ -93,7 +93,7 @@
 
                 <!-- Tarjeta de Alto Impacto / Cristal de Lujo -->
                 <button onclick="navigateWithAnimation('{{ $targetRoute }}')" 
-                    class="group relative premium-glow bg-zinc-900/50 hover:bg-zinc-900/80 backdrop-blur-xl border border-white/[0.12] hover:border-[#E5C483]/60 rounded-2xl p-8 flex flex-col items-center justify-center gap-6 transition-all duration-500 cursor-pointer transform active:scale-[0.98] min-h-[230px] w-full overflow-hidden">
+                    class="group relative premium-glow bg-zinc-900/90 hover:bg-zinc-900/80 backdrop-blur-xl border border-white/[0.12] hover:border-[#E5C483]/60 rounded-2xl p-8 flex flex-col items-center justify-center gap-6 transition-all duration-500 cursor-pointer transform active:scale-[0.98] min-h-[230px] w-full overflow-hidden">
                     
                     <!-- Resplandor superior sutil permanente que se enciende en Hover -->
                     <div class="absolute -top-10 left-1/2 -translate-x-1/2 w-32 h-20 bg-[#C5A059]/10 group-hover:bg-[#C5A059]/30 rounded-full blur-xl transition-all duration-500"></div>
