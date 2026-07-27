@@ -204,7 +204,7 @@
             <div
                 class="flex flex-wrap gap-x-6 gap-y-2 text-xs uppercase font-bold border-b border-white/5 tracking-[0.2em]">
                 <button id="tab-entrada" onclick="switchTab('entrada')"
-                    class="border-b-2 border-secrets-gold pb-3 text-white transition duration-200 cursor-pointer">
+                    class="pb-3 text-stone-500 hover:text-stone-300 transition duration-200 cursor-pointer">
                     {{ request('lang') == 'en' ? 'STARTER' : 'ENTRADA' }}
                 </button>
                 <button id="tab-crema" onclick="switchTab('crema')"
@@ -212,7 +212,7 @@
                     {{ request('lang') == 'en' ? 'SOUP / CREAM' : 'CREMA' }}
                 </button>
                 <button id="tab-fuerte" onclick="switchTab('fuerte')"
-                    class="pb-3 text-stone-500 hover:text-stone-300 transition duration-200 cursor-pointer">
+                    class="border-b-2 border-secrets-gold pb-3 text-white transition duration-200 cursor-pointer">
                     {{ request('lang') == 'en' ? 'MAIN COURSE' : 'PLATO FUERTE' }}
                 </button>
                 <button id="tab-postre" onclick="switchTab('postre')"
@@ -225,7 +225,7 @@
             <div
                 class="text-base text-stone-300/90 leading-relaxed max-w-xl h-[130px] overflow-y-auto no-scrollbar pr-1">
 
-                <div id="content-entrada" class="block">
+                <div id="content-entrada" class="hidden">
                     <p id="txt-entrada" class="font-light text-stone-300/90 text-justify tracking-wide fade-text">
                         {{ $entrada ?: 'No incluye' }}
                     </p>
@@ -237,7 +237,7 @@
                     </p>
                 </div>
 
-                <div id="content-fuerte" class="hidden">
+                <div id="content-fuerte" class="block">
                     <p id="txt-fuerte" class="font-light text-stone-300/90 text-justify tracking-wide fade-text">
                         {{ $plato_fuerte ?: 'No incluye' }}
                     </p>
