@@ -31,6 +31,14 @@ class CheckRole
             return $next($request);
         }
 
+        // Si el usuario está autenticado pero su rol no es válido, cerrar sesión y redirigir
+        if (!$user->Rol || $user->Rol === '') {
+            auth()->logout();
+            session()->invalidate();
+            session()->regenerateToken();
+            return redirect()->route('login')->with('error', 'Tu sesión expiró. Inicia sesión nuevamente.');
+        }
+
         // Si intenta entrar a una sección no permitida (ej: Operativo entrando a métricas)
         abort(403, 'No tienes permisos para acceder a esta sección de SecretsPad.');
     }
