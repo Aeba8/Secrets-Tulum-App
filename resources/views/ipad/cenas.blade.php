@@ -376,7 +376,7 @@
 
             let html = '<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">';
             cenasFiltradas.forEach(cena => {
-                    const descripcionMenu = `${menu_lbl}: ${cena.renderedPlatoFuerte || ''}`;
+                    const descripcionMenu = `Menú: ${cena.renderedPlatoFuerte || ''}`;
                 const restauranteStr = cena.restaurant || 'Hotel';
 
                 html += `
