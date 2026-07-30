@@ -802,7 +802,7 @@
                     if (currentLang === 'en') {
                         texto = await traducirTextoAIngles(texto);
                     }
-                    container.innerHTML = `<p style="white-space: pre-wrap">${texto}</p>`;
+                    container.innerHTML = `<p>${texto.replace(/\n/g, '<br>')}</p>`;
                     terminosCargados = true;
                 } else {
                     container.innerHTML = `<p class="text-stone-500 text-center">${currentLang === 'en' ? 'Could not load terms.' : 'No se pudieron cargar los términos.'}</p>`;
