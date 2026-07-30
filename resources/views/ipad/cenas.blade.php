@@ -371,18 +371,12 @@
 
             const t = translations[currentLang];
 
-            const menu_lbl = currentLang === 'en' ? 'Menu' : 'Menú';
-            const starter_lbl = currentLang === 'en' ? 'Starter' : 'Entrada';
-            const soup_lbl = currentLang === 'en' ? 'Soup/Cream' : 'Crema';
-            const main_lbl = currentLang === 'en' ? 'Main Course' : 'Plato Fuerte';
-            const dessert_lbl = currentLang === 'en' ? 'Dessert' : 'Postre';
             const location_lbl = currentLang === 'en' ? 'Location' : 'Ubicación';
             const table_lbl = currentLang === 'en' ? 'Capacity' : 'Capacidad';
 
             let html = '<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">';
             cenasFiltradas.forEach(cena => {
-                const descripcionMenu =
-                    `<strong>${menu_lbl}:</strong> ${starter_lbl}: ${cena.renderedEntrada || ''} • ${soup_lbl}: ${cena.renderedCrema || ''} • ${main_lbl}: ${cena.renderedPlatoFuerte || ''} • ${dessert_lbl}: ${cena.renderedPostre || ''}.`;
+                    const descripcionMenu = `${menu_lbl}: ${cena.renderedPlatoFuerte || ''}`;
                 const restauranteStr = cena.restaurant || 'Hotel';
 
                 html += `
@@ -454,7 +448,6 @@
 
                 const matchText = !searchText ||
                     (cena.renderedNombre && cena.renderedNombre.toLowerCase().includes(searchText)) ||
-                    (cena.renderedEntrada && cena.renderedEntrada.toLowerCase().includes(searchText)) ||
                     (cena.renderedPlatoFuerte && cena.renderedPlatoFuerte.toLowerCase().includes(searchText)) ||
                     (cena.restaurant && cena.restaurant.toLowerCase().includes(searchText));
 
