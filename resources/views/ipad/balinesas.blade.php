@@ -354,6 +354,8 @@
                                 dbBotella.trim() :
                                 (currentLang === 'en' ? 'Premium bottle included' : 'Botella premium incluida');
 
+                            let descripcion = balinesa.descripcion || balinesa.Descripcion || '';
+
                             const botellaOriginalEspañol = dbBotella.toLowerCase();
 
                             if (currentLang === 'en') {
@@ -365,12 +367,17 @@
                                 botellaIncluida = botellaTraducida;
                             }
 
+                            if (currentLang === 'en' && descripcion.trim() !== '') {
+                                descripcion = await traducirTextoAIngles(descripcion);
+                            }
+
                             return {
                                 slug: balinesa.slug,
                                 nombre: nombre,
                                 botellaIncluida: botellaIncluida,
                                 botellaRaw: botellaOriginalEspañol,
                                 horarioDisponible: horarioDisponible,
+                                descripcion: descripcion,
                                 capacidad_maxima: balinesa.capacidad_maxima || balinesa.Capacidad_Maxima || 2,
                                 precio: Number(balinesa.precio || balinesa.Precio),
                                 imagen: primeraImagen // 🌟 Pasamos la URL limpia lista para el render
@@ -433,6 +440,7 @@
 
                 const matchText = !searchText ||
                     (b.nombre && b.nombre.toLowerCase().includes(searchText)) ||
+                    (b.descripcion && b.descripcion.toLowerCase().includes(searchText)) ||
                     (b.botellaIncluida && b.botellaIncluida.toLowerCase().includes(searchText));
 
                 let matchPax = true;
@@ -487,12 +495,7 @@
                 
                 <div class="flex-1 text-white">
                     <h3 translate="no" class="text-base sm:text-lg font-medium tracking-wide mb-1.5 group-hover:text-[#C5A059] transition-colors">${balinesa.nombre}</h3>
-                    <p class="text-[11px] sm:text-xs text-white/70 font-light leading-relaxed mb-3 line-clamp-2">${balinesa.botellaIncluida}</p>
-                    
-                    <div class="flex flex-col gap-1 text-[10px] sm:text-[11px] text-white/50">
-                        <div>• <span>${currentLang === 'en' ? 'Availability' : 'Disponibilidad'}</span>: <span class="text-emerald-400/90 font-medium">${balinesa.horarioDisponible}</span></div>
-                        <div>• <span>${currentLang === 'en' ? 'Max Capacity' : 'Capacidad Máxima'}</span>: <span>${balinesa.capacidad_maxima} Pax</span></div>
-                    </div>
+                    <p class="text-[11px] sm:text-xs text-white/70 font-light leading-relaxed mb-3 line-clamp-2">${balinesa.descripcion || balinesa.botellaIncluida}</p>
                     
                     <div class="text-lg sm:text-xl font-light text-[#C5A059] mt-3 tracking-wide">$${balinesa.precio.toLocaleString()} <span class="text-[10px] sm:text-xs text-white/40 font-light">MXN</span></div>
                 </div>
