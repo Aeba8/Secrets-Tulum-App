@@ -497,6 +497,10 @@
                     <h3 translate="no" class="text-base sm:text-lg font-medium tracking-wide mb-1.5 group-hover:text-[#C5A059] transition-colors">${balinesa.nombre}</h3>
                     <p class="text-[11px] sm:text-xs text-white/70 font-light leading-relaxed mb-3 line-clamp-2">${balinesa.descripcion || balinesa.botellaIncluida}</p>
                     
+                    <div class="flex flex-col gap-1 text-[10px] sm:text-[11px] text-white/50">
+                        <div>• <span>${currentLang === 'en' ? 'Bottle Included' : 'Botella Incluida'}</span>: <span class="text-[#C5A059] font-medium">${balinesa.botellaIncluida}</span></div>
+                    </div>
+                    
                     <div class="text-lg sm:text-xl font-light text-[#C5A059] mt-3 tracking-wide">$${balinesa.precio.toLocaleString()} <span class="text-[10px] sm:text-xs text-white/40 font-light">MXN</span></div>
                 </div>
 
