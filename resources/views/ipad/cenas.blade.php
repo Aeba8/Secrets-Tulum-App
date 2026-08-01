@@ -178,10 +178,10 @@
                     <select id="price-range-filter" onchange="applyFilters()"
                         class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
                         <option value="all" data-key="price_all" class="bg-stone-900">Cualquier precio</option>
-                        <option value="0-5000" data-key="price_low" class="bg-stone-900">Hasta $6,000 MXN</option>
-                        <option value="5000-10000" data-key="price_mid" class="bg-stone-900">$6,000 MXN - $7,000 MXN
+                        <option value="0-6000" data-key="price_low" class="bg-stone-900">Hasta $6,000 MXN</option>
+                        <option value="6000-7000" data-key="price_mid" class="bg-stone-900">$6,000 MXN - $7,000 MXN
                         </option>
-                        <option value="10000-plus" data-key="price_high" class="bg-stone-900">Más de $7,000 MXN</option>
+                        <option value="7000-plus" data-key="price_high" class="bg-stone-900">Más de $7,000 MXN</option>
                     </select>
                 </div>
             </div>
@@ -440,10 +440,10 @@
                 let matchPrice = true;
                 if (selectedPriceRange !== 'all') {
                     const precioCena = parseFloat(cena.precio) || 0;
-                    if (selectedPriceRange === '0-2500') matchPrice = (precioCena <= 2500);
-                    else if (selectedPriceRange === '2500-5000') matchPrice = (precioCena > 2500 && precioCena <=
-                        5000);
-                    else if (selectedPriceRange === '5000-plus') matchPrice = (precioCena > 5000);
+                    if (selectedPriceRange === '0-6000') matchPrice = (precioCena <= 6000);
+                    else if (selectedPriceRange === '6000-7000') matchPrice = (precioCena > 6000 && precioCena <=
+                        7000);
+                    else if (selectedPriceRange === '7000-plus') matchPrice = (precioCena > 7000);
                 }
 
                 const matchText = !searchText ||
