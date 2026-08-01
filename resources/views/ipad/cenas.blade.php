@@ -178,10 +178,10 @@
                     <select id="price-range-filter" onchange="applyFilters()"
                         class="w-full bg-black/40 border border-white/10 rounded-lg py-2 px-3 text-xs text-white/80 focus:outline-none focus:border-[#C5A059] cursor-pointer transition-all">
                         <option value="all" data-key="price_all" class="bg-stone-900">Cualquier precio</option>
-                        <option value="0-2500" data-key="price_low" class="bg-stone-900">Hasta $2,500 MXN</option>
-                        <option value="2500-5000" data-key="price_mid" class="bg-stone-900">$2,500 MXN - $5,000 MXN
+                        <option value="0-5000" data-key="price_low" class="bg-stone-900">Hasta $6,000 MXN</option>
+                        <option value="5000-10000" data-key="price_mid" class="bg-stone-900">$6,000 MXN - $7,000 MXN
                         </option>
-                        <option value="5000-plus" data-key="price_high" class="bg-stone-900">Más de $5,000 MXN</option>
+                        <option value="10000-plus" data-key="price_high" class="bg-stone-900">Más de $7,000 MXN</option>
                     </select>
                 </div>
             </div>
@@ -215,9 +215,9 @@
                 search_title: "Rango & Preferencias",
                 range_lbl: "Filtrar por Rango",
                 price_all: "Cualquier precio",
-                price_low: "Hasta $2,500 MXN",
-                price_mid: "$2,500 MXN - $5,000 MXN",
-                price_high: "Más de $5,000 MXN",
+                price_low: "Hasta $6,000 MXN",
+                price_mid: "$6,000 MXN - $7,000 MXN",
+                price_high: "Más de $7,000 MXN",
                 loading: "Cargando menú...",
                 tap_view: "Ver Menú",
                 no_results: "No se encontraron cenas con esta selección."
@@ -236,9 +236,9 @@
                 search_title: "Range & Preferences",
                 range_lbl: "Filter by Range",
                 price_all: "Any price",
-                price_low: "Up to $2,500 MXN",
-                price_mid: "$2,500 MXN - $5,000 MXN",
-                price_high: "Over $5,000 MXN",
+                price_low: "Up to $6,000 MXN",
+                price_mid: "$6,000 MXN - $7,000 MXN",
+                price_high: "Over $7,000 MXN",
                 loading: "Loading menu...",
                 tap_view: "View Menu",
                 no_results: "No dinners found with this selection."
