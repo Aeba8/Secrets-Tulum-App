@@ -491,24 +491,27 @@
             let html = '<div class="p-6 flex flex-col gap-4 max-w-4xl mx-auto w-full">';
             items.forEach(balinesa => {
                 html += `
-            <div onclick="selectBalinesa('${balinesa.slug}')" class="bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#C5A059]/40 rounded-xl p-4 sm:p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.995] group gap-4 sm:gap-6">
+            <div onclick="selectBalinesa('${balinesa.slug}')" class="bg-black/40 hover:bg-black/60 backdrop-blur-md border border-white/10 hover:border-[#E5C483]/50 rounded-xl p-4 sm:p-5 flex flex-row justify-between items-center transition-all duration-300 cursor-pointer shadow-lg transform active:scale-[0.995] group gap-4 sm:gap-6">
                 
-                <div class="flex-1 text-white">
-                    <h3 translate="no" class="text-base sm:text-lg font-medium tracking-wide mb-1.5 group-hover:text-[#C5A059] transition-colors">${balinesa.nombre}</h3>
-                    <p class="text-[11px] sm:text-xs text-white/70 font-light leading-relaxed mb-3 line-clamp-2">${balinesa.descripcion || balinesa.botellaIncluida}</p>
+                <div class="flex-1">
+                    <div class="flex items-center gap-2 mb-1.5">
+                        <div class="w-[3px] h-5 bg-gradient-to-b from-[#E5C483] to-[#C5A059] rounded-full opacity-60 group-hover:opacity-100 group-hover:h-6 transition-all duration-300"></div>
+                        <h3 translate="no" class="text-base sm:text-lg font-medium tracking-wide text-[#F5E9D0] group-hover:text-[#E5C483] transition-colors drop-shadow-[0_1px_6px_rgba(197,160,89,0.15)]">${balinesa.nombre}</h3>
+                    </div>
+                    <p class="text-[11px] sm:text-xs text-[#D8CBB8]/80 font-light leading-relaxed mb-3 line-clamp-2">${balinesa.descripcion || balinesa.botellaIncluida}</p>
                     
                     <div class="flex flex-col gap-1 text-[10px] sm:text-[11px] text-white/50">
-                        <div>• <span>${currentLang === 'en' ? 'Bottle Included' : 'Botella Incluida'}</span>: <span class="text-[#C5A059] font-medium">${balinesa.botellaIncluida}</span></div>
+                        <div>• <span>${currentLang === 'en' ? 'Bottle Included' : 'Botella Incluida'}</span>: <span class="text-[#E5C483] font-medium">${balinesa.botellaIncluida}</span></div>
                     </div>
                     
-                    <div class="text-lg sm:text-xl font-light text-[#C5A059] mt-3 tracking-wide">$${balinesa.precio.toLocaleString()} <span class="text-[10px] sm:text-xs text-white/40 font-light">MXN</span></div>
+                    <div class="text-lg sm:text-xl font-light text-[#E5C483] mt-3 tracking-wide">$${balinesa.precio.toLocaleString()} <span class="text-[10px] sm:text-xs text-white/40 font-light">MXN</span></div>
                 </div>
 
-                <div class="w-32 h-32 sm:w-44 sm:h-36 md:w-52 md:h-40 bg-stone-900 border border-white/10 rounded-lg shrink-0 overflow-hidden relative group-hover:border-[#C5A059]/40 transition-colors shadow-inner">
+                <div class="w-32 h-32 sm:w-44 sm:h-36 md:w-52 md:h-40 bg-stone-900 border border-white/10 rounded-lg shrink-0 overflow-hidden relative group-hover:border-[#E5C483]/50 transition-colors shadow-inner">
                     <img src="${balinesa.imagen}" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90 group-hover:opacity-100" alt="${balinesa.nombre}">
                     
                     <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent flex items-end justify-center pb-2.5">
-                        <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-white/90 text-center font-medium group-hover:text-[#C5A059] transition-colors drop-shadow-lg flex items-center gap-1.5">
+                        <span class="text-[9px] sm:text-[10px] uppercase tracking-wider text-white/90 text-center font-medium group-hover:text-[#E5C483] transition-colors drop-shadow-lg flex items-center gap-1.5">
                             ${translations[currentLang].tap_view} 
                             <i class="fa-solid fa-arrow-right text-[9px] opacity-0 group-hover:opacity-100 transform -translate-x-2 group-hover:translate-x-0 transition-all duration-300"></i>
                         </span>
